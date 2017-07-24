@@ -1,13 +1,13 @@
 
-task xbibUpload(type: Upload, dependsOn: build) {
+task xbibUpload(type: Upload) {
     configuration = configurations.archives
     uploadDescriptor = true
     repositories {
-        if (project.hasProperty('xbibUsername')) {
+        if (project.hasProperty("xbibUsername")) {
             mavenDeployer {
                 configuration = configurations.wagon
-                repository(url: uri('scpexe://xbib.org/repository')) {
-                        authentication(userName: xbibUsername, privateKey: xbibPrivateKey)
+                repository(url: 'sftp://xbib.org/repository') {
+                    authentication(userName: xbibUsername, privateKey: xbibPrivateKey)
                 }
             }
         }
@@ -34,7 +34,7 @@ task sonatypeUpload(type: Upload, dependsOn: build) {
                     name project.name
                     description projectDescription
                     packaging 'jar'
-                    inceptionYear '2016'
+                    inceptionYear '2017'
                     url scmUrl
                     organization {
                         name 'xbib'
@@ -45,7 +45,7 @@ task sonatypeUpload(type: Upload, dependsOn: build) {
                             id user
                             name 'Jörg Prante'
                             email 'joergprante@gmail.com'
-                            url 'https://github.com/jprante'
+                            url 'https://github.com/xbib'
                         }
                     }
                     scm {

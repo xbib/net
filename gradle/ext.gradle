@@ -1,8 +1,8 @@
 ext {
     user = 'xbib'
-    projectName = 'content'
-    projectDescription = 'Content processing library for Java'
-    scmUrl = 'https://github.com/xbib/content'
-    scmConnection = 'scm:git:git://github.com/xbib/content.git'
-    scmDeveloperConnection = 'scm:git:git://github.com/xbib/content.git'
+    projectName = 'net'
+    projectDescription = 'Network classes for Java'
+    scmUrl = 'https://github.com/xbib/net'
+    scmConnection = 'scm:git:git://github.com/xbib/net.git'
+    scmDeveloperConnection = 'scm:git:git://github.com/xbib/net.git'
 }

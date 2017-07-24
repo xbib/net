@@ -60,23 +60,23 @@ public class PathMatcher {
         return queryParameters;
     }
 
-    void setCachePatterns(boolean cachePatterns) {
+    public void setCachePatterns(boolean cachePatterns) {
         this.cachePatterns = cachePatterns;
     }
 
-    Map<String, PathStringMatcher> stringMatcherCache() {
+    public Map<String, PathStringMatcher> stringMatcherCache() {
         return stringMatcherCache;
     }
 
-    boolean match(String pattern, String path) {
+    public boolean match(String pattern, String path) {
         return doMatch(pattern, path, true, null);
     }
 
-    boolean matchStart(String pattern, String path) {
+    public boolean matchStart(String pattern, String path) {
         return doMatch(pattern, path, false, null);
     }
 
-    String extractPathWithinPattern(String pattern, String path) {
+    public String extractPathWithinPattern(String pattern, String path) {
         List<String> patternParts = tokenize(pattern, this.pathSeparator, this.trimTokens, true);
         List<String> pathParts = tokenize(path, this.pathSeparator, this.trimTokens, true);
         StringBuilder sb = new StringBuilder();
@@ -97,7 +97,7 @@ public class PathMatcher {
         return sb.toString();
     }
 
-    String combine(String pattern1, String pattern2) {
+    public String combine(String pattern1, String pattern2) {
         if (!hasText(pattern1) && !hasText(pattern2)) {
             return "";
         }
