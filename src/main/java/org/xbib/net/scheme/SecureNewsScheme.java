@@ -1,0 +1,14 @@
+package org.xbib.net.scheme;
+
+/**
+ * The snews scheme.
+ *
+ * @see <a href="https://tools.ietf.org/html/rfc5538">news RFC</a>
+ */
+class SecureNewsScheme extends NewsScheme {
+
+    SecureNewsScheme() {
+        super("snews", 563);
+    }
+
+}
