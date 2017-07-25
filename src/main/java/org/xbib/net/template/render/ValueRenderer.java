@@ -11,7 +11,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 /**
- * The algorithm used for rendering is centered around this class,and is
+ * The algorithm used for rendering is centered around this class, and is
  * adapted from the algorithm suggested in the RFC's appendix.
  *
  * Eventually, rendering can be viewed as joining a list of rendered strings

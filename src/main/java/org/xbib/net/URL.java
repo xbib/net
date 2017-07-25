@@ -43,7 +43,7 @@ import java.util.logging.Logger;
  * --
  *
  */
-public class URL implements Serializable {
+public class URL implements Comparable<URL>, Serializable {
 
     private static final Logger logger = Logger.getLogger(URL.class.getName());
 
@@ -268,6 +268,23 @@ public class URL implements Serializable {
         }
     }
 
+    public String relativeReference() {
+        StringBuilder sb = new StringBuilder();
+        if (path != null) {
+            sb.append(path);
+        }
+        if (query != null) {
+            sb.append(QUESTION_CHAR).append(query);
+        }
+        if (fragment != null) {
+            sb.append(NUMBER_SIGN_CHAR).append(fragment);
+        }
+        if (sb.length() == 0) {
+            sb.append(SEPARATOR_CHAR);
+        }
+        return sb.toString();
+    }
+
     public String decode(String input) {
         try {
             return builder.percentDecoder.decode(input);
@@ -280,27 +297,12 @@ public class URL implements Serializable {
         return builder;
     }
 
-    @Override
-    public boolean equals(Object other) {
-        return other != null && other instanceof URL && toString().equals(other.toString());
-    }
-
-    @Override
-    public String toString() {
-        return toString(true);
-    }
-
-    public String toString(boolean withFragment) {
+    private String toString(boolean withFragment) {
         if (internalStringRepresentation != null) {
             return internalStringRepresentation;
         }
         internalStringRepresentation = toInternalForm(withFragment);
         return internalStringRepresentation;
-    }
-
-    @Override
-    public int hashCode() {
-        return toString().hashCode();
     }
 
     /**
@@ -401,6 +403,10 @@ public class URL implements Serializable {
      */
     public boolean isAbsolute() {
         return !isNullOrEmpty(builder.scheme);
+    }
+
+    public boolean isRelative() {
+        return isNullOrEmpty(builder.scheme);
     }
 
     public Comparator<URL> withFragmentComparator() {
@@ -651,6 +657,26 @@ public class URL implements Serializable {
      */
     private static boolean isNullOrEmpty(String str) {
         return str == null || str.isEmpty();
+    }
+
+    @Override
+    public int hashCode() {
+        return toString().hashCode();
+    }
+
+    @Override
+    public boolean equals(Object other) {
+        return other != null && other instanceof URL && toString().equals(other.toString());
+    }
+
+    @Override
+    public String toString() {
+        return toString(true);
+    }
+
+    @Override
+    public int compareTo(URL o) {
+        return toString().compareTo(o.toString());
     }
 
     /**
