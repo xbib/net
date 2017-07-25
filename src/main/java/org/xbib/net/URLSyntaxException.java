@@ -3,15 +3,15 @@ package org.xbib.net;
 /**
  *
  */
-public class IRISyntaxException extends RuntimeException {
+public class URLSyntaxException extends Exception {
 
     private static final long serialVersionUID = 1813084470937980392L;
 
-    IRISyntaxException(String message) {
+    URLSyntaxException(String message) {
         super(message);
     }
 
-    IRISyntaxException(Throwable cause) {
+    URLSyntaxException(Throwable cause) {
         super(cause);
     }
 

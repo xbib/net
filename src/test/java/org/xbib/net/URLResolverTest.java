@@ -4,17 +4,34 @@ import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 
+import java.net.URI;
+
 /**
  */
 public class URLResolverTest {
 
     @Test
-    public void testResolve() throws Exception {
-        URL base = URL.create("http://example.org/foo/");
+    public void testResolveURI() throws Exception {
+        URI base = URI.create("http://example.org/foo");
         assertEquals("http://example.org/", base.resolve("/").toString());
-        resolve("http://foo.bar", "foobar", "http://foo.bar/foobar");
-        resolve("http://foo.bar/", "foobar", "http://foo.bar/foobar");
-        resolve("http://foo.bar/foobar", "foobar", "http://foo.bar/foobar");
+        assertEquals("http://example.org/foobar", base.resolve("/foobar").toString());
+        assertEquals("http://example.org/foobar", base.resolve("foobar").toString());
+        base = URI.create("http://example.org/foo/");
+        assertEquals("http://example.org/", base.resolve("/").toString());
+        assertEquals("http://example.org/foobar", base.resolve("/foobar").toString());
+        assertEquals("http://example.org/foo/foobar", base.resolve("foobar").toString());
+    }
+
+    @Test
+    public void testResolveURL() throws Exception {
+        URL base = URL.create("http://example.org/foo");
+        assertEquals("http://example.org/", base.resolve("/").toString());
+        assertEquals("http://example.org/foobar", base.resolve("/foobar").toString());
+        assertEquals("http://example.org/foobar", base.resolve("foobar").toString());
+        base = URL.create("http://example.org/foo/");
+        assertEquals("http://example.org/", base.resolve("/").toString());
+        assertEquals("http://example.org/foobar", base.resolve("/foobar").toString());
+        assertEquals("http://example.org/foo/foobar", base.resolve("foobar").toString());
     }
 
     @Test
@@ -69,7 +86,7 @@ public class URLResolverTest {
         resolve("http://a/b/c/d;p?q", "http:", "http:");
     }
 
-    private void resolve(String inputBase, String relative, String expected) {
+    private void resolve(String inputBase, String relative, String expected) throws URLSyntaxException {
         assertEquals(expected, URL.base(inputBase).resolve(relative).toExternalForm());
     }
 }

@@ -37,8 +37,8 @@ public class URLTest {
                }
            } else {
                if (base != null && input != null) {
-                   URL url = URL.base(base).resolve(input);
-                   if (url != null) {
+                   try {
+                       URL url = URL.base(base).resolve(input);
                        System.err.println("resolved: " + url.toString());
                        if (test.protocol != null) {
                            assertEquals(test.protocol, url.getScheme() + ":");
@@ -54,8 +54,8 @@ public class URLTest {
                        //    assertEquals(test.pathname, url.getPath());
                        //}
                        System.err.println("passed: " + base + " " + input);
-                   } else {
-                       System.err.println("unable to resolve: " + base + " " + input);
+                   } catch (URLSyntaxException e) {
+                       System.err.println("unable to resolve: " + base + " " + input + " reason: " + e.getMessage());
                    }
                }
            }

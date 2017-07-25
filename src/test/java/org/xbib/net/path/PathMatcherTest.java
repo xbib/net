@@ -453,7 +453,7 @@ public class PathMatcherTest {
     @Test
     public void patternComparatorSort() {
         Comparator<String> comparator = pathMatcher.getPatternComparator("/hotels/new");
-        List<String> paths = new ArrayList<String>(3);
+        List<String> paths = new ArrayList<>(3);
         paths.add(null);
         paths.add("/hotels/new");
         paths.sort(comparator);
@@ -559,13 +559,6 @@ public class PathMatcherTest {
         assertTrue(pathMatcher.match("/group/{groupName}/members", "/group/sales/members"));
         assertTrue(pathMatcher.match("/group/{groupName}/members", "/Group/Sales/Members"));
         assertTrue(pathMatcher.match("/Group/{groupName}/Members", "/group/Sales/members"));
-    }
-
-    @Test
-    public void cachePatternsSetToFalse() {
-        pathMatcher.setCachePatterns(false);
-        match();
-        assertTrue(pathMatcher.stringMatcherCache().isEmpty());
     }
 
     @Test

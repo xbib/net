@@ -261,6 +261,13 @@ public class URLBuilderTest {
         assertEquals("http://foo.com?q%23%2B", s);
     }
 
+    @Test
+    public void testNewBuilder() {
+        URL.Builder builder = URL.from("http://google.com:8008/foobar").newBuilder();
+        builder.scheme("https");
+        assertEquals("https://google.com:8008/foobar", builder.build().toString());
+    }
+
     private void assertUrl(String urlString, String expected) throws Exception {
         assertEquals(expected, urlString);
         assertEquals(expected, URL.from(urlString).toExternalForm());

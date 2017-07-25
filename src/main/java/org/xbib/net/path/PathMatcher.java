@@ -1,11 +1,11 @@
 package org.xbib.net.path;
 
 import org.xbib.net.QueryParameters;
-import org.xbib.net.internal.LRUCache;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
@@ -16,9 +16,11 @@ public class PathMatcher {
 
     private static final String DEFAULT_PATH_SEPARATOR = "/";
 
-    private final Map<String, List<String>> tokenizedPatternCache = Collections.synchronizedMap(new LRUCache<>(1024));
+    private final Map<String, List<String>> tokenizedPatternCache =
+            Collections.synchronizedMap(new LRUCache<>(1024));
 
-    private final Map<String, PathStringMatcher> stringMatcherCache = Collections.synchronizedMap(new LRUCache<>(1024));
+    private final Map<String, PathStringMatcher> stringMatcherCache =
+            Collections.synchronizedMap(new LRUCache<>(1024));
 
     private String pathSeparator;
 
@@ -27,8 +29,6 @@ public class PathMatcher {
     private boolean caseSensitive = true;
 
     private boolean trimTokens = true;
-
-    private volatile boolean cachePatterns = true;
 
     public PathMatcher() {
         this(DEFAULT_PATH_SEPARATOR);
@@ -58,10 +58,6 @@ public class PathMatcher {
             throw new IllegalStateException("Pattern \"" + pattern + "\" is not a match for \"" + path + "\"");
         }
         return queryParameters;
-    }
-
-    public void setCachePatterns(boolean cachePatterns) {
-        this.cachePatterns = cachePatterns;
     }
 
     public Map<String, PathStringMatcher> stringMatcherCache() {
@@ -274,9 +270,7 @@ public class PathMatcher {
     }
 
     private List<String> tokenizePattern(String pattern) {
-        return cachePatterns ?
-            tokenizedPatternCache.computeIfAbsent(pattern, this::tokenizePath) :
-            tokenizePath(pattern);
+        return tokenizedPatternCache.computeIfAbsent(pattern, this::tokenizePath);
     }
 
     private List<String> tokenizePath(String path) {
@@ -306,8 +300,28 @@ public class PathMatcher {
     }
 
     private PathStringMatcher getStringMatcher(String pattern) {
-        return cachePatterns ?
-            stringMatcherCache.computeIfAbsent(pattern, p -> new PathStringMatcher(p, this.caseSensitive)) :
-            new PathStringMatcher(pattern, this.caseSensitive);
+        return stringMatcherCache.computeIfAbsent(pattern, p -> new PathStringMatcher(p, this.caseSensitive));
+    }
+
+    /**
+     * A simple LRU cache, based on a {@link LinkedHashMap}.
+     *
+     * @param <K> the key type parameter
+     * @param <V> the vale type parameter
+     */
+    private static class LRUCache<K, V> extends LinkedHashMap<K, V> {
+
+        private static final long serialVersionUID = -2795566703268944901L;
+
+        private final int cacheSize;
+
+        LRUCache(int cacheSize) {
+            super(16, 0.75f, true);
+            this.cacheSize = cacheSize;
+        }
+
+        protected boolean removeEldestEntry(Map.Entry<K, V> eldest) {
+            return size() >= cacheSize;
+        }
     }
 }

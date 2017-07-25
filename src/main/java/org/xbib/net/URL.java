@@ -22,8 +22,20 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * {@link URL} is a Java implementation of the Uniform Resource Identifier ({@code RFC 3986})
+ *
+ * A Uniform Resource Locator (URL) is a compact representation of the
+ * location and access method for a resource available via the Internet.
+ *
+ * Historically, there are many different forms of internet resource representations, for example,
+ * the URL (RFC 1738 as of 1994), the URI (RFC 2396 as of 1998), and IRI (RFC 3987 as of 2005),
+ * and most of them have updated specifications.
+ *
+ * {@link URL} is a Java implementation that serves as a universal point of handling all
+ * different forms. It follows the syntax of the Uniform Resource Identifier ({@code RFC 3986})
  * in accordance with the link:https://url.spec.whatwg.org/[{@code WHATWG} URL standard].
+ *
+ * The reason for the name {@code URL} is merely because of the popularity of the name, which
+ * overweighs the URI or IRI popularity.
  *
  * [source,java]
  * --
@@ -87,6 +99,9 @@ public class URL implements Serializable {
         this.fragment = encodeFragment();
     }
 
+    /**
+     * A special, scheme-less URL denoting the fact that this URL should be considered as invalid.
+     */
     public static final URL INVALID = URL.builder().build();
 
     public static Builder file() {
@@ -224,7 +239,7 @@ public class URL implements Serializable {
     public static URL from(String input) {
         try {
             return parser().parse(input, true);
-        } catch (CharacterCodingException e) {
+        } catch (URLSyntaxException e) {
             throw new IllegalArgumentException(e);
         }
     }
@@ -232,13 +247,25 @@ public class URL implements Serializable {
     public static URL create(String input) {
         try {
             return parser().parse(input, false);
-        } catch (CharacterCodingException e) {
+        } catch (URLSyntaxException e) {
             throw new IllegalArgumentException(e);
         }
     }
 
     public URL resolve(String spec) {
-        return new Resolver(this).resolve(spec);
+        try {
+            return new Resolver(this).resolve(spec);
+        } catch (URLSyntaxException e) {
+            throw new IllegalArgumentException(e);
+        }
+    }
+
+    public URL resolve(URL spec) {
+        try {
+            return new Resolver(this).resolve(spec);
+        } catch (URLSyntaxException e) {
+            throw new IllegalArgumentException(e);
+        }
     }
 
     public String decode(String input) {
@@ -627,7 +654,7 @@ public class URL implements Serializable {
     }
 
     /**
-     *
+     * The URL Builder embedded class is for building an URL by fluent API methods.
      */
     public static class Builder {
 
@@ -706,7 +733,7 @@ public class URL implements Serializable {
             return this;
         }
 
-        public Builder resolveFromHost(String hostname) throws CharacterCodingException {
+        public Builder resolveFromHost(String hostname) {
             if (hostname == null) {
                 return this;
             }
@@ -729,8 +756,12 @@ public class URL implements Serializable {
                 if (e.getMessage() != null && !e.getMessage().endsWith("invalid IPv6 address") &&
                         hostname.charAt(0) != '[' &&
                         hostname.charAt(hostname.length() - 1) != ']') {
-                    String idna = IDN.toASCII(percentDecoder.decode(hostname));
-                    host(idna, ProtocolVersion.NONE);
+                    try {
+                        String idna = IDN.toASCII(percentDecoder.decode(hostname));
+                        host(idna, ProtocolVersion.NONE);
+                    } catch (CharacterCodingException e2) {
+                        throw new IllegalArgumentException(e2);
+                    }
                 }
             }
             return this;
@@ -863,27 +894,26 @@ public class URL implements Serializable {
      */
     public static class Parser {
 
-        private final PercentDecoder percentDecoder;
+        private final Builder builder;
 
         private Parser() {
-            percentDecoder = new PercentDecoder();
+            builder = new Builder();
         }
 
-        public URL parse(String input) throws CharacterCodingException {
+        public URL parse(String input) throws URLSyntaxException {
             return parse(input, true);
         }
 
-        public URL parse(String input, boolean resolve) throws CharacterCodingException {
+        public URL parse(String input, boolean resolve) throws URLSyntaxException {
             if (isNullOrEmpty(input)) {
-                return null;
+                return INVALID;
             }
             if (input.indexOf('\n') >= 0) {
-                return null;
+                return INVALID;
             }
             if (input.indexOf('\t') >= 0) {
-                return null;
+                return INVALID;
             }
-            Builder builder = new Builder();
             String remaining = parseScheme(builder, input);
             if (remaining != null) {
                 remaining = remaining.replace('\\', SEPARATOR_CHAR);
@@ -906,7 +936,11 @@ public class URL implements Serializable {
                     }
                 }
                 if (!isNullOrEmpty(remaining)) {
-                    parsePathWithQueryAndFragment(builder, remaining);
+                    try {
+                        parsePathWithQueryAndFragment(builder, remaining);
+                    } catch (CharacterCodingException e) {
+                        throw new URLSyntaxException(e);
+                    }
                 }
             }
             return builder.build();
@@ -933,7 +967,7 @@ public class URL implements Serializable {
             return remaining;
         }
 
-        private void parseHostAndPort(Builder builder, String host, boolean resolve) throws CharacterCodingException {
+        private void parseHostAndPort(Builder builder, String host, boolean resolve) throws URLSyntaxException {
             if (host.indexOf('[') == 0) {
                 int i = host.lastIndexOf(']');
                 if (i >= 0) {
@@ -954,7 +988,7 @@ public class URL implements Serializable {
             }
         }
 
-        private Integer parsePort(String portStr) {
+        private Integer parsePort(String portStr) throws URLSyntaxException {
             if (portStr == null || portStr.isEmpty()) {
                 return null;
             }
@@ -970,20 +1004,21 @@ public class URL implements Serializable {
                 if (port > 0 && port < 65536) {
                     return port;
                 } else {
-                    throw new IllegalArgumentException("invalid port");
+                    throw new URLSyntaxException("invalid port");
                 }
             } catch (NumberFormatException e) {
-                throw new IllegalArgumentException("no numeric port: " + portStr);
+                throw new URLSyntaxException("no numeric port: " + portStr);
             }
         }
 
-        void parsePathWithQueryAndFragment(Builder builder, String input) throws CharacterCodingException {
+        private void parsePathWithQueryAndFragment(Builder builder, String input)
+                throws MalformedInputException, UnmappableCharacterException {
             if (input == null) {
                 return;
             }
             int i = input.lastIndexOf(NUMBER_SIGN_CHAR);
             if (i >= 0) {
-                builder.fragment(percentDecoder.decode(input.substring(i + 1)));
+                builder.fragment(builder.percentDecoder.decode(input.substring(i + 1)));
                 input = input.substring(0, i);
             }
             i = input.indexOf(QUESTION_CHAR);
@@ -1006,7 +1041,8 @@ public class URL implements Serializable {
                             Pair<String, String> pathWithMatrixElem = indexOf(SEMICOLON_CHAR, t);
                             String matrixElem = pathWithMatrixElem.getFirst();
                             Pair<String, String> p = indexOf(EQUAL_CHAR, matrixElem);
-                            builder.matrixParam(percentDecoder.decode(p.getFirst()), percentDecoder.decode(p.getSecond()));
+                            builder.matrixParam(builder.percentDecoder.decode(p.getFirst()),
+                                    builder.percentDecoder.decode(p.getSecond()));
                             t = pathWithMatrixElem.getSecond();
                         }
                     } else {
@@ -1016,10 +1052,11 @@ public class URL implements Serializable {
                             Pair<String, String> pathWithMatrixElem = indexOf(SEMICOLON_CHAR, t);
                             String segment = pathWithMatrixElem.getFirst();
                             if (i == 0) {
-                                builder.pathSegment(percentDecoder.decode(segment));
+                                builder.pathSegment(builder.percentDecoder.decode(segment));
                             } else {
                                 Pair<String, String> p = indexOf(EQUAL_CHAR, segment);
-                                builder.matrixParam(percentDecoder.decode(p.getFirst()), percentDecoder.decode(p.getSecond()));
+                                builder.matrixParam(builder.percentDecoder.decode(p.getFirst()),
+                                        builder.percentDecoder.decode(p.getSecond()));
                             }
                             t = pathWithMatrixElem.getSecond();
                             i++;
@@ -1033,7 +1070,8 @@ public class URL implements Serializable {
             }
         }
 
-        private void parseQuery(Builder builder, String query) throws CharacterCodingException {
+        private void parseQuery(Builder builder, String query)
+                throws MalformedInputException, UnmappableCharacterException {
             if (query == null) {
                 return;
             }
@@ -1042,18 +1080,19 @@ public class URL implements Serializable {
                 Pair<String, String> p = indexOf(AMPERSAND_CHAR, s);
                 Pair<String, String> param = indexOf(EQUAL_CHAR, p.getFirst());
                 if (!isNullOrEmpty(param.getFirst())) {
-                    builder.queryParam(percentDecoder.decode(param.getFirst()), percentDecoder.decode(param.getSecond()));
+                    builder.queryParam(builder.percentDecoder.decode(param.getFirst()),
+                            builder.percentDecoder.decode(param.getSecond()));
                 }
                 s = p.getSecond();
             }
             if (builder.queryParams.isEmpty()) {
-                builder.query(percentDecoder.decode(query));
+                builder.query(builder.percentDecoder.decode(query));
             } else {
                 builder.query(query);
             }
         }
 
-        Pair<String, String> indexOf(char ch, String input) {
+        private Pair<String, String> indexOf(char ch, String input) {
             int i = input.indexOf(ch);
             String k = i >= 0 ? input.substring(0, i) : input;
             String v = i >= 0 ? input.substring(i + 1) : null;
@@ -1062,7 +1101,8 @@ public class URL implements Serializable {
     }
 
     /**
-     *
+     * The URL resolver class is an embedded class for resolving a relative URL specification to
+     * a base URL.
      */
     public static class Resolver {
 
@@ -1072,27 +1112,23 @@ public class URL implements Serializable {
             this.base = base;
         }
 
-        public URL resolve(String relative) {
+        public URL resolve(String relative) throws URLSyntaxException {
             if (relative == null) {
                 return null;
             }
             if (relative.isEmpty()) {
                 return base;
             }
-            try {
-                URL url = parser().parse(relative);
-                return url != null ? resolve(url) : null;
-            } catch (CharacterCodingException e) {
-                throw new IllegalArgumentException(e);
-            }
+            URL url = parser().parse(relative);
+            return resolve(url);
         }
 
-        public URL resolve(URL relative) throws CharacterCodingException {
-            if (relative == null) {
-                return null;
+        public URL resolve(URL relative) throws URLSyntaxException {
+            if (relative == null || relative == INVALID) {
+                throw new URLSyntaxException("relative URL is invalid");
             }
             if (!base.isAbsolute()) {
-                throw new IllegalArgumentException("base is not absolute");
+                throw new URLSyntaxException("base URL is not absolute");
             }
             Builder builder = new Builder();
             if (relative.isOpaque()) {

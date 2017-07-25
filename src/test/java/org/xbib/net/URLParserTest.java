@@ -15,17 +15,17 @@ public class URLParserTest {
 
     @Test
     public void testNull() {
-        assertNull(URL.from(null));
+        assertEquals(URL.INVALID, URL.from(null));
     }
 
     @Test
     public void testEmpty() {
-        assertNull(URL.from(""));
+        assertEquals(URL.INVALID, URL.from(""));
     }
 
     @Test
     public void testNewline() {
-        assertNull(URL.from("\n"));
+        assertEquals(URL.INVALID, URL.from("\n"));
     }
 
     @Test(expected = IllegalArgumentException.class)
