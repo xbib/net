@@ -35,6 +35,16 @@ public class URLResolverTest {
     }
 
     @Test
+    public void testMultiResolve() throws Exception {
+        URL base = URL.create("http://example:8080");
+        String pathSpec = "foobar/";
+        String index = "index.html";
+        String queryString = "a=b";
+        URL url = base.resolve(pathSpec).resolve(index).newBuilder().query(queryString).build().normalize();
+        assertEquals("http://example:8080/foobar/index.html?a=b", url.toString());
+    }
+
+    @Test
     public void testFielding() throws Exception {
         // http://www.ics.uci.edu/~fielding/url/test1.html
         resolve("http://a/b/c/d;p?q", "g:h", "g:h");

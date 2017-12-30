@@ -28,8 +28,8 @@ class HttpScheme extends AbstractScheme {
                 .host(host, url.getProtocolVersion())
                 .port(url.getPort())
                 .path(PathNormalizer.normalize(url.getPath()))
-                .query(url.getQuery()/*PercentEncoders.getQueryEncoder().encode(url.getDecodedQuery())*/)
-                .fragment(url.getFragment()/*PercentEncoders.getFragmentEncoder().encode(url.getDecodedFragment())*/)
+                .query(url.getQuery())
+                .fragment(url.getFragment())
                 .build();
     }
 }
