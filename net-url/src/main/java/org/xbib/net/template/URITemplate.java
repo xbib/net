@@ -8,7 +8,7 @@ import org.xbib.net.template.vars.Variables;
 import java.util.List;
 
 /**
- *
+ * URI templates.
  */
 public class URITemplate {
 

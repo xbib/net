@@ -1,7 +1,7 @@
 package org.xbib.net.template.vars.values;
 
 /**
- *
+ * Scalar value.
  */
 public class ScalarValue extends VariableValue {
 

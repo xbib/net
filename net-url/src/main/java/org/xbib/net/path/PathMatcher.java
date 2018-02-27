@@ -11,7 +11,7 @@ import java.util.Map;
 import java.util.StringTokenizer;
 
 /**
- *
+ * Path matcher.
  */
 public class PathMatcher {
 
@@ -311,8 +311,6 @@ public class PathMatcher {
      * @param <V> the vale type parameter
      */
     private static class LRUCache<K, V> extends LinkedHashMap<K, V> {
-
-        private static final long serialVersionUID = -2795566703268944901L;
 
         private final int cacheSize;
 

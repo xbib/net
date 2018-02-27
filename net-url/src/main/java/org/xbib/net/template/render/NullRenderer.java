@@ -7,7 +7,7 @@ import org.xbib.net.template.vars.values.VariableValue;
 import java.util.List;
 
 /**
- *
+ * Null renderer.
  */
 public class NullRenderer extends ValueRenderer {
 

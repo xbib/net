@@ -1,11 +1,9 @@
 package org.xbib.net;
 
 /**
- *
+ * URL syntax exception.
  */
 public class URLSyntaxException extends Exception {
-
-    private static final long serialVersionUID = 1813084470937980392L;
 
     URLSyntaxException(String message) {
         super(message);

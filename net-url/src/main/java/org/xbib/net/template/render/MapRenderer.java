@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- *
+ * Map renderer.
  */
 public  class MapRenderer extends MultiValueRenderer {
 

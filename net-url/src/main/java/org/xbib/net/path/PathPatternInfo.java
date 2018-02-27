@@ -3,6 +3,7 @@ package org.xbib.net.path;
 import java.util.regex.Pattern;
 
 /**
+ * Path pattern info.
  */
 class PathPatternInfo {
 

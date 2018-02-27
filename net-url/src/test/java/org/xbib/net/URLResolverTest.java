@@ -94,9 +94,11 @@ public class URLResolverTest {
         // scheme
         resolve("http://a/b/c/d;p?q", "http:g", "http:g");
         resolve("http://a/b/c/d;p?q", "http:", "http:");
+        // absolute
+        resolve("http://a/b/c/d;p?q", "http://e/f/g/h", "http://e/f/g/h");
     }
 
-    private void resolve(String inputBase, String relative, String expected) throws URLSyntaxException {
-        assertEquals(expected, URL.base(inputBase).resolve(relative).toExternalForm());
+    private void resolve(String inputBase, String spec, String expected) throws URLSyntaxException {
+        assertEquals(expected, URL.base(inputBase).resolve(spec).toExternalForm());
     }
 }

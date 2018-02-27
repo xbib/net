@@ -1,7 +1,7 @@
 package org.xbib.net.scheme;
 
 /**
- *
+ * Secure FTP scheme.
  */
 class SftpScheme extends SshScheme {
 

@@ -6,7 +6,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
 
 /**
  *
@@ -15,17 +14,17 @@ public class URLParserTest {
 
     @Test
     public void testNull() {
-        assertEquals(URL.INVALID, URL.from(null));
+        assertEquals(URL.getInvalid(), URL.from(null));
     }
 
     @Test
     public void testEmpty() {
-        assertEquals(URL.INVALID, URL.from(""));
+        assertEquals(URL.getInvalid(), URL.from(""));
     }
 
     @Test
     public void testNewline() {
-        assertEquals(URL.INVALID, URL.from("\n"));
+        assertEquals(URL.getInvalid(), URL.from("\n"));
     }
 
     @Test(expected = IllegalArgumentException.class)

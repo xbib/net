@@ -29,7 +29,7 @@ public class IRITest {
     @Test
     public void testIpv6Invalid() {
         URL iri = URL.from("http://[2001:0db8:85a3:08d3:1319:8a2e:0370:734o]");
-        assertEquals(URL.INVALID, iri);
+        assertEquals(URL.getInvalid(), iri);
     }
 
     @Test

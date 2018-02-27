@@ -13,7 +13,7 @@ import java.nio.charset.UnmappableCharacterException;
  */
 public class PathDecoder {
 
-    private static final Integer MAX_PARAM_COUNT = 1000;
+    private static final Integer MAX_PARAM_COUNT = 1024;
 
     private PercentDecoder decoder;
 

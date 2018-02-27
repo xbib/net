@@ -1,7 +1,7 @@
 package org.xbib.net.scheme;
 
 /**
- *
+ * Default scheme.
  */
 public class DefaultScheme extends AbstractScheme {
 

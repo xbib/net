@@ -52,7 +52,7 @@ subprojects {
 
     [compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
     tasks.withType(JavaCompile) {
-        options.compilerArgs << "-Xlint:all" << "-profile" << "compact1"
+        options.compilerArgs << "-Xlint:all,-serial" << "-profile" << "compact1"
     }
 
     jar {

@@ -3,7 +3,6 @@ package org.xbib.net;
 import org.xbib.net.scheme.Scheme;
 import org.xbib.net.scheme.SchemeRegistry;
 
-import java.io.Serializable;
 import java.net.IDN;
 import java.net.Inet4Address;
 import java.net.Inet6Address;
@@ -43,11 +42,9 @@ import java.util.logging.Logger;
  * --
  *
  */
-public class URL implements Comparable<URL>, Serializable {
+public class URL implements Comparable<URL> {
 
     private static final Logger logger = Logger.getLogger(URL.class.getName());
-
-    private static final long serialVersionUID = 7936984038051707342L;
 
     private static final char SEPARATOR_CHAR = '/';
 
@@ -102,7 +99,7 @@ public class URL implements Comparable<URL>, Serializable {
     /**
      * A special, scheme-less URL denoting the fact that this URL should be considered as invalid.
      */
-    public static final URL INVALID = URL.builder().build();
+    private static final URL INVALID = URL.builder().build();
 
     public static Builder file() {
         return new Builder().scheme(Scheme.FILE);
@@ -236,33 +233,45 @@ public class URL implements Comparable<URL>, Serializable {
         return new Resolver(URL.create(base));
     }
 
+    public static URL getInvalid() {
+        return INVALID;
+    }
+
     public static URL from(String input) {
-        try {
-            return parser().parse(input, true);
-        } catch (URLSyntaxException e) {
-            throw new IllegalArgumentException(e);
-        }
+        return from(input, true);
     }
 
     public static URL create(String input) {
+        return from(input, false);
+    }
+
+    public static URL from(String input, boolean resolve) {
         try {
-            return parser().parse(input, false);
+            return parser().parse(input, resolve);
         } catch (URLSyntaxException e) {
             throw new IllegalArgumentException(e);
         }
     }
 
     public URL resolve(String spec) {
+        return from(this, spec);
+    }
+
+    public static URL from(URL base, String spec) {
         try {
-            return new Resolver(this).resolve(spec);
+            return new Resolver(base).resolve(spec);
         } catch (URLSyntaxException e) {
             throw new IllegalArgumentException(e);
         }
     }
 
     public URL resolve(URL spec) {
+        return from(this, spec);
+    }
+
+    public static URL from(URL base, URL spec) {
         try {
-            return new Resolver(this).resolve(spec);
+            return new Resolver(base).resolve(spec);
         } catch (URLSyntaxException e) {
             throw new IllegalArgumentException(e);
         }
@@ -1252,9 +1261,7 @@ public class URL implements Comparable<URL>, Serializable {
         }
     }
 
-    private static class URLWithFragmentComparator implements Comparator<URL>, Serializable {
-
-        private static final long serialVersionUID = -5048272347975931901L;
+    private static class URLWithFragmentComparator implements Comparator<URL> {
 
         @Override
         public int compare(URL o1, URL o2) {
@@ -1262,9 +1269,7 @@ public class URL implements Comparable<URL>, Serializable {
         }
     }
 
-    private static class URLWithoutFragmentComparator implements Comparator<URL>, Serializable {
-
-        private static final long serialVersionUID = 818948352939772199L;
+    private static class URLWithoutFragmentComparator implements Comparator<URL> {
 
         @Override
         public int compare(URL o1, URL o2) {

@@ -7,6 +7,7 @@ import org.xbib.net.template.expression.URITemplateExpression;
 import java.nio.CharBuffer;
 
 /**
+ * Literal parser.
  */
 public
 class LiteralParser implements TemplateParser {

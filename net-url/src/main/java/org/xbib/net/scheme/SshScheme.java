@@ -1,7 +1,7 @@
 package org.xbib.net.scheme;
 
 /**
- *
+ * Secure shell scheme.
  */
 class SshScheme extends HttpScheme {
 

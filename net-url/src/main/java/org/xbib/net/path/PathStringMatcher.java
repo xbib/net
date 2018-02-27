@@ -8,6 +8,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
+ * Path string matcher.
  */
 class PathStringMatcher {
 

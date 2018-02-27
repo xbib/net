@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * URI template parser.
  */
 public class URITemplateParser {
 

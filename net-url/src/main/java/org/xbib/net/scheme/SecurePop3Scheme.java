@@ -1,7 +1,7 @@
 package org.xbib.net.scheme;
 
 /**
- * The POP3S scheme.
+ * The secure POP3 scheme.
  *
  * @see <a href="https://tools.ietf.org/html/rfc2595">POP3 RFC</a>
  */

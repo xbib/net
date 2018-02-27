@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
+ * Variable value.
  */
 public abstract class VariableValue {
 

@@ -5,10 +5,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
+ * Query parameters.
  */
 public class QueryParameters extends ArrayList<QueryParameters.Pair<String, String>> {
-
-    private static final long serialVersionUID = 1195469379836789386L;
 
     private final int max;
 

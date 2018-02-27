@@ -7,7 +7,7 @@ import org.xbib.net.template.vars.values.VariableValue;
 import java.util.List;
 
 /**
- *
+ * Multi value renderer.
  */
 abstract class MultiValueRenderer extends ValueRenderer {
 

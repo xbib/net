@@ -1,7 +1,7 @@
 package org.xbib.net.template.vars.specs;
 
 /**
- *
+ * Exploded variable.
  */
 public class ExplodedVariable extends VariableSpec {
 

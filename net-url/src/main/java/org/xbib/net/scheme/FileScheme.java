@@ -1,7 +1,7 @@
 package org.xbib.net.scheme;
 
 /**
- *
+ * File scheme.
  */
 class FileScheme extends HttpScheme {
 

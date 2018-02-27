@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
+ * Expression parser.
  */
 public class ExpressionParser implements TemplateParser {
 

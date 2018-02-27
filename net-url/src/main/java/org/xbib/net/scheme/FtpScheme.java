@@ -1,7 +1,7 @@
 package org.xbib.net.scheme;
 
 /**
- *
+ * FTP scheme.
  */
 class FtpScheme extends HttpScheme {
 

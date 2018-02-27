@@ -1,6 +1,7 @@
 package org.xbib.net.template.vars.values;
 
 /**
+ * Null value.
  */
 public class NullValue extends VariableValue {
 

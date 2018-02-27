@@ -4,7 +4,7 @@ import org.xbib.net.URL;
 import org.xbib.net.path.PathNormalizer;
 
 /**
- *
+ * HTTP scheme.
  */
 class HttpScheme extends AbstractScheme {
 

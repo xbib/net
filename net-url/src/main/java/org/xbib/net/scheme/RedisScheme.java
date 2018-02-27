@@ -1,7 +1,7 @@
 package org.xbib.net.scheme;
 
 /**
- *
+ * Redis scheme.
  */
 class RedisScheme extends AbstractScheme {
 

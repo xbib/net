@@ -4,7 +4,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
- *
+ * Map value.
  */
 public class MapValue extends VariableValue {
 

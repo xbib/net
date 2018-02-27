@@ -1,6 +1,7 @@
 package org.xbib.net.template.expression;
 
 /**
+ * Expression types.
  */
 public enum ExpressionType {
     /*

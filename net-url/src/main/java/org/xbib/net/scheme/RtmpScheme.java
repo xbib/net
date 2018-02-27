@@ -1,7 +1,7 @@
 package org.xbib.net.scheme;
 
 /**
- *
+ * Rtmp scheme.
  */
 class RtmpScheme extends AbstractScheme {
 

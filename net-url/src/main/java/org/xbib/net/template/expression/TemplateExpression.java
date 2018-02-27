@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * Template expression.
  */
 public class TemplateExpression implements URITemplateExpression {
 

@@ -1,6 +1,7 @@
 package org.xbib.net.path;
 
 /**
+ * Path separator pattern cache.
  */
 class PathSeparatorPatternCache {
 

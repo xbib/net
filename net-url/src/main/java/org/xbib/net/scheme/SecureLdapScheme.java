@@ -1,7 +1,7 @@
 package org.xbib.net.scheme;
 
 /**
- * The LDAPS scheme.
+ * The secure LDAP scheme.
  *
  * @see <a href="https://tools.ietf.org/html/rfc4516">LDAP RFC</a>
  */

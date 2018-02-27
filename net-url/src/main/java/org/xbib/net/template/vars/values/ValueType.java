@@ -8,6 +8,7 @@ import org.xbib.net.template.render.StringRenderer;
 import org.xbib.net.template.render.ValueRenderer;
 
 /**
+ * Value types.
  */
 public enum ValueType {
 

@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * Variable spec parser.
  */
 public class VariableSpecParser {
 

@@ -8,7 +8,7 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- *
+ * String renderer.
  */
 public class StringRenderer extends ValueRenderer {
 

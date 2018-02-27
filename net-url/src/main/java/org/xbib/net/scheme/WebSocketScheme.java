@@ -1,7 +1,7 @@
 package org.xbib.net.scheme;
 
 /**
- *
+ * Web socket scheme.
  */
 class WebSocketScheme extends HttpScheme {
 

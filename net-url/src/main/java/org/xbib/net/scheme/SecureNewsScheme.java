@@ -1,7 +1,7 @@
 package org.xbib.net.scheme;
 
 /**
- * The snews scheme.
+ * The secure news scheme.
  *
  * @see <a href="https://tools.ietf.org/html/rfc5538">news RFC</a>
  */

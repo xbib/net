@@ -1,13 +1,11 @@
 package org.xbib.net.path;
 
-import java.io.Serializable;
 import java.util.Comparator;
 
 /**
+ * Path pattern comparator.
  */
-public class PathPatternComparator implements Comparator<String>, Serializable {
-
-    private static final long serialVersionUID = -5286803094119345841L;
+public class PathPatternComparator implements Comparator<String> {
 
     private final String path;
 
