@@ -18,8 +18,6 @@ printf "Host: %s\nOS: %s %s %s\nJVM: %s %s %s %s\nGroovy: %s\nGradle: %s\n" +
         GroovySystem.getVersion(),
         gradle.gradleVersion
 
-apply plugin: "io.codearte.nexus-staging"
-
 subprojects {
 
     apply plugin: 'java'
@@ -45,6 +43,12 @@ subprojects {
         testCompile "com.fasterxml.jackson.core:jackson-databind:${project.property('jackson.version')}"
         asciidoclet "org.asciidoctor:asciidoclet:${project.property('asciidoclet.version')}"
         wagon "org.apache.maven.wagon:wagon-ssh:${project.property('wagon.version')}"
+    }
+
+    checkstyle {
+        configFile = rootProject.file('config/checkstyle/checkstyle.xml')
+        ignoreFailures = true
+        showViolations = true
     }
 
     sourceCompatibility = JavaVersion.VERSION_1_8
