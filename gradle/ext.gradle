@@ -1,8 +1,0 @@
-ext {
-    user = 'xbib'
-    projectName = 'net'
-    projectDescription = 'Network classes for Java'
-    scmUrl = 'https://github.com/xbib/net'
-    scmConnection = 'scm:git:git://github.com/xbib/net.git'
-    scmDeveloperConnection = 'scm:git:git://github.com/xbib/net.git'
-}

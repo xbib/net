@@ -4930,7 +4930,7 @@
     "username": "",
     "password": "",
     "host": "255.255.255.255",
-    "hostname": "broadcasthost",
+    "hostname": "255.255.255.255",
     "port": "",
     "pathname": "/",
     "search": "",

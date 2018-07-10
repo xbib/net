@@ -1,4 +1,11 @@
 
+ext {
+    projectDescription = 'Network classes for Java'
+    scmUrl = 'https://github.com/xbib/net'
+    scmConnection = 'scm:git:git://github.com/xbib/net.git'
+    scmDeveloperConnection = 'scm:git:git://github.com/xbib/net.git'
+}
+
 task xbibUpload(type: Upload) {
     group = 'publish'
     configuration = configurations.archives
@@ -44,7 +51,7 @@ task sonatypeUpload(type: Upload, dependsOn: build) {
                     }
                     developers {
                         developer {
-                            id user
+                            id 'xbib'
                             name 'Jörg Prante'
                             email 'joergprante@gmail.com'
                             url 'https://github.com/xbib'

@@ -44,10 +44,15 @@ public class URLTest {
                            assertEquals(test.protocol, url.getScheme() + ":");
                        }
                        if (test.hostname != null) {
-                           assertEquals(test.hostname, url.getHost());
+                           // default in Mac OS
+                           String host = url.getHost();
+                           if ("broadcasthost".equals(host)) {
+                               host = "255.255.255.255";
+                           }
+                           assertEquals(test.hostname, host);
                        }
                        if (test.port != null && !test.port.isEmpty() && url.getPort() != null) {
-                           assertTrue(Integer.parseInt(test.port) == url.getPort());
+                           assertEquals(Integer.parseInt(test.port), (int) url.getPort());
                        }
                        // TODO(jprante)
                        //if (test.pathname != null && !test.pathname.isEmpty() && url.getPath() != null) {
