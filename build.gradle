@@ -45,10 +45,14 @@ subprojects {
         wagon "org.apache.maven.wagon:wagon-ssh:${project.property('wagon.version')}"
     }
 
-    sourceCompatibility = JavaVersion.VERSION_1_8
-    targetCompatibility = JavaVersion.VERSION_1_8
-
-    [compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
+    compileJava {
+        sourceCompatibility = JavaVersion.VERSION_1_8
+        targetCompatibility = JavaVersion.VERSION_1_8
+    }
+    compileTestJava {
+        sourceCompatibility = JavaVersion.VERSION_1_8
+        targetCompatibility = JavaVersion.VERSION_1_8
+    }
     tasks.withType(JavaCompile) {
         options.compilerArgs << "-Xlint:all,-serial" << "-profile" << "compact1"
     }

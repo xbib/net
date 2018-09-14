@@ -1,6 +1,4 @@
-# Network classes for Java
-
-## Net-url: Uniform Resource Locator implementation
+# A consolidated Uniform Resource Locator implementation for Java
 
 image:https://api.travis-ci.org/xbib/net-url.svg[title="Build status", link="https://travis-ci.org/xbib/net-url/"]
 image:https://img.shields.io/sonar/http/nemo.sonarqube.com/org.xbib%3Anet/coverage.svg?style=flat-square[title="Coverage", link="https://sonarqube.com/dashboard/index?id=org.xbib%3Anet-url"]
@@ -8,6 +6,50 @@ image:https://maven-badges.herokuapp.com/maven-central/org.xbib/net-url/badge.sv
 image:https://img.shields.io/badge/License-Apache%202.0-blue.svg[title="Apache License 2.0", link="https://opensource.org/licenses/Apache-2.0"]
 image:https://img.shields.io/twitter/url/https/twitter.com/xbib.svg?style=social&label=Follow%20%40xbib[title="Twitter", link="https://twitter.com/xbib"]
 
+A Uniform Resource Locator (URL) is a compact representation of the
+location and access method for a resource available via the Internet.
+
+Historically, there are many different forms of internet resource representations, for example,
+the URL (RFC 1738 as of 1994), the URI (RFC 2396 as of 1998), and IRI (RFC 3987 as of 2005),
+and most of them have updated specifications.
+
+This Java implementation serves as a universal point of handling all
+different forms. It follows the syntax of the Uniform Resource Identifier (RFC 3986)
+in accordance with the https://url.spec.whatwg.org/[WHATWG URL standard].
+
+This alternative implementation of Uniform Resource Locator combines the features of the vanilla URI/URL Java SDK implementations
+but removes it peculiarities and deficiencies, such as `java.lang.IllegalArgumentException: Illegal character in path at ... at java.net.URI.create()`
+
+Normalization, NIO charset encoding/decoding, IPv6, an extensive set of schemes, and path matching have been added.
+
+Fast building and parsing URLs, improved percent decoding/encoding, and URI templating features are included, to make
+this library also useful in URI and IRI contexts.
+
+While parsing and building, you have better control about address resolving. Only explicit `resolveFromhost` methods
+will execute host lookup queries against DNS resolvers, otherwise, no resolving will occur under the hood.
+
+You can build URLs with a fluent API, for example
+
+```
+URL.http().host("foo.com").toUrlString()
+```
+
+And you can parse URLs with a fluent API, for exmaple
+
+```
+URL url = URL.parser().parse("file:///foo/bar?foo=bar#fragment");
+```
+
+There is no external dependency. The size of the jar library is ~118k. The only dependency on `java.net` are the classes
+
+```
+java.net.IDN
+java.net.Inet4Address
+java.net.Inet6Address
+java.net.InetAddress
+```
+
+which might get re-implemented in another library at a later time, in a project like Netty DNS resolver.
 
 # License
 
