@@ -248,7 +248,7 @@ public class URL implements Comparable<URL> {
     public static URL from(String input, boolean resolve) {
         try {
             return parser().parse(input, resolve);
-        } catch (URLSyntaxException e) {
+        } catch (URLSyntaxException | MalformedInputException | UnmappableCharacterException e) {
             throw new IllegalArgumentException(e);
         }
     }
@@ -260,7 +260,7 @@ public class URL implements Comparable<URL> {
     public static URL from(URL base, String spec) {
         try {
             return new Resolver(base).resolve(spec);
-        } catch (URLSyntaxException e) {
+        } catch (URLSyntaxException | MalformedInputException | UnmappableCharacterException e) {
             throw new IllegalArgumentException(e);
         }
     }
@@ -328,6 +328,22 @@ public class URL implements Comparable<URL> {
      */
     public String getUserInfo() {
         return builder.userInfo;
+    }
+
+    public String getUser() {
+        if (builder.userInfo == null) {
+            return null;
+        }
+        Pair<String, String> p = indexOf(COLON_CHAR, builder.userInfo);
+        return decode(p.first);
+    }
+
+    public String getPassword() {
+        if (builder.userInfo == null) {
+            return null;
+        }
+        Pair<String, String> p = indexOf(COLON_CHAR, builder.userInfo);
+        return decode(p.second);
     }
 
     /**
@@ -668,6 +684,13 @@ public class URL implements Comparable<URL> {
         return str == null || str.isEmpty();
     }
 
+    private static Pair<String, String> indexOf(char ch, String input) {
+        int i = input.indexOf(ch);
+        String k = i >= 0 ? input.substring(0, i) : input;
+        String v = i >= 0 ? input.substring(i + 1) : null;
+        return new Pair<>(k, v);
+    }
+
     @Override
     public int hashCode() {
         return toString().hashCode();
@@ -675,7 +698,7 @@ public class URL implements Comparable<URL> {
 
     @Override
     public boolean equals(Object other) {
-        return other != null && other instanceof URL && toString().equals(other.toString());
+        return other instanceof URL && toString().equals(other.toString());
     }
 
     @Override
@@ -748,6 +771,16 @@ public class URL implements Comparable<URL> {
 
         public Builder userInfo(String userInfo) {
             this.userInfo = userInfo;
+            return this;
+        }
+
+        public Builder userInfo(String user, String pass) {
+            try {
+                this.userInfo = PercentEncoders.getRegNameEncoder(charset).encode(user) + ':' +
+                        PercentEncoders.getRegNameEncoder(charset).encode(pass);
+            } catch (MalformedInputException | UnmappableCharacterException e) {
+                throw new IllegalArgumentException(e);
+            }
             return this;
         }
 
@@ -935,11 +968,13 @@ public class URL implements Comparable<URL> {
             builder = new Builder();
         }
 
-        public URL parse(String input) throws URLSyntaxException {
+        public URL parse(String input)
+                throws URLSyntaxException, MalformedInputException, UnmappableCharacterException {
             return parse(input, true);
         }
 
-        public URL parse(String input, boolean resolve) throws URLSyntaxException {
+        public URL parse(String input, boolean resolve)
+                throws URLSyntaxException, MalformedInputException, UnmappableCharacterException {
             if (isNullOrEmpty(input)) {
                 return INVALID;
             }
@@ -992,17 +1027,20 @@ public class URL implements Comparable<URL> {
             return p.getSecond();
         }
 
-        private String parseUserInfo(Builder builder, String input) {
+        private String parseUserInfo(Builder builder, String input)
+                throws MalformedInputException, UnmappableCharacterException {
             String remaining = input;
             int i = input.lastIndexOf(AT_CHAR);
             if (i > 0) {
                 remaining = input.substring(i + 1);
-                builder.userInfo(input.substring(0, i));
+                String userInfo = input.substring(0, i);
+                builder.userInfo(builder.percentDecoder.decode(userInfo));
             }
             return remaining;
         }
 
-        private void parseHostAndPort(Builder builder, String host, boolean resolve) throws URLSyntaxException {
+        private void parseHostAndPort(Builder builder, String host, boolean resolve)
+                throws URLSyntaxException {
             if (host.indexOf('[') == 0) {
                 int i = host.lastIndexOf(']');
                 if (i >= 0) {
@@ -1126,13 +1164,6 @@ public class URL implements Comparable<URL> {
                 builder.query(query);
             }
         }
-
-        private Pair<String, String> indexOf(char ch, String input) {
-            int i = input.indexOf(ch);
-            String k = i >= 0 ? input.substring(0, i) : input;
-            String v = i >= 0 ? input.substring(i + 1) : null;
-            return new Pair<>(k, v);
-        }
     }
 
     /**
@@ -1147,7 +1178,8 @@ public class URL implements Comparable<URL> {
             this.base = base;
         }
 
-        public URL resolve(String relative) throws URLSyntaxException {
+        public URL resolve(String relative)
+                throws URLSyntaxException, MalformedInputException, UnmappableCharacterException {
             if (relative == null) {
                 return null;
             }
@@ -1158,7 +1190,8 @@ public class URL implements Comparable<URL> {
             return resolve(url);
         }
 
-        public URL resolve(URL relative) throws URLSyntaxException {
+        public URL resolve(URL relative)
+                throws URLSyntaxException {
             if (relative == null || relative == INVALID) {
                 throw new URLSyntaxException("relative URL is invalid");
             }

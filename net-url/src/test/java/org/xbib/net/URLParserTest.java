@@ -369,6 +369,18 @@ public class URLParserTest {
         assertEquals("plus+frag", url.getFragment());
     }
 
+    @Test
+    public void testUserInfo() throws Exception {
+        URL url = URL.parser().parse("http://foo:bar@foo.com/");
+        assertEquals("foo:bar", url.getUserInfo());
+        url = URL.parser().parse("http://foo:foo:bar@foo.com/");
+        assertEquals("foo:foo:bar", url.getUserInfo());
+        url = URL.parser().parse("http://foo:foo%3Abar@foo.com/");
+        assertEquals("foo:foo:bar", url.getUserInfo());
+        assertEquals("foo", url.getUser());
+        assertEquals("foo:bar", url.getPassword());
+    }
+
     private void assertUrlCompatibility(String url) throws Exception {
         String s = URL.from(url).toExternalForm();
         assertEquals(s, URL.from(s).toExternalForm());

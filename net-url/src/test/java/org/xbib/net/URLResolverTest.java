@@ -5,6 +5,8 @@ import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 
 import java.net.URI;
+import java.nio.charset.MalformedInputException;
+import java.nio.charset.UnmappableCharacterException;
 
 /**
  */
@@ -98,7 +100,8 @@ public class URLResolverTest {
         resolve("http://a/b/c/d;p?q", "http://e/f/g/h", "http://e/f/g/h");
     }
 
-    private void resolve(String inputBase, String spec, String expected) throws URLSyntaxException {
+    private void resolve(String inputBase, String spec, String expected)
+            throws URLSyntaxException, MalformedInputException, UnmappableCharacterException {
         assertEquals(expected, URL.base(inputBase).resolve(spec).toExternalForm());
     }
 }
