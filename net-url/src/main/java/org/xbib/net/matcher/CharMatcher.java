@@ -4,7 +4,8 @@ import java.util.Arrays;
 import java.util.BitSet;
 
 /**
- *
+ * The character matcher class is a fast table-based matcher class, able to match whitespace, control,
+ * literals, persent or hexdigit character groups.
  */
 public abstract class CharMatcher {
 

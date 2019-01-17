@@ -5,5 +5,5 @@ package org.xbib.net;
  */
 public enum ProtocolVersion {
 
-    IPV4, IPV6, IPV46, NONE
+    IPV4, IPV6, NONE
 }

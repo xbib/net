@@ -22,14 +22,14 @@ public class IRITest {
     @Test
     public void testIpv6() {
         URL iri = URL.from("http://[2001:0db8:85a3:08d3:1319:8a2e:0370:7344]");
-        assertTrue(iri.getProtocolVersion().equals(ProtocolVersion.IPV6));
+        assertEquals(iri.getProtocolVersion(), ProtocolVersion.IPV6);
         assertEquals("http://[2001:db8:85a3:8d3:1319:8a2e:370:7344]", iri.toString());
     }
 
     @Test
     public void testIpv6Invalid() {
         URL iri = URL.from("http://[2001:0db8:85a3:08d3:1319:8a2e:0370:734o]");
-        assertEquals(URL.getInvalid(), iri);
+        assertEquals(URL.nullUrl(), iri);
     }
 
     @Test

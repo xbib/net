@@ -63,6 +63,10 @@ public class URL implements Comparable<URL> {
 
     private static final char AT_CHAR = '@';
 
+    private static final char LEFT_BRACKET_CHAR = '[';
+
+    private static final char RIGHT_BRACKET_CHAR = ']';
+
     private static final String DOUBLE_SLASH = "//";
 
     private static final String EMPTY = "";
@@ -71,9 +75,19 @@ public class URL implements Comparable<URL> {
 
     private final transient Builder builder;
 
-    private final transient Charset charset;
-
     private final transient Scheme scheme;
+
+    private final transient PercentEncoder queryParamEncoder;
+
+    private final transient PercentEncoder regNameEncoder;
+
+    private final transient PercentEncoder pathEncoder;
+
+    private final transient PercentEncoder matrixEncoder;
+
+    private final transient PercentEncoder queryEncoder;
+
+    private final transient PercentEncoder fragmentEncoder;
 
     private final String hostinfo;
 
@@ -89,18 +103,18 @@ public class URL implements Comparable<URL> {
 
     private URL(Builder builder) {
         this.builder = builder;
-        this.charset = builder.charset;
         this.scheme = SchemeRegistry.getInstance().getScheme(builder.scheme);
+        this.queryParamEncoder = PercentEncoders.getQueryParamEncoder(builder.charset);
+        this.regNameEncoder = PercentEncoders.getRegNameEncoder(builder.charset);
+        this.pathEncoder = PercentEncoders.getPathEncoder(builder.charset);
+        this.matrixEncoder = PercentEncoders.getMatrixEncoder(builder.charset);
+        this.queryEncoder = PercentEncoders.getQueryEncoder(builder.charset);
+        this.fragmentEncoder = PercentEncoders.getFragmentEncoder(builder.charset);
         this.hostinfo = encodeHostInfo();
         this.path = encodePath();
         this.query = encodeQuery();
         this.fragment = encodeFragment();
     }
-
-    /**
-     * A special, scheme-less URL denoting the fact that this URL should be considered as invalid.
-     */
-    private static final URL INVALID = URL.builder().build();
 
     public static Builder file() {
         return new Builder().scheme(Scheme.FILE);
@@ -234,8 +248,14 @@ public class URL implements Comparable<URL> {
         return new Resolver(URL.create(base));
     }
 
-    public static URL getInvalid() {
-        return INVALID;
+    private static final URL NULL_URL = URL.builder().build();
+
+    /**
+     * Return a special URL denoting the fact that this URL should be considered as invalid.
+     * The URL has a null scheme.
+     */
+    public static URL nullUrl() {
+        return NULL_URL;
     }
 
     public static URL from(String input) {
@@ -331,6 +351,10 @@ public class URL implements Comparable<URL> {
         return builder.userInfo;
     }
 
+    /**
+     * Get the user of the user info.
+     * @return the user
+     */
     public String getUser() {
         if (builder.userInfo == null) {
             return null;
@@ -355,6 +379,10 @@ public class URL implements Comparable<URL> {
         return builder.host;
     }
 
+    /**
+     * Get the decoded host name.
+     * @return the decoded host name
+     */
     public String getDecodedHost() {
         return decode(builder.host);
     }
@@ -372,13 +400,16 @@ public class URL implements Comparable<URL> {
     }
 
     /**
-     * Get the encoded path  ('/path/to/my/file.html') of the {@code URL} if it exists.
-     * @return the encoded path
+     * Get the path  ('/path/to/my/file.html') of the {@code URL} if it exists.
+     * @return the path
      */
     public String getPath() {
         return path;
     }
 
+    /**
+     * Get the percent-decoded path of the  {@code URL} if it exists.
+     */
     public String getDecodedPath() {
         return decode(path);
     }
@@ -458,18 +489,16 @@ public class URL implements Comparable<URL> {
     private String toInternalForm(boolean withFragment) {
         StringBuilder sb = new StringBuilder();
         if (!isNullOrEmpty(builder.scheme)) {
-            sb.append(builder.scheme).append(':');
+            sb.append(builder.scheme).append(COLON_CHAR);
         }
         if (isOpaque()) {
             sb.append(builder.schemeSpecificPart);
         } else {
             appendHostInfo(sb, false, true);
             appendPath(sb, false);
-            if (!isNullOrEmpty(query)) {
-                sb.append(QUESTION_CHAR).append(query);
-            }
-            if (!isNullOrEmpty(fragment) && withFragment) {
-                sb.append(NUMBER_SIGN_CHAR).append(fragment);
+            appendQuery(sb, false, true);
+            if (withFragment) {
+                appendFragment(sb, false, true);
             }
         }
         return sb.toString();
@@ -478,7 +507,7 @@ public class URL implements Comparable<URL> {
     private String writeExternalForm() {
         StringBuilder sb = new StringBuilder();
         if (!isNullOrEmpty(builder.scheme)) {
-            sb.append(builder.scheme).append(':');
+            sb.append(builder.scheme).append(COLON_CHAR);
         }
         if (isOpaque()) {
             sb.append(builder.schemeSpecificPart);
@@ -521,17 +550,16 @@ public class URL implements Comparable<URL> {
                         if (s != null && !s.equals(builder.hostAddress)) {
                             sb.append(s);
                         } else if (builder.hostAddress != null) {
-                            sb.append("[").append(builder.hostAddress).append("]");
+                            sb.append(LEFT_BRACKET_CHAR).append(builder.hostAddress).append(RIGHT_BRACKET_CHAR);
                         }
                         break;
                     case IPV4:
-                    case IPV46:
                         sb.append(builder.host);
                         break;
                     default:
                         if (encoded) {
                             try {
-                                String encodedHostName = PercentEncoders.getRegNameEncoder(charset).encode(builder.host);
+                                String encodedHostName = regNameEncoder.encode(builder.host);
                                 validateHostnameCharacters(encodedHostName);
                                 sb.append(encodedHostName);
                             } catch (CharacterCodingException e) {
@@ -545,7 +573,7 @@ public class URL implements Comparable<URL> {
             } else {
                 if (encoded) {
                     try {
-                        String encodedHostName = PercentEncoders.getRegNameEncoder(charset).encode(builder.host);
+                        String encodedHostName = regNameEncoder.encode(builder.host);
                         validateHostnameCharacters(encodedHostName);
                         sb.append(encodedHostName);
                     } catch (CharacterCodingException e) {
@@ -556,7 +584,7 @@ public class URL implements Comparable<URL> {
                 }
             }
             if (scheme != null && builder.port != null && builder.port != scheme.getDefaultPort()) {
-                sb.append(':');
+                sb.append(COLON_CHAR);
                 if (builder.port != -1) {
                     sb.append(builder.port);
                 }
@@ -587,8 +615,6 @@ public class URL implements Comparable<URL> {
     }
 
     private void appendPath(StringBuilder sb, boolean encoded) {
-        PercentEncoder pathEncoder = PercentEncoders.getPathEncoder(charset);
-        PercentEncoder matrixEncoder = PercentEncoders.getMatrixEncoder(charset);
         Iterator<PathSegment> it = builder.pathSegments.iterator();
         while (it.hasNext()) {
             PathSegment pathSegment = it.next();
@@ -623,7 +649,6 @@ public class URL implements Comparable<URL> {
                 sb.append(QUESTION_CHAR);
             }
             Iterator<QueryParameters.Pair<String, String>> it = builder.queryParams.iterator();
-            PercentEncoder queryParamEncoder = PercentEncoders.getQueryParamEncoder(charset);
             while (it.hasNext()) {
                 QueryParameters.Pair<String, String> queryParam = it.next();
                 try {
@@ -645,7 +670,7 @@ public class URL implements Comparable<URL> {
             }
             if (encoded) {
                 try {
-                    sb.append(PercentEncoders.getQueryEncoder(charset).encode(builder.query));
+                    sb.append(queryEncoder.encode(builder.query));
                 } catch (CharacterCodingException e) {
                     throw new IllegalArgumentException(e);
                 }
@@ -668,7 +693,7 @@ public class URL implements Comparable<URL> {
             }
             if (encoded) {
                 try {
-                    sb.append(PercentEncoders.getFragmentEncoder(charset).encode(builder.fragment));
+                    sb.append(fragmentEncoder.encode(builder.fragment));
                 } catch (CharacterCodingException e) {
                     throw new IllegalArgumentException(e);
                 }
@@ -713,9 +738,12 @@ public class URL implements Comparable<URL> {
     }
 
     /**
-     * The URL Builder embedded class is for building an URL by fluent API methods.
+     * The URL builder class is required for building an URL. It uses fluent API methods
+     * and pre-processes paralameter accordingly.
      */
     public static class Builder {
+
+        private PercentEncoder regNameEncoder;
 
         private final PercentDecoder percentDecoder;
 
@@ -746,20 +774,26 @@ public class URL implements Comparable<URL> {
         private boolean fatalResolveErrorsEnabled;
 
         private Builder() {
+            charset(StandardCharsets.UTF_8);
             this.percentDecoder = new PercentDecoder();
             this.queryParams = new QueryParameters();
             this.pathSegments = new ArrayList<>();
-            this.charset = StandardCharsets.UTF_8;
         }
 
+        /**
+         * Set the character set of the URL. Default is UTF-8.
+         * @param charset the chaarcter set
+         * @return this builder
+         */
         public Builder charset(Charset charset) {
             this.charset = charset;
+            this.regNameEncoder = PercentEncoders.getRegNameEncoder(charset);
             return this;
         }
 
         public Builder scheme(String scheme) {
             if (!isNullOrEmpty(scheme)) {
-                validateSchemeCharacters(scheme.toLowerCase());
+                validateSchemeCharacters(scheme.toLowerCase(Locale.ROOT));
                 this.scheme = scheme;
             }
             return this;
@@ -777,8 +811,8 @@ public class URL implements Comparable<URL> {
 
         public Builder userInfo(String user, String pass) {
             try {
-                this.userInfo = PercentEncoders.getRegNameEncoder(charset).encode(user) + ':' +
-                        PercentEncoders.getRegNameEncoder(charset).encode(pass);
+                // allow colons in usernames and passwords by percent-encoding them here
+                this.userInfo = regNameEncoder.encode(user) + COLON_CHAR + regNameEncoder.encode(pass);
             } catch (MalformedInputException | UnmappableCharacterException e) {
                 throw new IllegalArgumentException(e);
             }
@@ -827,8 +861,8 @@ public class URL implements Comparable<URL> {
                 }
                 logger.log(Level.WARNING, e.getMessage(), e);
                 if (e.getMessage() != null && !e.getMessage().endsWith("invalid IPv6 address") &&
-                        hostname.charAt(0) != '[' &&
-                        hostname.charAt(hostname.length() - 1) != ']') {
+                        hostname.charAt(0) != LEFT_BRACKET_CHAR &&
+                        hostname.charAt(hostname.length() - 1) != RIGHT_BRACKET_CHAR) {
                     try {
                         String idna = IDN.toASCII(percentDecoder.decode(hostname));
                         host(idna, ProtocolVersion.NONE);
@@ -969,7 +1003,7 @@ public class URL implements Comparable<URL> {
     }
 
     /**
-     *
+     * A URL parser class.
      */
     public static class Parser {
 
@@ -987,13 +1021,13 @@ public class URL implements Comparable<URL> {
         public URL parse(String input, boolean resolve)
                 throws URLSyntaxException, MalformedInputException, UnmappableCharacterException {
             if (isNullOrEmpty(input)) {
-                return INVALID;
+                return NULL_URL;
             }
             if (input.indexOf('\n') >= 0) {
-                return INVALID;
+                return NULL_URL;
             }
             if (input.indexOf('\t') >= 0) {
-                return INVALID;
+                return NULL_URL;
             }
             String remaining = parseScheme(builder, input);
             if (remaining != null) {
@@ -1011,7 +1045,7 @@ public class URL implements Comparable<URL> {
                         String host = (pos >= 0 ? remaining.substring(0, pos) : remaining);
                         parseHostAndPort(builder, parseUserInfo(builder, host), resolve);
                         if (builder.host == null) {
-                            return INVALID;
+                            return NULL_URL;
                         }
                         remaining = pos >= 0 ? remaining.substring(pos) : EMPTY;
                     }
@@ -1053,14 +1087,14 @@ public class URL implements Comparable<URL> {
         private void parseHostAndPort(Builder builder, String rawHost, boolean resolve)
                 throws URLSyntaxException {
             String host = rawHost;
-            if (host.indexOf('[') == 0) {
-                int i = host.lastIndexOf(']');
+            if (host.indexOf(LEFT_BRACKET_CHAR) == 0) {
+                int i = host.lastIndexOf(RIGHT_BRACKET_CHAR);
                 if (i >= 0) {
                     builder.port(parsePort(host.substring(i + 1)));
                     host = host.substring(1, i);
                 }
             } else {
-                int i = host.indexOf(':');
+                int i = host.indexOf(COLON_CHAR);
                 if (i >= 0) {
                     builder.port(parsePort(host.substring(i)));
                     host = host.substring(0, i);
@@ -1077,7 +1111,7 @@ public class URL implements Comparable<URL> {
             if (portStr == null || portStr.isEmpty()) {
                 return null;
             }
-            int i = portStr.indexOf(":");
+            int i = portStr.indexOf(COLON_CHAR);
             if (i >= 0) {
                 portStr = portStr.substring(i + 1);
                 if (portStr.isEmpty()) {
@@ -1179,8 +1213,7 @@ public class URL implements Comparable<URL> {
     }
 
     /**
-     * The URL resolver class is an embedded class for resolving a relative URL specification to
-     * a base URL.
+     * The URL resolver class is a class for resolving a relative URL specification to a base URL.
      */
     public static class Resolver {
 
@@ -1204,7 +1237,7 @@ public class URL implements Comparable<URL> {
 
         public URL resolve(URL relative)
                 throws URLSyntaxException {
-            if (relative == null || relative == INVALID) {
+            if (relative == null || relative.equals(NULL_URL)) {
                 throw new URLSyntaxException("relative URL is invalid");
             }
             if (!base.isAbsolute()) {

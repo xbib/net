@@ -1,6 +1,7 @@
 package org.xbib.net.scheme;
 
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.ServiceLoader;
 
@@ -62,7 +63,7 @@ public final class SchemeRegistry {
             return false;
         }
         if (!schemes.containsKey(name)) {
-            schemes.put(name.toLowerCase(), scheme);
+            schemes.put(name.toLowerCase(Locale.ROOT), scheme);
             return true;
         } else {
             return false;
@@ -73,7 +74,7 @@ public final class SchemeRegistry {
         if (scheme == null) {
             return null;
         }
-        Scheme s = schemes.get(scheme.toLowerCase());
+        Scheme s = schemes.get(scheme.toLowerCase(Locale.ROOT));
         return s != null ? s : new DefaultScheme(scheme);
     }
 }

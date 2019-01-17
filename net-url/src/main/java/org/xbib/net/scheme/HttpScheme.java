@@ -3,6 +3,8 @@ package org.xbib.net.scheme;
 import org.xbib.net.URL;
 import org.xbib.net.path.PathNormalizer;
 
+import java.util.Locale;
+
 /**
  * HTTP scheme.
  */
@@ -20,7 +22,7 @@ class HttpScheme extends AbstractScheme {
     public URL normalize(URL url) {
         String host = url.getHost();
         if (host != null) {
-            host = host.toLowerCase();
+            host = host.toLowerCase(Locale.ROOT);
         }
         return URL.builder()
                 .scheme(url.getScheme())

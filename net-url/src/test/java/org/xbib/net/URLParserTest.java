@@ -14,22 +14,22 @@ public class URLParserTest {
 
     @Test
     public void testNull() {
-        assertEquals(URL.getInvalid(), URL.from(null));
+        assertEquals(URL.nullUrl(), URL.from(null));
     }
 
     @Test
     public void testEmpty() {
-        assertEquals(URL.getInvalid(), URL.from(""));
+        assertEquals(URL.nullUrl(), URL.from(""));
     }
 
     @Test
     public void testNewline() {
-        assertEquals(URL.getInvalid(), URL.from("\n"));
+        assertEquals(URL.nullUrl(), URL.from("\n"));
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void testInvalidScheme() throws Exception {
-        URL url = URL.from("/:23");
+    public void testInvalidScheme() {
+        URL.from("/:23");
     }
 
     @Test
@@ -62,7 +62,7 @@ public class URLParserTest {
     }
 
     @Test
-    public void testGopher() throws Exception {
+    public void testGopher() {
         URL url = URL.from("gopher:/example.com/");
         assertEquals("gopher:/example.com/", url.toExternalForm());
     }
@@ -76,7 +76,7 @@ public class URLParserTest {
     }
 
     @Test
-    public void testSlashAfterScheme() throws Exception {
+    public void testSlashAfterScheme() {
         URL url = URL.from("http:/example.com/");
         assertEquals("http:/example.com/", url.toExternalForm());
     }
@@ -96,7 +96,7 @@ public class URLParserTest {
     }
 
     @Test
-    public void testNetworkLocation() throws Exception {
+    public void testNetworkLocation() {
         URL url = URL.from("//foo.bar");
         assertEquals("//foo.bar", url.toExternalForm());
         assertEquals("//foo.bar", url.toString());
@@ -131,7 +131,7 @@ public class URLParserTest {
     }
 
     @Test
-    public void testBackslash() throws Exception {
+    public void testBackslash() {
         URL url = URL.from("http://foo.com/\\@");
         assertEquals("http://foo.com/@", url.toExternalForm());
     }
@@ -153,7 +153,6 @@ public class URLParserTest {
     @Test
     public void testReservedChar() throws Exception {
         URL url = URL.from("http://www.google.com/ig/calculator?q=1USD=?EUR");
-        //assertEquals("http://www.google.com/ig/calculator?q=1USD=?EUR", url.toString());
         if ("false".equals(System.getProperty("java.net.preferIPv6Addresses"))) {
             assertEquals("http://www.google.com/ig/calculator?q=1USD%3D?EUR", url.toString());
         }
@@ -163,7 +162,7 @@ public class URLParserTest {
     @Test
     public void testPlus() throws Exception {
         URL url = URL.from("http://foobar:8080/test/print?value=%EA%B0%80+%EB%82%98");
-        assertEquals("http://foobar:8080/test/print?value=%EA%B0%80%2B%EB%82%98", url.toString());
+        assertEquals("http://foobar:8080/test/print?value=%EA%B0%80%2B%EB%82%98", url.toExternalForm());
         assertRoundTrip(url.toExternalForm());
     }
 

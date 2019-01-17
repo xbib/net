@@ -2,7 +2,6 @@ package org.xbib.net;
 
 import java.nio.charset.Charset;
 import java.util.BitSet;
-
 import static java.nio.charset.CodingErrorAction.REPORT;
 
 /**
