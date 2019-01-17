@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * Query parameters.
+ * Query parameter list, of limited size. Default is 1024 pairs.
  */
 public class QueryParameters extends ArrayList<QueryParameters.Pair<String, String>> {
 

@@ -1,3 +1,4 @@
 rootProject.name = name
 
 include 'net-url'
+include 'net-http'

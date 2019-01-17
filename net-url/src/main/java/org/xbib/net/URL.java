@@ -864,6 +864,12 @@ public class URL implements Comparable<URL> {
             return this;
         }
 
+        public Builder resetQueryParams() {
+            queryParams.clear();
+            query = null;
+            return this;
+        }
+
         /**
          * Add a query parameter. Query parameters will be encoded in the order added.
          *
