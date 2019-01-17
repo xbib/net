@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -785,13 +786,17 @@ public class URL implements Comparable<URL> {
         }
 
         public Builder host(String host) {
-            this.host = host;
+            if (host != null) {
+                this.host = host.toLowerCase(Locale.ROOT);
+            }
             this.protocolVersion = ProtocolVersion.NONE;
             return this;
         }
 
         public Builder host(String host, ProtocolVersion protocolVersion) {
-            this.host = host;
+            if (host != null) {
+                this.host = host.toLowerCase(Locale.ROOT);
+            }
             this.protocolVersion = protocolVersion;
             return this;
         }
@@ -1003,7 +1008,7 @@ public class URL implements Comparable<URL> {
                         int i = remaining.indexOf(SEPARATOR_CHAR);
                         int j = remaining.indexOf(QUESTION_CHAR);
                         int pos = i >= 0 && j >= 0 ? Math.min(i, j) : i >= 0 ? i : j >= 0 ? j : -1;
-                        String host = (pos >= 0 ? remaining.substring(0, pos) : remaining).toLowerCase();
+                        String host = (pos >= 0 ? remaining.substring(0, pos) : remaining);
                         parseHostAndPort(builder, parseUserInfo(builder, host), resolve);
                         if (builder.host == null) {
                             return INVALID;
@@ -1045,8 +1050,9 @@ public class URL implements Comparable<URL> {
             return remaining;
         }
 
-        private void parseHostAndPort(Builder builder, String host, boolean resolve)
+        private void parseHostAndPort(Builder builder, String rawHost, boolean resolve)
                 throws URLSyntaxException {
+            String host = rawHost;
             if (host.indexOf('[') == 0) {
                 int i = host.lastIndexOf(']');
                 if (i >= 0) {
