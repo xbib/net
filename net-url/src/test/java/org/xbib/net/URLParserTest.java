@@ -160,6 +160,16 @@ public class URLParserTest {
     }
 
     @Test
+    public void testPassword() throws Exception {
+        URL url = URL.from("ftp://aaa:b%2B1@www.google.com");
+        assertEquals("b+1", url.getPassword());
+        assertRoundTrip(url.toExternalForm());
+        url = URL.from("ftp://aaa:b+1@www.google.com");
+        assertEquals("b+1", url.getPassword());
+        assertRoundTrip(url.toExternalForm());
+    }
+
+    @Test
     public void testPlus() throws Exception {
         URL url = URL.from("http://foobar:8080/test/print?value=%EA%B0%80+%EB%82%98");
         assertEquals("http://foobar:8080/test/print?value=%EA%B0%80%2B%EB%82%98", url.toExternalForm());

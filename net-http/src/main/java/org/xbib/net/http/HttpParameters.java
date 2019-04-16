@@ -20,7 +20,7 @@ import java.util.SortedSet;
  * A limited multi-map of HTTP request parameters. Each key references a
  * limited set of parameters collected from the request during message
  * signing. Parameter values are sorted as per
- * <a href="http://oauth.net/core/1.0a/#anchor13">OAuth specification</a></a>.
+ * <a href="http://oauth.net/core/1.0a/#anchor13">OAuth specification</a>.
  * Every key/value pair will be percent-encoded upon insertion.
  *  This class has special semantics tailored to
  * being useful for message signing; it's not a general purpose collection class
@@ -130,6 +130,8 @@ public class HttpParameters implements Map<String, SortedSet<String>> {
      * @param key the parameter name
      * @param value the parameter value
      * @return the value
+     * @throws MalformedInputException if input is malformed
+     * @throws UnmappableCharacterException if characters are unmappable
      */
     public String put(String key, String value)
             throws MalformedInputException, UnmappableCharacterException {
@@ -145,6 +147,8 @@ public class HttpParameters implements Map<String, SortedSet<String>> {
      * @param percentEncode whether key and value should be percent encoded before being
      *        inserted into the map
      * @return the value
+     * @throws MalformedInputException if input is malformed
+     * @throws UnmappableCharacterException if characters are unmappable
      */
     public String put(String key, String value, boolean percentEncode)
             throws MalformedInputException, UnmappableCharacterException {
@@ -169,6 +173,8 @@ public class HttpParameters implements Map<String, SortedSet<String>> {
      * @param key the parameter name
      * @param nullString can be anything, but probably... null?
      * @return null
+     * @throws MalformedInputException if input is malformed
+     * @throws UnmappableCharacterException if characters are unmappable
      */
     public String putNull(String key, String nullString)
             throws MalformedInputException, UnmappableCharacterException {
@@ -194,7 +200,7 @@ public class HttpParameters implements Map<String, SortedSet<String>> {
     }
 
     /**
-     * Convenience method to merge a Map<String, List<String>>.
+     * Convenience method to merge a {@code Map<String, List<String>>}.
      *
      * @param m the map
      */
@@ -226,6 +232,8 @@ public class HttpParameters implements Map<String, SortedSet<String>> {
      *        characters!)
      * @param percentDecode whether the value being retrieved should be percent decoded
      * @return the first value found for this parameter
+     * @throws MalformedInputException if input is malformed
+     * @throws UnmappableCharacterException if characters are unmappable
      */
     public String getFirst(String key, boolean percentDecode)
             throws MalformedInputException, UnmappableCharacterException {
@@ -243,6 +251,8 @@ public class HttpParameters implements Map<String, SortedSet<String>> {
      *
      * @param key the parameter name
      * @return the query string
+     * @throws MalformedInputException if input is malformed
+     * @throws UnmappableCharacterException if characters are unmappable
      */
     public String getAsQueryString(String key)
             throws MalformedInputException, UnmappableCharacterException {
@@ -257,6 +267,8 @@ public class HttpParameters implements Map<String, SortedSet<String>> {
      * @param percentEncode whether key should be percent encoded before being
      *        used with the map
      * @return the query string
+     * @throws MalformedInputException if input is malformed
+     * @throws UnmappableCharacterException if characters are unmappable
      */
     public String getAsQueryString(String key, boolean percentEncode)
             throws MalformedInputException, UnmappableCharacterException {

@@ -55,7 +55,7 @@ subprojects {
         targetCompatibility = JavaVersion.VERSION_1_8
     }
     tasks.withType(JavaCompile) {
-        options.compilerArgs << "-Xlint:all,-serial" << "-profile" << "compact1"
+        options.compilerArgs << "-Xlint:all,-serial"
     }
 
     jar {
@@ -89,7 +89,7 @@ subprojects {
                 imagesdir: 'img'
     }
 
-    javadoc {
+    /*javadoc {
         options.docletpath = configurations.asciidoclet.files.asType(List)
         options.doclet = 'org.asciidoctor.Asciidoclet'
         //options.overview = "src/docs/asciidoclet/overview.adoc"
@@ -99,7 +99,7 @@ subprojects {
         configure(options) {
             noTimestamp = true
         }
-    }
+    }*/
 
     task sourcesJar(type: Jar, dependsOn: classes) {
         classifier 'sources'

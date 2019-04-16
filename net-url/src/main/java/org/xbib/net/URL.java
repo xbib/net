@@ -253,6 +253,7 @@ public class URL implements Comparable<URL> {
     /**
      * Return a special URL denoting the fact that this URL should be considered as invalid.
      * The URL has a null scheme.
+     * @return url
      */
     public static URL nullUrl() {
         return NULL_URL;
@@ -409,6 +410,7 @@ public class URL implements Comparable<URL> {
 
     /**
      * Get the percent-decoded path of the  {@code URL} if it exists.
+     * @return decoded path
      */
     public String getDecodedPath() {
         return decode(path);
