@@ -4,33 +4,30 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
-import org.junit.Test;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- */
-public class URLTest {
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
+
+class URLTest {
 
     @Test
-    public void test() throws Exception {
+    void test() throws Exception {
        List<JsonTest> tests = readTests(fromResource("/urltestdata.json"));
        for (JsonTest test : tests) {
            String base = test.base;
            String input = test.input;
-           System.err.println("testing: " + base + " " + input + " " + test.failure);
+           //System.err.println("testing: " + base + " " + input + " " + test.failure);
            if (test.skip) {
                continue;
            }
            if (test.failure) {
                try {
                    URL url = URL.base(base).resolve(input);
-                   System.err.println("resolved: " + url.toString());
+                   //System.err.println("resolved: " + url.toString());
                    fail();
                } catch (Exception e) {
                    // pass
@@ -39,7 +36,7 @@ public class URLTest {
                if (base != null && input != null) {
                    try {
                        URL url = URL.base(base).resolve(input);
-                       System.err.println("resolved: " + url.toString());
+                       //System.err.println("resolved: " + url.toString());
                        if (test.protocol != null) {
                            assertEquals(test.protocol, url.getScheme() + ":");
                        }
@@ -58,9 +55,9 @@ public class URLTest {
                        //if (test.pathname != null && !test.pathname.isEmpty() && url.getPath() != null) {
                        //    assertEquals(test.pathname, url.getPath());
                        //}
-                       System.err.println("passed: " + base + " " + input);
+                       //System.err.println("passed: " + base + " " + input);
                    } catch (URLSyntaxException e) {
-                       System.err.println("unable to resolve: " + base + " " + input + " reason: " + e.getMessage());
+                       //System.err.println("unable to resolve: " + base + " " + input + " reason: " + e.getMessage());
                    }
                }
            }

@@ -1,73 +1,69 @@
 package org.xbib.net.path;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-/**
- *
- */
-public class PathNormalizerTest {
+class PathNormalizerTest {
 
     @Test
-    public void normalizeNullPath() {
+    void normalizeNullPath() {
         assertEquals("/", PathNormalizer.normalize(null));
     }
 
     @Test
-    public void normalizeEmptyPath() {
+    void normalizeEmptyPath() {
         assertEquals("/", PathNormalizer.normalize(""));
     }
 
     @Test
-    public void normalizeSlashPath() {
+    void normalizeSlashPath() {
         assertEquals("/", PathNormalizer.normalize("/"));
     }
 
     @Test
-    public void normalizeDoubleSlashPath() {
+    void normalizeDoubleSlashPath() {
         assertEquals("/", PathNormalizer.normalize("//"));
     }
 
     @Test
-    public void normalizeTripleSlashPath() {
+    void normalizeTripleSlashPath() {
         assertEquals("/", PathNormalizer.normalize("///"));
     }
 
     @Test
-    public void normalizePathWithPoint() {
+    void normalizePathWithPoint() {
         assertEquals("/", PathNormalizer.normalize("/."));
     }
 
     @Test
-    public void normalizePathWithPointAndElement() {
+    void normalizePathWithPointAndElement() {
         assertEquals("/a", PathNormalizer.normalize("/./a"));
     }
 
     @Test
-    public void normalizePathWithTwoPointsAndElement() {
+    void normalizePathWithTwoPointsAndElement() {
         assertEquals("/a", PathNormalizer.normalize("/././a"));
     }
 
     @Test
-    public void normalizePathWithDoublePoint() {
+    void normalizePathWithDoublePoint() {
         assertEquals("/", PathNormalizer.normalize("/.."));
         assertEquals("/", PathNormalizer.normalize("/../.."));
         assertEquals("/", PathNormalizer.normalize("/../../.."));
     }
 
     @Test
-    public void normalizePathWithFirstElementAndDoublePoint() {
+    void normalizePathWithFirstElementAndDoublePoint() {
         assertEquals("/", PathNormalizer.normalize("/a/.."));
         assertEquals("/", PathNormalizer.normalize("/a/../.."));
         assertEquals("/", PathNormalizer.normalize("/a/../../.."));
     }
 
     @Test
-    public void normalizePathWithTwoElementsAndDoublePoint() {
+    void normalizePathWithTwoElementsAndDoublePoint() {
         assertEquals("/b", PathNormalizer.normalize("/a/../b"));
         assertEquals("/b", PathNormalizer.normalize("/a/../../b"));
         assertEquals("/b", PathNormalizer.normalize("/a/../../../b"));
     }
-
 }

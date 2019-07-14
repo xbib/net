@@ -9,22 +9,25 @@ import java.util.StringTokenizer;
  */
 public class PathNormalizer {
 
-    private static final char separator = '/';
+    private static final char SEPARATOR_CHAR = '/';
+
+    private static final String SEPARATOR_STRING = "/";
 
     private PathNormalizer() {
     }
 
-    public static String normalize(String path) {
-        if (path == null || "".equals(path) || "/".equals(path)) {
-            return "/";
+    public static String normalize(String p) {
+        String path = p;
+        if (path == null || "".equals(path) || SEPARATOR_STRING.equals(path)) {
+            return SEPARATOR_STRING;
         }
-        path = path.replaceAll("/+", "/");
+        path = path.replaceAll("/+", SEPARATOR_STRING);
         int leadingSlashes = 0;
-        while (leadingSlashes < path.length() && path.charAt(leadingSlashes) == '/') {
+        while (leadingSlashes < path.length() && path.charAt(leadingSlashes) == SEPARATOR_CHAR) {
             ++leadingSlashes;
         }
-        boolean isDir = (path.charAt(path.length() - 1) == '/');
-        StringTokenizer st = new StringTokenizer(path, "/");
+        boolean isDir = (path.charAt(path.length() - 1) == SEPARATOR_CHAR);
+        StringTokenizer st = new StringTokenizer(path, SEPARATOR_STRING);
         LinkedList<String> list = new LinkedList<>();
         while (st.hasMoreTokens()) {
             String token = st.nextToken();
@@ -41,16 +44,16 @@ public class PathNormalizer {
         }
         StringBuilder sb = new StringBuilder();
         while (leadingSlashes-- > 0) {
-            sb.append('/');
+            sb.append(SEPARATOR_CHAR);
         }
         for (Iterator<String> it = list.iterator(); it.hasNext();) {
             sb.append(it.next());
             if (it.hasNext()) {
-                sb.append('/');
+                sb.append(SEPARATOR_CHAR);
             }
         }
-        if (isDir && sb.length() > 0 && sb.charAt(sb.length() - 1) != '/') {
-            sb.append('/');
+        if (isDir && sb.length() > 0 && sb.charAt(sb.length() - 1) != SEPARATOR_CHAR) {
+            sb.append(SEPARATOR_CHAR);
         }
         return sb.toString();
     }

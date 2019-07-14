@@ -1,39 +1,35 @@
 package org.xbib.net;
 
-import org.junit.Test;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertTrue;
+import org.junit.jupiter.api.Test;
 
 import java.text.Normalizer;
 
-/**
- *
- */
-public class IRITest {
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+
+class IRITest {
 
     @Test
-    public void testIpv4() {
+    void testIpv4() {
         URL iri = URL.create("http://127.0.0.1");
         assertEquals("http://127.0.0.1", iri.toExternalForm());
     }
 
     @Test
-    public void testIpv6() {
+    void testIpv6() {
         URL iri = URL.from("http://[2001:0db8:85a3:08d3:1319:8a2e:0370:7344]");
         assertEquals(iri.getProtocolVersion(), ProtocolVersion.IPV6);
         assertEquals("http://[2001:db8:85a3:8d3:1319:8a2e:370:7344]", iri.toString());
     }
 
     @Test
-    public void testIpv6Invalid() {
+    void testIpv6Invalid() {
         URL iri = URL.from("http://[2001:0db8:85a3:08d3:1319:8a2e:0370:734o]");
         assertEquals(URL.nullUrl(), iri);
     }
 
     @Test
-    public void testSimple() {
+    void testSimple() {
         URL iri = URL.create("http://validator.w3.org/check?uri=http%3A%2F%2Fr\u00E9sum\u00E9.example.org");
         //assertEquals("http://validator.w3.org/check?uri=http%3A%2F%2Fr\u00E9sum\u00E9.example.org", iri.toString());
         assertEquals("http://validator.w3.org/check?uri=http://r%C3%A9sum%C3%A9.example.org",
@@ -41,7 +37,7 @@ public class IRITest {
     }
 
     @Test
-    public void testFile() throws Exception {
+    void testFile() throws Exception {
         URL iri = URL.create("file:///tmp/test/foo");
         assertEquals("", iri.getHost());
         assertEquals("/tmp/test/foo", iri.getPath());
@@ -50,25 +46,25 @@ public class IRITest {
     }
 
     @Test
-    public void testSimple2() throws Exception {
+    void testSimple2() throws Exception {
         URL iri = URL.create("http://www.example.org/red%09ros\u00E9#red");
         assertEquals("http://www.example.org/red%09ros%C3%A9#red", iri.toExternalForm());
     }
 
     @Test
-    public void testNotSoSimple() throws Exception {
+    void testNotSoSimple() throws Exception {
         URL iri = URL.create("http://example.com/\uD800\uDF00\uD800\uDF01\uD800\uDF02");
         assertEquals("http://example.com/%F0%90%8C%80%F0%90%8C%81%F0%90%8C%82", iri.toExternalForm());
     }
 
     @Test
-    public void testIRItoURI() throws Exception {
+    void testIRItoURI() throws Exception {
         URL iri = URL.from("http://\u7D0D\u8C46.example.org/%E2%80%AE");
         assertEquals("http://xn--99zt52a.example.org/%E2%80%AE", iri.toExternalForm());
     }
 
     @Test
-    public void testComparison() throws Exception {
+    void testComparison() throws Exception {
 
         URL url1 = URL.create("http://www.example.org/");
         URL url2 = URL.create("http://www.example.org/..");
@@ -90,7 +86,7 @@ public class IRITest {
     }
 
     @Test
-    public void testUCN() throws Exception {
+    void testUCN() throws Exception {
         URL iri1 = URL.create("http://www.example.org/r\u00E9sum\u00E9.html");
         String s = Normalizer.normalize("http://www.example.org/re\u0301sume\u0301.html", Normalizer.Form.NFC);
         URL iri2 = URL.create(s);
@@ -98,20 +94,20 @@ public class IRITest {
     }
 
     @Test
-    public void testPercent() {
+    void testPercent() {
         URL iri1 = URL.create("http://example.org/%7e%2Fuser?%2f");
         URL iri2 = URL.create("http://example.org/%7E%2fuser?/");
         assertEquals(iri1.normalize(), iri2.normalize());
     }
 
     @Test
-    public void testIDN() {
+    void testIDN() {
         URL iri1 = URL.from("http://r\u00E9sum\u00E9.example.org");
         assertEquals("xn--rsum-bpad.example.org", iri1.getHost());
     }
 
     @Test
-    public void testResolveRelative() {
+    void testResolveRelative() {
         URL base = URL.create("http://example.org/foo/");
         assertEquals("http://example.org/", base.resolve("/").toString());
         assertEquals("http://example.org/test", base.resolve("/test").toString());
@@ -125,7 +121,7 @@ public class IRITest {
     }
 
     @Test
-    public void testSchemes() {
+    void testSchemes() {
 
         URL iri = URL.create("http://a:b@c.org:80/d/e?f#g");
         assertEquals("http", iri.getScheme());

@@ -1,19 +1,17 @@
 package org.xbib.net;
 
-import org.junit.Test;
-
-import static org.junit.Assert.assertEquals;
+import org.junit.jupiter.api.Test;
 
 import java.net.URI;
 import java.nio.charset.MalformedInputException;
 import java.nio.charset.UnmappableCharacterException;
 
-/**
- */
-public class URLResolverTest {
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+class URLResolverTest {
 
     @Test
-    public void testResolveURI() throws Exception {
+    void testResolveURI() throws Exception {
         URI base = URI.create("http://example.org/foo");
         assertEquals("http://example.org/", base.resolve("/").toString());
         assertEquals("http://example.org/foobar", base.resolve("/foobar").toString());
@@ -25,7 +23,7 @@ public class URLResolverTest {
     }
 
     @Test
-    public void testResolveURL() throws Exception {
+    void testResolveURL() throws Exception {
         URL base = URL.create("http://example.org/foo");
         assertEquals("http://example.org/", base.resolve("/").toString());
         assertEquals("http://example.org/foobar", base.resolve("/foobar").toString());
@@ -37,7 +35,7 @@ public class URLResolverTest {
     }
 
     @Test
-    public void testMultiResolve() throws Exception {
+    void testMultiResolve() throws Exception {
         URL base = URL.create("http://example:8080");
         String pathSpec = "foobar/";
         String index = "index.html";
@@ -47,7 +45,7 @@ public class URLResolverTest {
     }
 
     @Test
-    public void testFielding() throws Exception {
+    void testFielding() throws Exception {
         // http://www.ics.uci.edu/~fielding/url/test1.html
         resolve("http://a/b/c/d;p?q", "g:h", "g:h");
         resolve("http://a/b/c/d;p?q", "g", "http://a/b/c/g");

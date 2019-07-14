@@ -1,26 +1,23 @@
 package org.xbib.net;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-/**
- *
- */
-public class URLBuilderTest {
+class URLBuilderTest {
 
     @Test
-    public void testNoUrlParts() {
+    void testNoUrlParts() {
         assertUrl(URL.http().resolveFromHost("foo.com").toUrlString(), "http://foo.com");
     }
 
     @Test
-    public void testWithPort() {
+    void testWithPort() {
         assertUrl(URL.http().resolveFromHost("foo.com").port(33).toUrlString(), "http://foo.com:33");
     }
 
     @Test
-    public void testSimplePath() {
+    void testSimplePath() {
         assertUrl(URL.http().resolveFromHost("foo.com")
                         .pathSegment("seg1")
                         .pathSegment("seg2")
@@ -29,7 +26,7 @@ public class URLBuilderTest {
     }
 
     @Test
-    public void testPathWithReserved() {
+    void testPathWithReserved() {
         // RFC 1738 S3.3
         assertUrl(URL.http().resolveFromHost("foo.com")
                 .pathSegment("seg/;?ment")
@@ -38,14 +35,14 @@ public class URLBuilderTest {
     }
 
     @Test
-    public void testPathSegments() {
+    void testPathSegments() {
         assertUrl(URL.http().resolveFromHost("foo.com")
                 .pathSegments("seg1", "seg2", "seg3")
                 .toUrlString(), "http://foo.com/seg1/seg2/seg3");
     }
 
     @Test
-    public void testMatrixWithReserved() {
+    void testMatrixWithReserved() {
         assertUrl(URL.http().resolveFromHost("foo.com")
                 .pathSegment("foo")
                 .matrixParam("foo", "bar")
@@ -55,28 +52,28 @@ public class URLBuilderTest {
     }
 
     @Test
-    public void testUrlEncodedPathSegmentUtf8() {
+    void testUrlEncodedPathSegmentUtf8() {
         assertUrl(URL.http().resolveFromHost("foo.com")
                 .pathSegment("snowman").pathSegment("\u2603")
                 .toUrlString(), "http://foo.com/snowman/%E2%98%83");
     }
 
     @Test
-    public void testUrlEncodedPathSegmentUtf8SurrogatePair() {
+    void testUrlEncodedPathSegmentUtf8SurrogatePair() {
         assertUrl(URL.http().resolveFromHost("foo.com")
                 .pathSegment("clef").pathSegment("\ud834\udd1e")
                 .toUrlString(), "http://foo.com/clef/%F0%9D%84%9E");
     }
 
     @Test
-    public void testQueryParamNoPath() {
+    void testQueryParamNoPath() {
         assertUrl(URL.http().resolveFromHost("foo.com")
                 .queryParam("foo", "bar")
                 .toUrlString(), "http://foo.com?foo=bar");
     }
 
     @Test
-    public void testQueryParamsDuplicated() {
+    void testQueryParamsDuplicated() {
         assertUrl(URL.http().resolveFromHost("foo.com")
                 .queryParam("foo", "bar")
                 .queryParam("foo", "bar2")
@@ -86,7 +83,7 @@ public class URLBuilderTest {
     }
 
     @Test
-    public void testEncodeQueryParams() {
+    void testEncodeQueryParams() {
         assertUrl(URL.http().resolveFromHost("foo.com")
                 .queryParam("foo", "bar&=#baz")
                 .queryParam("foo", "bar?/2")
@@ -94,7 +91,7 @@ public class URLBuilderTest {
     }
 
     @Test
-    public void testEncodeQueryParamWithSpaceAndPlus() {
+    void testEncodeQueryParamWithSpaceAndPlus() {
         assertUrl(URL.http().resolveFromHost("foo.com")
                 .queryParam("foo", "spa ce")
                 .queryParam("fo+o", "plus+")
@@ -102,7 +99,7 @@ public class URLBuilderTest {
     }
 
     @Test
-    public void testPlusInVariousParts() {
+    void testPlusInVariousParts() {
         assertUrl(URL.http().resolveFromHost("foo.com")
                 .pathSegment("has+plus")
                 .matrixParam("plusMtx", "pl+us")
@@ -112,7 +109,7 @@ public class URLBuilderTest {
     }
 
     @Test
-    public void testFragment() {
+    void testFragment() {
         assertUrl(URL.http().resolveFromHost("foo.com")
                 .queryParam("foo", "bar")
                 .fragment("#frag/?")
@@ -120,7 +117,7 @@ public class URLBuilderTest {
     }
 
     @Test
-    public void testAllParts() {
+    void testAllParts() {
         assertUrl(URL.https().resolveFromHost("foo.bar.com").port(3333)
                 .pathSegment("foo")
                 .pathSegment("bar")
@@ -134,24 +131,24 @@ public class URLBuilderTest {
     }
 
     @Test
-    public void testSlashInHost() {
+    void testSlashInHost() {
         URL.http().resolveFromHost("/").toUrlString();
     }
 
     @Test
-    public void testGoogle() {
+    void testGoogle() {
         URL url = URL.https().resolveFromHost("google.com").build();
         assertEquals("https://google.com", url.toString());
     }
 
     @Test
-    public void testBadIPv4LiteralDoesntChoke() {
+    void testBadIPv4LiteralDoesntChoke() {
         assertUrl(URL.http().resolveFromHost("300.100.50.1")
                 .toUrlString(), "http://300.100.50.1");
     }
 
     @Test
-    public void testIPv4Literal() {
+    void testIPv4Literal() {
         if ("false".equals(System.getProperty("java.net.preferIPv6Addresses"))) {
             assertUrl(URL.http().resolveFromHost("127.0.0.1")
                     .toUrlString(), "http://localhost");
@@ -161,7 +158,7 @@ public class URLBuilderTest {
     }
 
     @Test
-    public void testIPv6LiteralLocalhost() {
+    void testIPv6LiteralLocalhost() {
         String s = URL.http().resolveFromHost("[::1]").toUrlString();
         if ("true".equals(System.getProperty("java.net.preferIPv6Addresses"))) {
             assertEquals("http://[0:0:0:0:0:0:0:1]", s);
@@ -171,7 +168,7 @@ public class URLBuilderTest {
     }
 
     @Test
-    public void testIPv6Literal() {
+    void testIPv6Literal() {
         if ("true".equals(System.getProperty("java.net.preferIPv6Addresses"))) {
             String s = URL.http().resolveFromHost("[2001:db8:85a3::8a2e:370:7334]")
                     .toUrlString();
@@ -180,21 +177,21 @@ public class URLBuilderTest {
     }
 
     @Test
-    public void testEncodedRegNameSingleByte() {
+    void testEncodedRegNameSingleByte() {
         String s = URL.http().resolveFromHost("host?name;")
                 .toUrlString();
         assertEquals("http://host%3Fname;", s);
     }
 
     @Test
-    public void testEncodedRegNameMultiByte() {
+    void testEncodedRegNameMultiByte() {
         String s = URL.http().host("snow\u2603man")
                 .toUrlString();
         assertEquals("http://snow%E2%98%83man", s);
     }
 
     @Test
-    public void testThreePathSegments() {
+    void testThreePathSegments() {
         String s = URL.https().resolveFromHost("foo.com")
                 .pathSegments("a", "b", "c")
                 .toUrlString();
@@ -202,7 +199,7 @@ public class URLBuilderTest {
     }
 
     @Test
-    public void testThreePathSegmentsWithQueryParams() {
+    void testThreePathSegmentsWithQueryParams() {
         String s = URL.https().resolveFromHost("foo.com")
                 .pathSegments("a", "b", "c")
                 .queryParam("foo", "bar")
@@ -211,7 +208,7 @@ public class URLBuilderTest {
     }
 
     @Test
-    public void testIntermingledMatrixParamsAndPathSegments() {
+    void testIntermingledMatrixParamsAndPathSegments() {
         String s = URL.http().resolveFromHost("foo.com")
                 .pathSegments("seg1", "seg2")
                 .matrixParam("m1", "v1")
@@ -222,7 +219,7 @@ public class URLBuilderTest {
     }
 
     @Test
-    public void testUseQueryParamAfterQuery() {
+    void testUseQueryParamAfterQuery() {
         String s = URL.http().resolveFromHost("foo.com")
                 .query("q")
                 .queryParam("foo", "bar")
@@ -231,7 +228,7 @@ public class URLBuilderTest {
     }
 
     @Test
-    public void testUseQueryAfterQueryParam() {
+    void testUseQueryAfterQueryParam() {
         String s = URL.http().resolveFromHost("foo.com")
                 .queryParam("foo", "bar")
                 .query("q")
@@ -240,7 +237,7 @@ public class URLBuilderTest {
     }
 
     @Test
-    public void testQueryWithNoSpecialChars() {
+    void testQueryWithNoSpecialChars() {
         String s = URL.http().resolveFromHost("foo.com")
                 .query("q")
                 .toUrlString();
@@ -248,28 +245,28 @@ public class URLBuilderTest {
     }
 
     @Test
-    public void testQueryWithOkSpecialChars() {
+    void testQueryWithOkSpecialChars() {
         String s = URL.http().resolveFromHost("foo.com")
                 .query("q?/&=").toUrlString();
         assertEquals("http://foo.com?q?/&=", s);
     }
 
     @Test
-    public void testQueryWithEscapedSpecialChars() {
+    void testQueryWithEscapedSpecialChars() {
         String s = URL.http().resolveFromHost("foo.com")
                 .query("q#+").toUrlString();
         assertEquals("http://foo.com?q%23%2B", s);
     }
 
     @Test
-    public void testNewBuilder() {
+    void testNewBuilder() {
         URL.Builder builder = URL.from("http://google.com:8008/foobar").newBuilder();
         builder.scheme("https");
         assertEquals("https://google.com:8008/foobar", builder.build().toString());
     }
 
     @Test
-    public void testUserInfo(){
+    void testUserInfo(){
         String s = URL.http().userInfo("foo:bar").host("foo.com").toUrlString();
         assertEquals("http://foo:bar@foo.com", s);
         s = URL.http().userInfo("foo:foo:bar").host("foo.com").toUrlString();

@@ -1,18 +1,15 @@
 package org.xbib.net;
 
-import org.junit.Test;
-
-import static org.junit.Assert.assertEquals;
+import org.junit.jupiter.api.Test;
 
 import java.net.URI;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-/**
- */
-public class URIComponentTest {
+class URIComponentTest {
 
     @Test
-    public void testURI() {
+    void testURI() {
         URI uri = URI.create("ftp://user:pass@host:1234/path/to/filename.txt");
         assertEquals("ftp", scheme(uri));
         assertEquals("user", user(uri));
@@ -24,7 +21,7 @@ public class URIComponentTest {
     }
 
     @Test
-    public void testURI2() {
+    void testURI2() {
         URI uri = URI.create("sftp://user:pass@host:1234/filename.txt");
         assertEquals("sftp", scheme(uri));
         assertEquals("user", user(uri));

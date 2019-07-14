@@ -6,20 +6,6 @@ plugins {
     id "org.xbib.gradle.plugin.asciidoctor" version "1.5.6.0.1"
 }
 
-printf "Host: %s\nOS: %s %s %s\nJVM: %s %s %s %s\nGradle: %s Groovy: %s Java: %s\n" +
-        "Build: group: ${project.group} name: ${project.name} version: ${project.version}\n",
-        InetAddress.getLocalHost(),
-        System.getProperty("os.name"),
-        System.getProperty("os.arch"),
-        System.getProperty("os.version"),
-        System.getProperty("java.version"),
-        System.getProperty("java.vm.version"),
-        System.getProperty("java.vm.vendor"),
-        System.getProperty("java.vm.name"),
-        gradle.gradleVersion,
-        GroovySystem.getVersion(),
-        JavaVersion.current()
-
 subprojects {
 
     apply plugin: 'java'
@@ -36,14 +22,15 @@ subprojects {
 
     configurations {
         asciidoclet
-        wagon
     }
 
     dependencies {
-        testCompile "junit:junit:${project.property('junit.version')}"
-        testCompile "com.fasterxml.jackson.core:jackson-databind:${project.property('jackson.version')}"
+        testImplementation "org.junit.jupiter:junit-jupiter-api:${project.property('junit.version')}"
+        testImplementation "org.junit.jupiter:junit-jupiter-params:${project.property('junit.version')}"
+        testImplementation "org.hamcrest:hamcrest-library:${project.property('hamcrest.version')}"
+        testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:${project.property('junit.version')}"
+        testImplementation "com.fasterxml.jackson.core:jackson-databind:${project.property('jackson.version')}"
         asciidoclet "org.asciidoctor:asciidoclet:${project.property('asciidoclet.version')}"
-        wagon "org.apache.maven.wagon:wagon-ssh:${project.property('wagon.version')}"
     }
 
     compileJava {
@@ -51,8 +38,8 @@ subprojects {
         targetCompatibility = JavaVersion.VERSION_1_8
     }
     compileTestJava {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
     }
     tasks.withType(JavaCompile) {
         options.compilerArgs << "-Xlint:all,-serial"
@@ -69,12 +56,22 @@ subprojects {
     }
 
     test {
-        testLogging {
-            showStandardStreams = false
-            exceptionFormat = 'full'
-        }
+        useJUnitPlatform()
         systemProperty 'java.net.preferIPv4Stack', 'false'
         systemProperty 'java.net.preferIPv6Addresses', 'true'
+        failFast = false
+        testLogging {
+            events 'PASSED', 'FAILED', 'SKIPPED'
+        }
+        afterSuite { desc, result ->
+            if (!desc.parent) {
+                println "\nTest result: ${result.resultType}"
+                println "Test summary: ${result.testCount} tests, " +
+                        "${result.successfulTestCount} succeeded, " +
+                        "${result.failedTestCount} failed, " +
+                        "${result.skippedTestCount} skipped"
+            }
+        }
     }
 
     asciidoctor {
@@ -112,12 +109,6 @@ subprojects {
 
     artifacts {
         archives sourcesJar, javadocJar
-    }
-
-    if (project.hasProperty('signing.keyId')) {
-        signing {
-            sign configurations.archives
-        }
     }
 
     apply from: "${rootProject.projectDir}/gradle/publish.gradle"

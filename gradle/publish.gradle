@@ -6,7 +6,7 @@ ext {
     scmDeveloperConnection = 'scm:git:git://github.com/xbib/net.git'
 }
 
-task xbibUpload(type: Upload) {
+/*task xbibUpload(type: Upload) {
     group = 'publish'
     configuration = configurations.archives
     uploadDescriptor = true
@@ -20,7 +20,7 @@ task xbibUpload(type: Upload) {
             }
         }
     }
-}
+}*/
 
 task sonatypeUpload(type: Upload, dependsOn: build) {
     group = 'publish'

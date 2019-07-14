@@ -1,10 +1,6 @@
 package org.xbib.net;
 
-import org.junit.Before;
-import org.junit.Test;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+import org.junit.jupiter.api.Test;
 
 import java.nio.charset.MalformedInputException;
 import java.nio.charset.StandardCharsets;
@@ -17,33 +13,29 @@ import java.util.stream.Collectors;
 import static java.lang.Character.isHighSurrogate;
 import static java.lang.Character.isLowSurrogate;
 import static java.lang.Integer.toHexString;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 
-/**
- */
-public class PercentDecoderTest {
+class PercentDecoderTest {
 
     private static final int CODE_POINT_IN_SUPPLEMENTARY = 2;
+
     private static final int CODE_POINT_IN_BMP = 1;
 
-    private PercentDecoder decoder;
-
-    @Before
-    public void setUp() {
-        decoder = new PercentDecoder(StandardCharsets.UTF_8.newDecoder());
-    }
+    private PercentDecoder decoder = new PercentDecoder(StandardCharsets.UTF_8.newDecoder());
 
     @Test
-    public void testDecodesWithoutPercents() throws Exception {
+    void testDecodesWithoutPercents() throws Exception {
         assertEquals("asdf", decoder.decode("asdf"));
     }
 
     @Test
-    public void testDecodeSingleByte() throws Exception {
+    void testDecodeSingleByte() throws Exception {
         assertEquals("#", decoder.decode("%23"));
     }
 
     @Test
-    public void testIncompletePercentPairNoNumbers() throws Exception {
+    void testIncompletePercentPairNoNumbers() throws Exception {
         try {
             decoder.decode("%");
             fail();
@@ -53,7 +45,7 @@ public class PercentDecoderTest {
     }
 
     @Test
-    public void testIncompletePercentPairOneNumber() throws Exception {
+    void testIncompletePercentPairOneNumber() throws Exception {
         try {
             decoder.decode("%2");
             fail();
@@ -63,7 +55,7 @@ public class PercentDecoderTest {
     }
 
     @Test
-    public void testInvalidHex() throws Exception {
+    void testInvalidHex() throws Exception {
         try {
             decoder.decode("%xz");
             fail();
@@ -73,7 +65,7 @@ public class PercentDecoderTest {
     }
 
     @Test
-    public void testRandomStrings() throws MalformedInputException, UnmappableCharacterException {
+    void testRandomStrings() throws MalformedInputException, UnmappableCharacterException {
         PercentEncoder encoder = PercentEncoders.getQueryEncoder(StandardCharsets.UTF_8);
         Random rand = new Random();
         long seed = rand.nextLong();
@@ -87,10 +79,10 @@ public class PercentDecoderTest {
             randString(buf, codePoints, charBuf, rand, 1 + rand.nextInt(1000));
             byte[] origBytes = buf.toString().getBytes(StandardCharsets.UTF_8);
             byte[] decodedBytes = null;
-            String codePointsHex = String.join("", codePoints.stream().map(Integer::toHexString).collect(Collectors.toList()));
+            String codePointsHex = codePoints.stream().map(Integer::toHexString).collect(Collectors.joining(""));
             try {
                 decodedBytes = decoder.decode(encoder.encode(buf.toString())).getBytes(StandardCharsets.UTF_8);
-                assertEquals("Seed: $seed Code points: $codePointsHex", toHex(origBytes), toHex(decodedBytes));
+                assertEquals(toHex(origBytes), toHex(decodedBytes));
             } catch (IllegalArgumentException e) {
                 List<String> charHex = new ArrayList<>();
                 for (int j = 0; j < buf.toString().length(); j++) {

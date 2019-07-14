@@ -16,7 +16,7 @@ public class Variables {
 
     private final Map<String, VariableValue> vars;
 
-    Variables(Builder builder) {
+    private Variables(Builder builder) {
         this.vars = builder.vars;
     }
 
@@ -45,7 +45,7 @@ public class Variables {
     }
 
     /**
-     *
+     * A Builder for variables.
      */
     public static class Builder {
 

@@ -4,7 +4,8 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
-import org.junit.Test;
+
+import org.junit.jupiter.api.Test;
 import org.xbib.net.template.expression.ExpressionType;
 import org.xbib.net.template.expression.TemplateExpression;
 import org.xbib.net.template.expression.URITemplateExpression;
@@ -23,11 +24,11 @@ import org.xbib.net.template.vars.values.NullValue;
 import org.xbib.net.template.vars.values.ScalarValue;
 import org.xbib.net.template.vars.values.VariableValue;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.nio.CharBuffer;
 import java.util.ArrayList;
@@ -38,12 +39,10 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-/**
- */
-public class URITemplateTest {
+class URITemplateTest {
 
     @Test
-    public void simpleTest() {
+    void simpleTest() {
         String[] strings = new String[]{
                 "foo", "%33foo", "foo%20", "foo_%20bar", "FoOb%02ZAZE287", "foo.bar", "foo_%20bar.baz%af.r"
         };
@@ -57,7 +56,7 @@ public class URITemplateTest {
     }
 
     @Test
-    public void invalidTest() {
+    void invalidTest() {
         String[] strings = new String[]{"", "%", "foo..bar", ".", "foo%ra", "foo%ar"};
         for (String s : strings) {
             try {
@@ -71,7 +70,7 @@ public class URITemplateTest {
     }
 
     @Test
-    public void literalTest() {
+    void literalTest() {
         Variables vars = Variables.builder().build();
         String[] strings = new String[]{"foo", "%23foo", "%23foo%24", "foo%24", "f%c4oo", "http://slashdot.org",
                 "x?y=e", "urn:d:ze:/oize#/e/e", "ftp://ftp.foo.com/ee/z?a=b#e/dz",
@@ -85,7 +84,7 @@ public class URITemplateTest {
     }
 
     @Test
-    public void parsingEmptyInputGivesEmptyList() {
+    void parsingEmptyInputGivesEmptyList() {
         CharBuffer buffer = CharBuffer.wrap("").asReadOnlyBuffer();
         List<URITemplateExpression> list = URITemplateParser.parse(buffer);
         assertTrue(list.isEmpty());
@@ -94,7 +93,7 @@ public class URITemplateTest {
 
     @Test
     @SuppressWarnings("unchecked")
-    public void parseExpressions() {
+    void parseExpressions() {
         List<Object[]> list = new ArrayList<>();
         String input;
         ExpressionType type;
@@ -130,7 +129,7 @@ public class URITemplateTest {
     }
 
     @Test
-    public void parseInvalidExpressions() {
+    void parseInvalidExpressions() {
         try {
             CharBuffer buffer = CharBuffer.wrap("{foo").asReadOnlyBuffer();
             new ExpressionParser().parse(buffer);
@@ -148,7 +147,7 @@ public class URITemplateTest {
     }
 
     @Test
-    public void parsePrefixes() {
+    void parsePrefixes() {
         String[] strings = new String[]{"foo:323", "%33foo:323", "foo%20:323", "foo_%20bar:323", "FoOb%02ZAZE287:323",
                 "foo.bar:323", "foo_%20bar.baz%af.r:323"};
         for (String s : strings) {
@@ -161,7 +160,7 @@ public class URITemplateTest {
     }
 
     @Test
-    public void parseInvalidPrefixes() {
+    void parseInvalidPrefixes() {
         String[] strings = new String[]{"foo:", "foo:-1", "foo:a", "foo:10001", "foo:2147483648"};
         for (String s : strings) {
             try {
@@ -174,7 +173,7 @@ public class URITemplateTest {
     }
 
     @Test
-    public void parseExploded() {
+    void parseExploded() {
         String[] strings = new String[]{"foo*", "%33foo*", "foo%20*", "foo_%20bar*", "FoOb%02ZAZE287*", "foo.bar*",
                 "foo_%20bar.baz%af.r*"};
         for (String s : strings) {
@@ -187,7 +186,7 @@ public class URITemplateTest {
     }
 
     @Test
-    public void parseExceptions() {
+    void parseExceptions() {
         String[] strings = new String[]{"foo%", "foo%r", "foo%ra", "foo%ar", "foo<", "foo{"};
         for (String s : strings) {
             try {
@@ -200,7 +199,7 @@ public class URITemplateTest {
     }
 
     @Test
-    public void testExamples() throws Exception {
+    void testExamples() throws Exception {
         JsonNode data = fromResource("/spec-examples.json");
         List<Map<String, Object>> list = new ArrayList<>();
         for (JsonNode node : data) {
@@ -240,7 +239,7 @@ public class URITemplateTest {
     }
 
     @Test
-    public void testExamplesBySection() throws Exception {
+    void testExamplesBySection() throws Exception {
         JsonNode data = fromResource("/spec-examples-by-section.json");
         List<Map<String, Object>> list = new ArrayList<>();
         for (JsonNode node : data) {
@@ -280,7 +279,7 @@ public class URITemplateTest {
     }
 
     @Test
-    public void extendedTests() throws Exception {
+    void extendedTests() throws Exception {
         JsonNode data = fromResource("/extended-tests.json");
         List<Map<String, Object>> list = new ArrayList<>();
         for (JsonNode node : data) {
@@ -320,7 +319,7 @@ public class URITemplateTest {
     }
 
     @Test
-    public void negativeTests() throws Exception {
+    void negativeTests() throws Exception {
         JsonNode data = fromResource("/negative-tests.json");
         JsonNode node =  data.get("Failure Tests").get("variables");
         Variables.Builder builder = Variables.builder();
@@ -347,7 +346,7 @@ public class URITemplateTest {
     }
 
     @Test
-    public void expansionTest() throws Exception {
+    void expansionTest() throws Exception {
         String[] strings = new String[]{"/rfcExamples.json", "/strings.json", "/multipleStrings.json",
                 "/lists.json", "/multipleLists.json"};
         for (String s : strings) {

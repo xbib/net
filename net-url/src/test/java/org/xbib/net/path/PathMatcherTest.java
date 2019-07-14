@@ -1,31 +1,27 @@
 package org.xbib.net.path;
 
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.xbib.net.QueryParameters;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 /**
  */
-public class PathMatcherTest {
+class PathMatcherTest {
 
     private PathMatcher pathMatcher = new PathMatcher();
 
-    @Rule
-    public final ExpectedException exception = ExpectedException.none();
-
     @Test
-    public void match() {
+    void match() {
         // test exact matching
         assertTrue(pathMatcher.match("test", "test"));
         assertTrue(pathMatcher.match("/test", "/test"));
@@ -110,7 +106,7 @@ public class PathMatcherTest {
     }
 
     @Test
-    public void withMatchStart() {
+    void withMatchStart() {
         // test exact matching
         assertTrue(pathMatcher.matchStart("test", "test"));
         assertTrue(pathMatcher.matchStart("/test", "/test"));
@@ -197,7 +193,7 @@ public class PathMatcherTest {
     }
 
     @Test
-    public void uniqueDeliminator() {
+    void uniqueDeliminator() {
         pathMatcher.setPathSeparator(".");
 
         // test exact matching
@@ -259,7 +255,7 @@ public class PathMatcherTest {
     }
 
     @Test
-    public void extractPathWithinPattern() throws Exception {
+    void extractPathWithinPattern() throws Exception {
         assertEquals("",
                 pathMatcher.extractPathWithinPattern("/docs/commit.html", "/docs/commit.html"));
 
@@ -303,7 +299,7 @@ public class PathMatcherTest {
     }
 
     @Test
-    public void extractUriTemplateVariables() throws Exception {
+    void extractUriTemplateVariables() throws Exception {
         QueryParameters result = pathMatcher.extractUriTemplateVariables("/hotels/{hotel}", "/hotels/1");
         assertEquals("[hotel:1]", result.toString());
         result = pathMatcher.extractUriTemplateVariables("/h?tels/{hotel}", "/hotels/1");
@@ -323,7 +319,7 @@ public class PathMatcherTest {
     }
 
     @Test
-    public void extractUriTemplateVariablesRegex() {
+    void extractUriTemplateVariablesRegex() {
         QueryParameters result = pathMatcher
                 .extractUriTemplateVariables("{symbolicName:[\\w\\.]+}-{version:[\\w\\.]+}.jar",
                         "com.example-1.0.0.jar");
@@ -337,7 +333,7 @@ public class PathMatcherTest {
     }
 
     @Test
-    public void extractUriTemplateVarsRegexQualifiers() {
+    void extractUriTemplateVarsRegexQualifiers() {
         QueryParameters result = pathMatcher.extractUriTemplateVariables(
                 "{symbolicName:[\\p{L}\\.]+}-sources-{version:[\\p{N}\\.]+}.jar",
                 "com.example-sources-1.0.0.jar");
@@ -359,14 +355,14 @@ public class PathMatcherTest {
     }
 
     @Test
-    public void extractUriTemplateVarsRegexCapturingGroups() {
-        exception.expect(IllegalArgumentException.class);
-        //exception.expectMessage(containsString("The number of capturing groups in the pattern"))
-        pathMatcher.extractUriTemplateVariables("/web/{id:foo(bar)?}", "/web/foobar");
+    void extractUriTemplateVarsRegexCapturingGroups() {
+        Assertions.assertThrows(IllegalArgumentException.class, () -> {
+            pathMatcher.extractUriTemplateVariables("/web/{id:foo(bar)?}", "/web/foobar");
+        });
     }
 
     @Test
-    public void combine() {
+    void combine() {
         assertEquals("", pathMatcher.combine(null, null));
         assertEquals("/hotels", pathMatcher.combine("/hotels", null));
         assertEquals("/hotels", pathMatcher.combine(null, "/hotels"));
@@ -397,13 +393,14 @@ public class PathMatcherTest {
     }
 
     @Test
-    public void combineWithTwoFileExtensionPatterns() {
-        exception.expect(IllegalArgumentException.class);
-        pathMatcher.combine("/*.html", "/*.txt");
+    void combineWithTwoFileExtensionPatterns() {
+        Assertions.assertThrows(IllegalArgumentException.class, () ->{
+            pathMatcher.combine("/*.html", "/*.txt");
+        });
     }
 
     @Test
-    public void patternComparator() {
+    void patternComparator() {
         Comparator<String> comparator = pathMatcher.getPatternComparator("/hotels/new");
 
         assertEquals(0, comparator.compare(null, null));
@@ -451,7 +448,7 @@ public class PathMatcherTest {
     }
 
     @Test
-    public void patternComparatorSort() {
+    void patternComparatorSort() {
         Comparator<String> comparator = pathMatcher.getPatternComparator("/hotels/new");
         List<String> paths = new ArrayList<>(3);
         paths.add(null);
@@ -546,7 +543,7 @@ public class PathMatcherTest {
     }
 
     @Test
-    public void trimTokensOff() {
+    void trimTokensOff() {
         pathMatcher.setTrimTokens(false);
         assertTrue(pathMatcher.match("/group/{groupName}/members", "/group/sales/members"));
         assertTrue(pathMatcher.match("/group/{groupName}/members", "/group/  sales/members"));
@@ -554,7 +551,7 @@ public class PathMatcherTest {
     }
 
     @Test
-    public void caseInsensitive() {
+    void caseInsensitive() {
         pathMatcher.setCaseSensitive(false);
         assertTrue(pathMatcher.match("/group/{groupName}/members", "/group/sales/members"));
         assertTrue(pathMatcher.match("/group/{groupName}/members", "/Group/Sales/Members"));
@@ -562,10 +559,9 @@ public class PathMatcherTest {
     }
 
     @Test
-    public void extensionMappingWithDotPathSeparator() {
+    void extensionMappingWithDotPathSeparator() {
         pathMatcher.setPathSeparator(".");
-        assertEquals("Extension mapping should be disabled with \".\" as path separator",
-                "/*.html.hotel.*", pathMatcher.combine("/*.html", "hotel.*"));
+        assertEquals("/*.html.hotel.*", pathMatcher.combine("/*.html", "hotel.*"));
     }
 }
 

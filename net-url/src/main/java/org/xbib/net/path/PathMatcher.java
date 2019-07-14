@@ -74,8 +74,8 @@ public class PathMatcher {
     }
 
     public String extractPathWithinPattern(String pattern, String path) {
-        List<String> patternParts = tokenize(pattern, this.pathSeparator, this.trimTokens, true);
-        List<String> pathParts = tokenize(path, this.pathSeparator, this.trimTokens, true);
+        List<String> patternParts = tokenize(pattern, pathSeparator, trimTokens);
+        List<String> pathParts = tokenize(path, pathSeparator, trimTokens);
         StringBuilder sb = new StringBuilder();
         boolean pathStarted = false;
         for (int segment = 0; segment < patternParts.size(); segment++) {
@@ -95,13 +95,13 @@ public class PathMatcher {
     }
 
     public String combine(String pattern1, String pattern2) {
-        if (!hasText(pattern1) && !hasText(pattern2)) {
+        if (hasNotText(pattern1) && hasNotText(pattern2)) {
             return "";
         }
-        if (!hasText(pattern1)) {
+        if (hasNotText(pattern1)) {
             return pattern2;
         }
-        if (!hasText(pattern2)) {
+        if (hasNotText(pattern2)) {
             return pattern1;
         }
         boolean pattern1ContainsUriVar = pattern1.indexOf('{') != -1;
@@ -135,17 +135,17 @@ public class PathMatcher {
         return new PathPatternComparator(path);
     }
 
-    private static boolean hasText(CharSequence str) {
+    private static boolean hasNotText(CharSequence str) {
         if (str == null || str.length() == 0) {
-            return false;
+            return true;
         }
         int strLen = str.length();
         for (int i = 0; i < strLen; i++) {
             if (!Character.isWhitespace(str.charAt(i))) {
-                return true;
+                return false;
             }
         }
-        return false;
+        return true;
     }
 
     private String concat(String path1, String path2) {
@@ -274,22 +274,22 @@ public class PathMatcher {
         return tokenizedPatternCache.computeIfAbsent(pattern, this::tokenizePath);
     }
 
-    private List<String> tokenizePath(String path) {
-        return tokenize(path, this.pathSeparator, this.trimTokens, true);
+    public List<String> tokenizePath(String path) {
+        return tokenize(path, pathSeparator, trimTokens);
     }
 
-    private static List<String> tokenize(String str, String delimiters, boolean trimTokens, boolean ignoreEmptyTokens) {
+    private static List<String> tokenize(String str, String delimiters, boolean trimTokens) {
+        List<String> tokens = new ArrayList<>();
         if (str == null) {
-            return null;
+            return tokens;
         }
         StringTokenizer st = new StringTokenizer(str, delimiters);
-        List<String> tokens = new ArrayList<>();
         while (st.hasMoreTokens()) {
             String token = st.nextToken();
             if (trimTokens) {
                 token = token.trim();
             }
-            if (!ignoreEmptyTokens || token.length() > 0) {
+            if (token.length() > 0) {
                 tokens.add(token);
             }
         }
@@ -310,6 +310,7 @@ public class PathMatcher {
      * @param <K> the key type parameter
      * @param <V> the vale type parameter
      */
+    @SuppressWarnings("serial")
     private static class LRUCache<K, V> extends LinkedHashMap<K, V> {
 
         private final int cacheSize;

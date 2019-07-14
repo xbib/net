@@ -240,12 +240,12 @@ public class URL implements Comparable<URL> {
         return new Parser();
     }
 
-    public static Resolver base(URL base) {
-        return new Resolver(base);
+    public static Resolver base(String base) {
+        return base(URL.create(base));
     }
 
-    public static Resolver base(String base) {
-        return new Resolver(URL.create(base));
+    public static Resolver base(URL base) {
+        return new Resolver(base);
     }
 
     private static final URL NULL_URL = URL.builder().build();
@@ -416,6 +416,10 @@ public class URL implements Comparable<URL> {
         return decode(path);
     }
 
+    public List<PathSegment> getPathSegments() {
+        return builder.pathSegments;
+    }
+
     /**
      * Get the query ('?q=foo{@literal &}bar') of the {@code URL} if it exists.
      * @return the query
@@ -455,6 +459,20 @@ public class URL implements Comparable<URL> {
      */
     public boolean isOpaque() {
         return !isNullOrEmpty(builder.scheme) && !isNullOrEmpty(builder.schemeSpecificPart) && builder.host == null;
+    }
+
+    /**
+     * Whether this is a hierarchical URL or not. That is, a URL that allows multiple path segments.
+     *
+     * The term <em>hierarchical</em> comes form the URI standard
+     * (<a href="https://www.ietf.org/rfc/rfc3986.txt">RFC 3986</a>).
+     * Other libraries might refer to it as <em>relative</em> or <em>cannot-be-a-base-URL</em>.
+     * The later is the current WHATWG URL standard
+     * (see <a href="https://github.com/whatwg/url/issues/89">whatwg/url#89</a> for the rationale).
+     * @return true if URL is hierarchical
+     */
+    public boolean isHierarchical() {
+        return !isOpaque();
     }
 
     /**
@@ -645,7 +663,7 @@ public class URL implements Comparable<URL> {
         return sb.length() == 0 ? null : sb.toString();
     }
 
-    private void appendQuery(StringBuilder sb, boolean encoded, boolean withQuestionMark) {
+    private void appendQuery(StringBuilder sb, boolean withEncoding, boolean withQuestionMark) {
         if (!builder.queryParams.isEmpty()) {
             if (withQuestionMark) {
                 sb.append(QUESTION_CHAR);
@@ -654,9 +672,9 @@ public class URL implements Comparable<URL> {
             while (it.hasNext()) {
                 QueryParameters.Pair<String, String> queryParam = it.next();
                 try {
-                    sb.append(encoded ? queryParamEncoder.encode(queryParam.getFirst()) : queryParam.getFirst());
+                    sb.append(withEncoding ? queryParamEncoder.encode(queryParam.getFirst()) : queryParam.getFirst());
                     if (queryParam.getSecond() != null) {
-                        sb.append(EQUAL_CHAR).append(encoded ?
+                        sb.append(EQUAL_CHAR).append(withEncoding ?
                                 queryParamEncoder.encode(queryParam.getSecond()) : queryParam.getSecond());
                     }
                 } catch (CharacterCodingException e) {
@@ -670,7 +688,7 @@ public class URL implements Comparable<URL> {
             if (withQuestionMark) {
                 sb.append(QUESTION_CHAR);
             }
-            if (encoded) {
+            if (withEncoding) {
                 try {
                     sb.append(queryEncoder.encode(builder.query));
                 } catch (CharacterCodingException e) {
@@ -898,10 +916,11 @@ public class URL implements Comparable<URL> {
         }
 
         public Builder pathSegment(String segment) {
-            if (pathSegments.isEmpty() && !isNullOrEmpty(host) && !isNullOrEmpty(segment)) {
-                 pathSegments.add(EMPTY_SEGMENT);
+            if (pathSegments.isEmpty() && !isNullOrEmpty(host) && isNullOrEmpty(segment)) {
+                pathSegments.add(EMPTY_SEGMENT);
+            } else {
+                pathSegments.add(new PathSegment(segment));
             }
-            pathSegments.add(new PathSegment(segment));
             return this;
         }
 
@@ -1132,8 +1151,9 @@ public class URL implements Comparable<URL> {
             }
         }
 
-        private void parsePathWithQueryAndFragment(Builder builder, String input)
+        private void parsePathWithQueryAndFragment(Builder builder, String inputStr)
                 throws MalformedInputException, UnmappableCharacterException {
+            String input = inputStr;
             if (input == null) {
                 return;
             }
@@ -1221,7 +1241,7 @@ public class URL implements Comparable<URL> {
 
         private final URL base;
 
-        public Resolver(URL base) {
+        Resolver(URL base) {
             this.base = base;
         }
 
@@ -1357,8 +1377,16 @@ public class URL implements Comparable<URL> {
         }
     }
 
-    private static class Pair<K, V> {
+    /**
+     * A pair for matrix params.
+     *
+     * @param <K> key
+     * @param <V> value
+     */
+    public static class Pair<K, V> {
+
         private final K first;
+
         private final V second;
 
         Pair(K first, V second) {
@@ -1366,11 +1394,11 @@ public class URL implements Comparable<URL> {
             this.second = second;
         }
 
-        K getFirst() {
+        public K getFirst() {
             return first;
         }
 
-        V getSecond() {
+        public V getSecond() {
             return second;
         }
 
@@ -1381,9 +1409,9 @@ public class URL implements Comparable<URL> {
     }
 
     /**
-     *  A path segment with any associated matrix params.
+     *  A path segment with associated matrix params, if any.
      */
-    private static class PathSegment {
+    public static class PathSegment {
 
         private final String segment;
 
@@ -1394,7 +1422,11 @@ public class URL implements Comparable<URL> {
             this.params = new ArrayList<>();
         }
 
-        List<Pair<String, String>> getMatrixParams() {
+        public String getSegment() {
+            return segment;
+        }
+
+        public List<Pair<String, String>> getMatrixParams() {
             return params;
         }
 
