@@ -27,7 +27,7 @@ class ParseBodyTest {
         QueryParameters queryParameters = new QueryParameters(100);
         List<String> list = new ArrayList<>();
         for (int i = 0; i < 200; i++) {
-            list.add("a" + i + "=b" + i );
+            list.add("a" + i + "=b" + i);
         }
         String body = String.join("&", list);
         queryParameters.addPercentEncodedBody(body);

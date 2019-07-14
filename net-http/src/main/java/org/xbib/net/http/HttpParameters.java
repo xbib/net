@@ -3,8 +3,8 @@ package org.xbib.net.http;
 import org.xbib.net.PercentDecoder;
 import org.xbib.net.PercentEncoder;
 import org.xbib.net.PercentEncoders;
-import org.xbib.net.http.util.LimitedSortedStringSet;
-import org.xbib.net.http.util.LimitedStringMap;
+import org.xbib.net.http.util.LimitedSet;
+import org.xbib.net.http.util.LimitedTreeMap;
 
 import java.nio.charset.MalformedInputException;
 import java.nio.charset.StandardCharsets;
@@ -28,14 +28,14 @@ import java.util.SortedSet;
  */
 public class HttpParameters implements Map<String, SortedSet<String>> {
 
-    private final LimitedStringMap wrappedMap;
+    private final LimitedTreeMap<String, String> wrappedMap;
 
     private final PercentEncoder percentEncoder;
 
     private final PercentDecoder percentDecoder;
 
     public HttpParameters() {
-        this.wrappedMap = new LimitedStringMap();
+        this.wrappedMap = new LimitedTreeMap<>();
         this.percentEncoder = PercentEncoders.getQueryEncoder(StandardCharsets.UTF_8);
         this.percentDecoder = new PercentDecoder();
     }
@@ -155,7 +155,7 @@ public class HttpParameters implements Map<String, SortedSet<String>> {
         String k  = percentEncode ? percentEncoder.encode(key) : key;
         SortedSet<String> values = wrappedMap.get(k);
         if (values == null) {
-            values = new LimitedSortedStringSet();
+            values = new LimitedSet<>();
             wrappedMap.put(k, values);
         }
         String v = null;
@@ -208,7 +208,7 @@ public class HttpParameters implements Map<String, SortedSet<String>> {
         for (String key : m.keySet()) {
             SortedSet<String> vals = get(key);
             if (vals == null) {
-                vals = new LimitedSortedStringSet();
+                vals = new LimitedSet<>();
                 put(key, vals);
             }
             vals.addAll(m.get(key));

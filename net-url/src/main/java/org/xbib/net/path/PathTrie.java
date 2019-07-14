@@ -20,6 +20,7 @@ import java.util.regex.Pattern;
  * path is resolved, a map from parameter names to raw String values is returned as part of the
  * result. Null values are not acceptable values in this trie. Parameter names can only contain
  * alphanumeric characters or underscores, and cannot start with a numeric.
+ * @param <T> type
  */
 public class PathTrie<T> {
 
@@ -100,6 +101,7 @@ public class PathTrie<T> {
     /**
      * The resulting information for a successful path resolution, which includes the value to which
      * the path maps, as well as the raw (but URL decoded) string values of all path parameters.
+     * @param <T> type
      */
     public static class Result<T> {
 
@@ -151,12 +153,13 @@ public class PathTrie<T> {
 
     /**
      * A builder for creating a {@link PathTrie}, which is immutable.
+     * @param <T> type
      */
     public static class Builder<T> {
 
         private final Map<String, Builder<T>> subBuilders = new LinkedHashMap<>();
 
-        private final Map<String, MethodInfo<T>> httpMethodMap =new LinkedHashMap<>();
+        private final Map<String, MethodInfo<T>> httpMethodMap = new LinkedHashMap<>();
 
         private final boolean throwOnConflict;
 

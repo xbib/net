@@ -3,6 +3,7 @@ package org.xbib.net;
 import org.xbib.net.scheme.Scheme;
 import org.xbib.net.scheme.SchemeRegistry;
 
+import java.io.Serializable;
 import java.net.IDN;
 import java.net.Inet4Address;
 import java.net.Inet6Address;
@@ -361,7 +362,7 @@ public class URL implements Comparable<URL> {
             return null;
         }
         Pair<String, String> p = indexOf(COLON_CHAR, builder.userInfo);
-        return decode(p.first);
+        return decode(p.getFirst());
     }
 
     public String getPassword() {
@@ -369,7 +370,7 @@ public class URL implements Comparable<URL> {
             return null;
         }
         Pair<String, String> p = indexOf(COLON_CHAR, builder.userInfo);
-        return decode(p.second);
+        return decode(p.getSecond());
     }
 
     /**
@@ -668,9 +669,9 @@ public class URL implements Comparable<URL> {
             if (withQuestionMark) {
                 sb.append(QUESTION_CHAR);
             }
-            Iterator<QueryParameters.Pair<String, String>> it = builder.queryParams.iterator();
+            Iterator<Pair<String, String>> it = builder.queryParams.iterator();
             while (it.hasNext()) {
-                QueryParameters.Pair<String, String> queryParam = it.next();
+                Pair<String, String> queryParam = it.next();
                 try {
                     sb.append(withEncoding ? queryParamEncoder.encode(queryParam.getFirst()) : queryParam.getFirst());
                     if (queryParam.getSecond() != null) {
@@ -916,11 +917,10 @@ public class URL implements Comparable<URL> {
         }
 
         public Builder pathSegment(String segment) {
-            if (pathSegments.isEmpty() && !isNullOrEmpty(host) && isNullOrEmpty(segment)) {
+            if (pathSegments.isEmpty() && !isNullOrEmpty(host) && !isNullOrEmpty(segment)) {
                 pathSegments.add(EMPTY_SEGMENT);
-            } else {
-                pathSegments.add(new PathSegment(segment));
             }
+            pathSegments.add(new PathSegment(segment));
             return this;
         }
 
@@ -1361,7 +1361,8 @@ public class URL implements Comparable<URL> {
         }
     }
 
-    private static class URLWithFragmentComparator implements Comparator<URL> {
+    @SuppressWarnings("serial")
+    private static class URLWithFragmentComparator implements Comparator<URL>, Serializable {
 
         @Override
         public int compare(URL o1, URL o2) {
@@ -1369,42 +1370,12 @@ public class URL implements Comparable<URL> {
         }
     }
 
-    private static class URLWithoutFragmentComparator implements Comparator<URL> {
+    @SuppressWarnings("serial")
+    private static class URLWithoutFragmentComparator implements Comparator<URL>, Serializable {
 
         @Override
         public int compare(URL o1, URL o2) {
             return o1.toString(false).compareTo(o2.toString(false));
-        }
-    }
-
-    /**
-     * A pair for matrix params.
-     *
-     * @param <K> key
-     * @param <V> value
-     */
-    public static class Pair<K, V> {
-
-        private final K first;
-
-        private final V second;
-
-        Pair(K first, V second) {
-            this.first = first;
-            this.second = second;
-        }
-
-        public K getFirst() {
-            return first;
-        }
-
-        public V getSecond() {
-            return second;
-        }
-
-        @Override
-        public String toString() {
-            return first + "=" + second;
         }
     }
 

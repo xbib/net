@@ -10,13 +10,13 @@ import java.util.stream.Collectors;
  * Query parameter list, of limited size. Default is 1024 pairs.
  */
 @SuppressWarnings("serial")
-public class QueryParameters extends ArrayList<QueryParameters.Pair<String, String>> {
+public class QueryParameters extends ArrayList<Pair<String, String>> {
 
     private static final char AMPERSAND_CHAR = '&';
 
     private static final char EQUAL_CHAR = '=';
 
-    private final PercentDecoder percentDecoder;
+    private transient final PercentDecoder percentDecoder;
 
     private final int max;
 
@@ -42,8 +42,13 @@ public class QueryParameters extends ArrayList<QueryParameters.Pair<String, Stri
     }
 
     @Override
-    public boolean add(QueryParameters.Pair<String, String> element) {
+    public boolean add(Pair<String, String> element) {
         return size() < max && super.add(element);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        return o instanceof QueryParameters && super.equals(o);
     }
 
     public QueryParameters addPercentEncodedBody(String body) throws MalformedInputException, UnmappableCharacterException {
@@ -72,33 +77,5 @@ public class QueryParameters extends ArrayList<QueryParameters.Pair<String, Stri
         String k = i >= 0 ? input.substring(0, i) : input;
         String v = i >= 0 ? input.substring(i + 1) : null;
         return new Pair<>(k, v);
-    }
-
-    /**
-     * A pair of query parameters.
-     * @param <K> the key type parameter
-     * @param <V> the value type parameter
-     */
-    public static class Pair<K, V> {
-        private final K first;
-        private final V second;
-
-        Pair(K first, V second) {
-            this.first = first;
-            this.second = second;
-        }
-
-        public K getFirst() {
-            return first;
-        }
-
-        public V getSecond() {
-            return second;
-        }
-
-        @Override
-        public String toString() {
-            return first + ":" + second;
-        }
     }
 }

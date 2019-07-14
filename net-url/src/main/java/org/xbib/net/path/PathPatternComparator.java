@@ -1,11 +1,13 @@
 package org.xbib.net.path;
 
+import java.io.Serializable;
 import java.util.Comparator;
 
 /**
  * Path pattern comparator.
  */
-public class PathPatternComparator implements Comparator<String> {
+@SuppressWarnings("serial")
+public class PathPatternComparator implements Comparator<String>, Serializable {
 
     private final String path;
 
