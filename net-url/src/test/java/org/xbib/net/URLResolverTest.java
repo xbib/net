@@ -44,7 +44,7 @@ class URLResolverTest {
         String pathSpec = "foobar/";
         String index = "index.html";
         String queryString = "a=b";
-        URL url = base.resolve(pathSpec).resolve(index).newBuilder().query(queryString).build().normalize();
+        URL url = base.resolve(pathSpec).resolve(index).mutator().query(queryString).build().normalize();
         assertEquals("http://example:8080/foobar/index.html?a=b", url.toString());
     }
 

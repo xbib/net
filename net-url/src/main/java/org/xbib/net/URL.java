@@ -500,7 +500,7 @@ public class URL implements Comparable<URL> {
     }
 
     public URL normalize() {
-        return scheme.normalize(this);
+        return scheme != null ? scheme.normalize(this) : this;
     }
 
     public String toExternalForm() {

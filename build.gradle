@@ -2,7 +2,7 @@
 plugins {
     id "org.sonarqube" version "2.6.1"
     id "io.codearte.nexus-staging" version "0.11.0"
-    id "com.github.spotbugs" version "1.6.9"
+    id "com.github.spotbugs" version "2.0.0"
     id "org.xbib.gradle.plugin.asciidoctor" version "1.5.6.0.1"
 }
 
@@ -10,7 +10,6 @@ subprojects {
 
     apply plugin: 'java'
     apply plugin: 'maven'
-    apply plugin: 'signing'
     apply plugin: 'checkstyle'
     apply plugin: 'com.github.spotbugs'
     apply plugin: 'pmd'
@@ -63,7 +62,7 @@ subprojects {
         systemProperty 'java.net.preferIPv6Addresses', 'true'
         failFast = false
         testLogging {
-            events 'PASSED', 'FAILED', 'SKIPPED'
+            events 'STARTED', 'PASSED', 'FAILED', 'SKIPPED'
         }
         afterSuite { desc, result ->
             if (!desc.parent) {
