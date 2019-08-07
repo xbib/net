@@ -14,6 +14,10 @@ class URLResolverTest {
     void testResolveURI() throws Exception {
         URI base = URI.create("http://example.org/foo");
         assertEquals("http://example.org/", base.resolve("/").toString());
+        assertEquals("http://example.org/foo", base.toString());
+        URI rel = URI.create("http://foobar/rel");
+        assertEquals("http://foobar/rel", base.resolve(rel).toString());
+        assertEquals("http://example.org/foo", base.toString());
         assertEquals("http://example.org/foobar", base.resolve("/foobar").toString());
         assertEquals("http://example.org/foobar", base.resolve("foobar").toString());
         base = URI.create("http://example.org/foo/");

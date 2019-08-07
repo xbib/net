@@ -325,8 +325,12 @@ public class URL implements Comparable<URL> {
         }
     }
 
-    public Builder newBuilder() {
+    public Builder mutator() {
         return builder;
+    }
+
+    public Builder newBuilder() {
+        return new Builder();
     }
 
     private String toString(boolean withFragment) {

@@ -118,7 +118,7 @@ class URLBuilderTest {
 
     @Test
     void testAllParts() {
-        assertUrl(URL.https().resolveFromHost("foo.bar.com").port(3333)
+        assertUrl(URL.https().resolveFromHost("foobar.com").port(3333)
                 .pathSegment("foo")
                 .pathSegment("bar")
                 .matrixParam("mtx1", "val1")
@@ -127,11 +127,11 @@ class URLBuilderTest {
                 .queryParam("q2", "v2")
                 .fragment("zomg it's a fragment")
                 .toUrlString(),
-                "https://foo.bar.com:3333/foo/bar;mtx1=val1;mtx2=val2?q1=v1&q2=v2#zomg%20it's%20a%20fragment");
+                "https://foobar.com:3333/foo/bar;mtx1=val1;mtx2=val2?q1=v1&q2=v2#zomg%20it's%20a%20fragment");
     }
 
     @Test
-    void testSlashInHost() {
+    void testSlashHost() {
         URL.http().resolveFromHost("/").toUrlString();
     }
 
@@ -259,10 +259,19 @@ class URLBuilderTest {
     }
 
     @Test
-    void testNewBuilder() {
-        URL.Builder builder = URL.from("http://google.com:8008/foobar").newBuilder();
+    void testMutator() {
+        URL.Builder builder = URL.from("http://google.com:8008/foobar").mutator();
         builder.scheme("https");
         assertEquals("https://google.com:8008/foobar", builder.build().toString());
+    }
+
+    @Test
+    void testNewBuilder() {
+        URL url =  URL.from("http://google.com:8008/foobar");
+        URL.Builder builder = url.newBuilder()
+                .scheme(url.getScheme())
+                .schemeSpecificPart(url.getSchemeSpecificPart());
+        assertEquals("http://google.com:8008/foobar", builder.build().toString());
     }
 
     @Test

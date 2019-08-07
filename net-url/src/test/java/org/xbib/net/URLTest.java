@@ -20,14 +20,12 @@ class URLTest {
        for (JsonTest test : tests) {
            String base = test.base;
            String input = test.input;
-           //System.err.println("testing: " + base + " " + input + " " + test.failure);
            if (test.skip) {
                continue;
            }
            if (test.failure) {
                try {
                    URL url = URL.base(base).resolve(input);
-                   //System.err.println("resolved: " + url.toString());
                    fail();
                } catch (Exception e) {
                    // pass
@@ -36,7 +34,6 @@ class URLTest {
                if (base != null && input != null) {
                    try {
                        URL url = URL.base(base).resolve(input);
-                       //System.err.println("resolved: " + url.toString());
                        if (test.protocol != null) {
                            assertEquals(test.protocol, url.getScheme() + ":");
                        }
