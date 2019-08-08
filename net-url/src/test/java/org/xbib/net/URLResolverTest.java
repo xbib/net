@@ -11,7 +11,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class URLResolverTest {
 
     @Test
-    void testResolveURI() throws Exception {
+    void testResolveURI() {
         URI base = URI.create("http://example.org/foo");
         assertEquals("http://example.org/", base.resolve("/").toString());
         assertEquals("http://example.org/foo", base.toString());
@@ -27,7 +27,7 @@ class URLResolverTest {
     }
 
     @Test
-    void testResolveURL() throws Exception {
+    void testResolveURL() {
         URL base = URL.create("http://example.org/foo");
         assertEquals("http://example.org/", base.resolve("/").toString());
         assertEquals("http://example.org/foobar", base.resolve("/foobar").toString());
@@ -39,7 +39,7 @@ class URLResolverTest {
     }
 
     @Test
-    void testMultiResolve() throws Exception {
+    void testMultiResolve() {
         URL base = URL.create("http://example:8080");
         String pathSpec = "foobar/";
         String index = "index.html";

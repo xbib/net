@@ -19,6 +19,7 @@ import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -253,7 +254,7 @@ public class URL implements Comparable<URL> {
 
     /**
      * Return a special URL denoting the fact that this URL should be considered as invalid.
-     * The URL has a null scheme.
+     * The URL has no scheme.
      * @return url
      */
     public static URL nullUrl() {
@@ -317,10 +318,11 @@ public class URL implements Comparable<URL> {
         return sb.toString();
     }
 
-    public String decode(String input) {
+    public static QueryParameters parseQueryString(String query) {
+        Objects.requireNonNull(query);
         try {
-            return builder.percentDecoder.decode(input);
-        } catch (MalformedInputException | UnmappableCharacterException e) {
+            return URL.parser().parse(query.charAt(0) == QUESTION_CHAR ? query : QUESTION_CHAR + query).getQueryParams();
+        } catch (URLSyntaxException | MalformedInputException | UnmappableCharacterException e) {
             throw new IllegalArgumentException(e);
         }
     }
@@ -331,6 +333,14 @@ public class URL implements Comparable<URL> {
 
     public Builder newBuilder() {
         return new Builder();
+    }
+
+    private String decode(String input) {
+        try {
+            return builder.percentDecoder.decode(input);
+        } catch (MalformedInputException | UnmappableCharacterException e) {
+            throw new IllegalArgumentException(e);
+        }
     }
 
     private String toString(boolean withFragment) {

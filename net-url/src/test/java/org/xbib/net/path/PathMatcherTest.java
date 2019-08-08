@@ -301,21 +301,21 @@ class PathMatcherTest {
     @Test
     void extractUriTemplateVariables() throws Exception {
         QueryParameters result = pathMatcher.extractUriTemplateVariables("/hotels/{hotel}", "/hotels/1");
-        assertEquals("[hotel:1]", result.toString());
+        assertEquals("[hotel=1]", result.toString());
         result = pathMatcher.extractUriTemplateVariables("/h?tels/{hotel}", "/hotels/1");
-        assertEquals("[hotel:1]", result.toString());
+        assertEquals("[hotel=1]", result.toString());
         result = pathMatcher.extractUriTemplateVariables("/hotels/{hotel}/bookings/{booking}", "/hotels/1/bookings/2");
-        assertEquals("[hotel:1, booking:2]", result.toString());
+        assertEquals("[hotel=1, booking=2]", result.toString());
         result = pathMatcher.extractUriTemplateVariables("/**/hotels/**/{hotel}", "/foo/hotels/bar/1");
-        assertEquals("[hotel:1]", result.toString());
+        assertEquals("[hotel=1]", result.toString());
         result = pathMatcher.extractUriTemplateVariables("/{page}.html", "/42.html");
-        assertEquals("[page:42]", result.toString());
+        assertEquals("[page=42]", result.toString());
         result = pathMatcher.extractUriTemplateVariables("/{page}.*", "/42.html");
-        assertEquals("[page:42]", result.toString());
+        assertEquals("[page=42]", result.toString());
         result = pathMatcher.extractUriTemplateVariables("/A-{B}-C", "/A-b-C");
-        assertEquals("[B:b]", result.toString());
+        assertEquals("[B=b]", result.toString());
         result = pathMatcher.extractUriTemplateVariables("/{name}.{extension}", "/test.html");
-        assertEquals("[name:test, extension:html]", result.toString());
+        assertEquals("[name=test, extension=html]", result.toString());
     }
 
     @Test

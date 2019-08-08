@@ -25,7 +25,7 @@ class URLTest {
            }
            if (test.failure) {
                try {
-                   URL url = URL.base(base).resolve(input);
+                   URL.base(base).resolve(input);
                    fail();
                } catch (Exception e) {
                    // pass

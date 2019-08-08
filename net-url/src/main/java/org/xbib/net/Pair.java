@@ -5,7 +5,7 @@ package org.xbib.net;
  * @param <K> the key type parameter
  * @param <V> the value type parameter
  */
-public class Pair<K, V> {
+public class Pair<K, V> implements Comparable<Pair<K, V>> {
 
     private final K first;
 
@@ -26,6 +26,11 @@ public class Pair<K, V> {
 
     @Override
     public String toString() {
-        return first + ":" + second;
+        return first + "=" + second;
+    }
+
+    @Override
+    public int compareTo(Pair<K, V> pair) {
+        return 0;
     }
 }

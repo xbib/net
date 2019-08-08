@@ -33,7 +33,7 @@ class URLParserTest {
     }
 
     @Test
-    void testScheme() throws Exception {
+    void testScheme() {
         URL url = URL.from("http://");
         assertEquals("http://", url.toExternalForm());
         assertEquals("http://", url.toString());
@@ -52,7 +52,7 @@ class URLParserTest {
     }
 
     @Test
-    void testOpaque() throws Exception {
+    void testOpaque() {
         URL url = URL.from("a:b");
         assertEquals("a", url.getScheme());
         assertEquals("b", url.getSchemeSpecificPart());
@@ -68,7 +68,7 @@ class URLParserTest {
     }
 
     @Test
-    void testWithoutDoubleSlash() throws Exception {
+    void testWithoutDoubleSlash() {
         URL url = URL.from("http:foo.com");
         assertEquals("http:foo.com", url.toExternalForm());
         assertEquals("http:foo.com", url.toString());
@@ -82,14 +82,14 @@ class URLParserTest {
     }
 
     @Test
-    void testSchemeHost() throws Exception {
+    void testSchemeHost() {
         URL url = URL.from("http://foo.bar");
         assertEquals("http://foo.bar", url.toString());
         assertRoundTrip(url.toExternalForm());
     }
 
     @Test
-    void testSchemeHostPort() throws Exception {
+    void testSchemeHostPort() {
         URL url = URL.from("http://f:/c");
         assertEquals("http://f:/c", url.toString());
         assertRoundTrip(url.toExternalForm());
@@ -103,28 +103,28 @@ class URLParserTest {
     }
 
     @Test
-    void testSchemeHostAuthInfo() throws Exception {
+    void testSchemeHostAuthInfo() {
         URL url = URL.from("http://auth@foo.bar");
         assertEquals("http://auth@foo.bar", url.toString());
         assertRoundTrip(url.toExternalForm());
     }
 
     @Test
-    void testSchemeHostAuthInfoPort() throws Exception {
+    void testSchemeHostAuthInfoPort() {
         URL url = URL.from("http://auth@foo.bar:1");
         assertEquals("http://auth@foo.bar:1", url.toString());
         assertRoundTrip(url.toExternalForm());
     }
 
     @Test
-    void testSchemeHostAuthInfoPortPath() throws Exception {
+    void testSchemeHostAuthInfoPortPath() {
         URL url = URL.from("http://auth@foo.bar:1/path");
         assertEquals("http://auth@foo.bar:1/path", url.toString());
         assertRoundTrip(url.toExternalForm());
     }
 
     @Test
-    void testTrailingSlash() throws Exception {
+    void testTrailingSlash() {
         URL url = URL.from("http://foo.bar/path/");
         assertEquals("http://foo.bar/path/", url.toString());
         assertRoundTrip(url.toExternalForm());
@@ -137,21 +137,21 @@ class URLParserTest {
     }
 
     @Test
-    void testQuery() throws Exception {
+    void testQuery() {
         URL url = URL.from("http://auth@foo.bar:1/path?query");
         assertEquals("http://auth@foo.bar:1/path?query", url.toString());
         assertRoundTrip(url.toExternalForm());
     }
 
     @Test
-    void testFragment() throws Exception {
+    void testFragment() {
         URL url = URL.from("http://auth@foo.bar:1/path#fragment");
         assertEquals("http://auth@foo.bar:1/path#fragment", url.toString());
         assertRoundTrip(url.toExternalForm());
     }
 
     @Test
-    void testReservedChar() throws Exception {
+    void testReservedChar() {
         URL url = URL.from("http://www.google.com/ig/calculator?q=1USD=?EUR");
         if ("false".equals(System.getProperty("java.net.preferIPv6Addresses"))) {
             assertEquals("http://www.google.com/ig/calculator?q=1USD%3D?EUR", url.toString());
@@ -160,7 +160,7 @@ class URLParserTest {
     }
 
     @Test
-    void testPassword() throws Exception {
+    void testPassword() {
         URL url = URL.from("ftp://aaa:b%2B1@www.google.com");
         assertEquals("b+1", url.getPassword());
         assertRoundTrip(url.toExternalForm());
@@ -170,21 +170,21 @@ class URLParserTest {
     }
 
     @Test
-    void testPlus() throws Exception {
+    void testPlus() {
         URL url = URL.from("http://foobar:8080/test/print?value=%EA%B0%80+%EB%82%98");
         assertEquals("http://foobar:8080/test/print?value=%EA%B0%80%2B%EB%82%98", url.toExternalForm());
         assertRoundTrip(url.toExternalForm());
     }
 
     @Test
-    void testIPv6() throws Exception {
+    void testIPv6() {
         URL url = URL.from("http://[2001:db8:85a3::8a2e:370:7334]");
         assertEquals("http://[2001:db8:85a3:0:0:8a2e:370:7334]", url.toString());
         assertRoundTrip(url.toExternalForm());
     }
 
     @Test
-    void testIPv6WithScope() throws Exception {
+    void testIPv6WithScope() {
         // test scope ID. Must be a valid IPv6
         URL url = URL.from("http://[3002:0:0:0:20c:29ff:fe64:614a%2]:8080/resource");
         assertEquals("http://[3002:0:0:0:20c:29ff:fe64:614a%2]:8080/resource", url.toString());
@@ -192,7 +192,7 @@ class URLParserTest {
     }
 
     @Test
-    void testIPv6WithIPv4() throws Exception {
+    void testIPv6WithIPv4() {
         URL url = URL.from("http://[::192.168.1.1]:8080/resource");
         assertEquals("http://[0:0:0:0:0:0:c0a8:101]:8080/resource", url.toString());
         assertRoundTrip(url.toExternalForm());
@@ -265,12 +265,12 @@ class URLParserTest {
     }
 
     @Test
-    void testFromUrlMalformedQueryParamMultiValues() throws Exception {
+    void testFromUrlMalformedQueryParamMultiValues() {
         assertRoundTrip("http://foo.com/foo?q1=v1=v2");
     }
 
     @Test
-    void testFromUrlQueryWithEscapedChars() throws Exception {
+    void testFromUrlQueryWithEscapedChars() {
         assertRoundTrip("http://foo.com/foo?query==&%23");
     }
 
@@ -338,12 +338,21 @@ class URLParserTest {
 
     @Test
     void testRelative() throws Exception {
-        URL url = URL.parser().parse("/foo/bar?foo=bar#fragment");
+        URL url = URL.parser().parse("/some/path?foo=bar#fragment");
         assertNull(url.getScheme());
         assertEquals("", url.getHostInfo());
-        assertEquals("/foo/bar", url.getPath());
+        assertEquals("/some/path", url.getPath());
         assertEquals("foo=bar", url.getQuery());
         assertEquals("fragment", url.getFragment());
+        assertEquals("[foo=bar]", url.getQueryParams().toString());
+    }
+
+    @Test
+    void testQueryParams() throws Exception {
+        URL url = URL.parser().parse("?foo=bar");
+        assertEquals("foo=bar", url.getQuery());
+        assertEquals("[foo=bar]", url.getQueryParams().toString());
+        assertEquals("[k1=v1, k2=v2]", URL.parseQueryString("k1=v1&k2=v2").toString());
     }
 
     @Test
@@ -417,7 +426,7 @@ class URLParserTest {
         assertEquals(s, new java.net.URL(url).toExternalForm());
     }
 
-    private void assertRoundTrip(String url) throws Exception {
+    private void assertRoundTrip(String url) {
         String s = URL.from(url).toExternalForm();
         assertEquals(s, URL.from(s).toExternalForm());
     }
