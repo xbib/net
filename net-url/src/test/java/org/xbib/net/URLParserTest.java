@@ -3,6 +3,8 @@ package org.xbib.net;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import java.nio.charset.CodingErrorAction;
+import java.nio.charset.StandardCharsets;
 import java.util.Iterator;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -418,6 +420,18 @@ class URLParserTest {
         assertEquals("foo:foo:bar", url.getUserInfo());
         assertEquals("foo", url.getUser());
         assertEquals("foo:bar", url.getPassword());
+    }
+
+    @Test
+    void testCharset() throws Exception {
+        // default parser uses UTF-8
+        Assertions.assertThrows(URLSyntaxException.class, () -> {
+            String string = "http%3A%2F%2Flibrary.fes.de%2Flibrary%2Fjournals%2Fde-part%2Fdas-rote-bl%E4ttla%2Findex.html";
+            URL url = URL.parser().parse(string);
+        });
+        String string = "http%3A%2F%2Flibrary.fes.de%2Flibrary%2Fjournals%2Fde-part%2Fdas-rote-bl%E4ttla%2Findex.html";
+        URL url = URL.parser(StandardCharsets.ISO_8859_1, CodingErrorAction.REPLACE).parse(string);
+        assertEquals("http://library.fes.de/library/journals/de-part/das-rote-blättla/index.html", url.toString());
     }
 
     private void assertUrlCompatibility(String url) throws Exception {

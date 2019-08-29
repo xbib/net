@@ -11,6 +11,7 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.nio.charset.CharacterCodingException;
 import java.nio.charset.Charset;
+import java.nio.charset.CodingErrorAction;
 import java.nio.charset.MalformedInputException;
 import java.nio.charset.StandardCharsets;
 import java.nio.charset.UnmappableCharacterException;
@@ -239,7 +240,11 @@ public class URL implements Comparable<URL> {
     }
 
     public static Parser parser() {
-        return new Parser();
+        return new Parser(StandardCharsets.UTF_8, CodingErrorAction.REPORT);
+    }
+
+    public static Parser parser(Charset charset, CodingErrorAction codingErrorAction) {
+        return new Parser(charset, codingErrorAction);
     }
 
     public static Resolver base(String base) {
@@ -262,42 +267,71 @@ public class URL implements Comparable<URL> {
     }
 
     public static URL from(String input) {
-        return from(input, true);
+        return from(input, StandardCharsets.UTF_8, CodingErrorAction.REPORT, true, false);
     }
 
     public static URL create(String input) {
-        return from(input, false);
+        return from(input, StandardCharsets.UTF_8, CodingErrorAction.REPORT, false, false);
     }
 
-    public static URL from(String input, boolean resolve) {
+    public static URL create(String input, boolean disableException) {
+        return from(input, StandardCharsets.UTF_8, CodingErrorAction.REPORT, false, disableException);
+    }
+
+    public static URL from(String input,
+                           Charset charset, CodingErrorAction codingErrorAction,
+                           boolean resolve, boolean disableException) {
         try {
-            return parser().parse(input, resolve);
+            return parser(charset, codingErrorAction).parse(input, resolve);
         } catch (URLSyntaxException | MalformedInputException | UnmappableCharacterException e) {
-            throw new IllegalArgumentException(e);
+            if (disableException) {
+                logger.log(Level.WARNING, e.getMessage(), e);
+                return null;
+            } else {
+                throw new IllegalArgumentException(e);
+            }
         }
     }
 
     public URL resolve(String spec) {
-        return from(this, spec);
+        return from(this, spec, false);
     }
 
-    public static URL from(URL base, String spec) {
+    public URL resolve(String spec, boolean disableException) {
+        return from(this, spec, disableException);
+    }
+
+    public static URL from(URL base, String spec, boolean disableException) {
         try {
             return new Resolver(base).resolve(spec);
         } catch (URLSyntaxException | MalformedInputException | UnmappableCharacterException e) {
-            throw new IllegalArgumentException(e);
+            if (disableException) {
+                logger.log(Level.WARNING, e.getMessage(), e);
+                return null;
+            } else {
+                throw new IllegalArgumentException(e);
+            }
         }
     }
 
     public URL resolve(URL spec) {
-        return from(this, spec);
+        return from(this, spec, false);
     }
 
-    public static URL from(URL base, URL spec) {
+    public URL resolve(URL spec, boolean disableException) {
+        return from(this, spec, disableException);
+    }
+
+    public static URL from(URL base, URL spec, boolean disableException) {
         try {
             return new Resolver(base).resolve(spec);
         } catch (URLSyntaxException e) {
-            throw new IllegalArgumentException(e);
+            if (disableException) {
+                logger.log(Level.WARNING, e.getMessage(), e);
+                return null;
+            } else {
+                throw new IllegalArgumentException(e);
+            }
         }
     }
 
@@ -319,11 +353,20 @@ public class URL implements Comparable<URL> {
     }
 
     public static QueryParameters parseQueryString(String query) {
+        return parseQueryString(query, false);
+    }
+
+    public static QueryParameters parseQueryString(String query, boolean disableException) {
         Objects.requireNonNull(query);
         try {
             return URL.parser().parse(query.charAt(0) == QUESTION_CHAR ? query : QUESTION_CHAR + query).getQueryParams();
         } catch (URLSyntaxException | MalformedInputException | UnmappableCharacterException e) {
-            throw new IllegalArgumentException(e);
+            if (disableException) {
+                logger.log(Level.WARNING, e.getMessage(), e);
+                return null;
+            } else {
+                throw new IllegalArgumentException(e);
+            }
         }
     }
 
@@ -774,19 +817,21 @@ public class URL implements Comparable<URL> {
 
     /**
      * The URL builder class is required for building an URL. It uses fluent API methods
-     * and pre-processes paralameter accordingly.
+     * and pre-processes parameter accordingly.
      */
     public static class Builder {
 
         private PercentEncoder regNameEncoder;
 
-        private final PercentDecoder percentDecoder;
+        private PercentDecoder percentDecoder;
 
         private final QueryParameters queryParams;
 
         private final List<PathSegment> pathSegments;
 
         private Charset charset;
+
+        private CodingErrorAction codingErrorAction;
 
         private String scheme;
 
@@ -809,10 +854,9 @@ public class URL implements Comparable<URL> {
         private boolean fatalResolveErrorsEnabled;
 
         private Builder() {
-            charset(StandardCharsets.UTF_8);
-            this.percentDecoder = new PercentDecoder();
             this.queryParams = new QueryParameters();
             this.pathSegments = new ArrayList<>();
+            charset(StandardCharsets.UTF_8, CodingErrorAction.REPLACE);
         }
 
         /**
@@ -820,9 +864,12 @@ public class URL implements Comparable<URL> {
          * @param charset the chaarcter set
          * @return this builder
          */
-        public Builder charset(Charset charset) {
+        public Builder charset(Charset charset, CodingErrorAction codingErrorAction) {
             this.charset = charset;
+            this.codingErrorAction = codingErrorAction;
             this.regNameEncoder = PercentEncoders.getRegNameEncoder(charset);
+            this.percentDecoder = new PercentDecoder(charset.newDecoder()
+                    .onUnmappableCharacter(codingErrorAction));
             return this;
         }
 
@@ -916,7 +963,7 @@ public class URL implements Comparable<URL> {
 
         public Builder path(String path) {
             try {
-                parser().parsePathWithQueryAndFragment(this, path);
+                parser(charset, codingErrorAction).parsePathWithQueryAndFragment(this, path);
             } catch (CharacterCodingException e) {
                 throw new IllegalArgumentException(e);
             }
@@ -1044,8 +1091,9 @@ public class URL implements Comparable<URL> {
 
         private final Builder builder;
 
-        private Parser() {
+        private Parser(Charset charset, CodingErrorAction codingErrorAction) {
             builder = new Builder();
+            builder.charset(charset, codingErrorAction);
         }
 
         public URL parse(String input)
@@ -1267,6 +1315,7 @@ public class URL implements Comparable<URL> {
             if (relative.isEmpty()) {
                 return base;
             }
+            // TODO(jprante) parser(charset, codingErrorAction)
             URL url = parser().parse(relative);
             return resolve(url);
         }
