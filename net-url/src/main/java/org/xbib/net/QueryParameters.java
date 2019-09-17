@@ -1,6 +1,9 @@
 package org.xbib.net;
 
+import java.nio.charset.Charset;
+import java.nio.charset.CodingErrorAction;
 import java.nio.charset.MalformedInputException;
+import java.nio.charset.StandardCharsets;
 import java.nio.charset.UnmappableCharacterException;
 import java.util.ArrayList;
 import java.util.List;
@@ -25,8 +28,27 @@ public class QueryParameters extends ArrayList<Pair<String, String>> {
     }
 
     public QueryParameters(int max) {
+        this(StandardCharsets.UTF_8, max);
+    }
+
+    public QueryParameters(Charset charset) {
+        this(charset, 1024);
+    }
+
+    public QueryParameters(Charset charset, int max) {
+        this(new PercentDecoder(charset.newDecoder()
+                .onUnmappableCharacter(CodingErrorAction.REPLACE)
+                .onMalformedInput(CodingErrorAction.REPLACE)), max);
+    }
+
+
+    public QueryParameters(PercentDecoder percentDecoder) {
+        this(percentDecoder, 1024);
+    }
+
+    public QueryParameters(PercentDecoder percentDecoder, int max) {
+        this.percentDecoder = percentDecoder;
         this.max = max;
-        this.percentDecoder = new PercentDecoder();
     }
 
     public List<String> get(String key) {
@@ -51,14 +73,20 @@ public class QueryParameters extends ArrayList<Pair<String, String>> {
         return o instanceof QueryParameters && super.equals(o);
     }
 
-    public QueryParameters addPercentEncodedBody(String body) throws MalformedInputException, UnmappableCharacterException {
+    public QueryParameters addPercentEncodedBody(String body) {
         String s = body;
         while (s != null) {
             Pair<String, String> pairs = indexOf(AMPERSAND_CHAR, s);
             Pair<String, String> pair = indexOf(EQUAL_CHAR, pairs.getFirst());
             if (!isNullOrEmpty(pair.getFirst())) {
-                add(percentDecoder.decode(pair.getFirst()),
-                        percentDecoder.decode(pair.getSecond()));
+                try {
+                    add(percentDecoder.decode(pair.getFirst()),
+                            percentDecoder.decode(pair.getSecond()));
+                } catch (MalformedInputException e) {
+                    // never thrown
+                } catch (UnmappableCharacterException e) {
+                   // never thrown
+                }
             }
             s = pairs.getSecond();
         }

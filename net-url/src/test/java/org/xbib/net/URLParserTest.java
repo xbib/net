@@ -434,6 +434,16 @@ class URLParserTest {
         assertEquals("http://library.fes.de/library/journals/de-part/das-rote-blättla/index.html", url.toString());
     }
 
+    @Test
+    void testPathQueryFragmentFromPath(){
+        URL url = URL.builder()
+                .path("/a/b?c=d#e")
+                .build();
+        assertEquals("/a/b", url.getPath());
+        assertEquals("c=d", url.getQuery());
+        assertEquals("e", url.getFragment());
+    }
+
     private void assertUrlCompatibility(String url) throws Exception {
         String s = URL.from(url).toExternalForm();
         assertEquals(s, URL.from(s).toExternalForm());

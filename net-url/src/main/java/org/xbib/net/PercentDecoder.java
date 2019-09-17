@@ -11,6 +11,8 @@ import java.nio.charset.UnmappableCharacterException;
 
 /**
  * Decodes percent-encoded strings.
+ *
+ * This class is not thread-safe.
  */
 public class PercentDecoder {
 

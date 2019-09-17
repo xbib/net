@@ -11,6 +11,7 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.nio.charset.CharacterCodingException;
 import java.nio.charset.Charset;
+import java.nio.charset.CharsetDecoder;
 import java.nio.charset.CodingErrorAction;
 import java.nio.charset.MalformedInputException;
 import java.nio.charset.StandardCharsets;
@@ -825,7 +826,7 @@ public class URL implements Comparable<URL> {
 
         private PercentDecoder percentDecoder;
 
-        private final QueryParameters queryParams;
+        private QueryParameters queryParams;
 
         private final List<PathSegment> pathSegments;
 
@@ -854,22 +855,24 @@ public class URL implements Comparable<URL> {
         private boolean fatalResolveErrorsEnabled;
 
         private Builder() {
-            this.queryParams = new QueryParameters();
             this.pathSegments = new ArrayList<>();
             charset(StandardCharsets.UTF_8, CodingErrorAction.REPLACE);
         }
 
         /**
          * Set the character set of the URL. Default is UTF-8.
-         * @param charset the chaarcter set
+         * @param charset the character set
+         * @param codingErrorAction  the coding error action
          * @return this builder
          */
         public Builder charset(Charset charset, CodingErrorAction codingErrorAction) {
             this.charset = charset;
             this.codingErrorAction = codingErrorAction;
             this.regNameEncoder = PercentEncoders.getRegNameEncoder(charset);
-            this.percentDecoder = new PercentDecoder(charset.newDecoder()
-                    .onUnmappableCharacter(codingErrorAction));
+            CharsetDecoder charsetDecoder = charset.newDecoder()
+                    .onUnmappableCharacter(codingErrorAction);
+            this.percentDecoder = new PercentDecoder(charsetDecoder);
+            this.queryParams = new QueryParameters(percentDecoder);
             return this;
         }
 

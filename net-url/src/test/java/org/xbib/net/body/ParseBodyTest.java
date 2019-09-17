@@ -13,7 +13,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class ParseBodyTest {
 
     @Test
-    void testSimpleParse() throws MalformedInputException, UnmappableCharacterException {
+    void testSimpleParse() {
         QueryParameters queryParameters = new QueryParameters();
         String body = "a=b&c=d&e=f";
         queryParameters.addPercentEncodedBody(body);
@@ -23,7 +23,7 @@ class ParseBodyTest {
     }
 
     @Test
-    void testManyParse() throws MalformedInputException, UnmappableCharacterException {
+    void testManyParse() {
         QueryParameters queryParameters = new QueryParameters(100);
         List<String> list = new ArrayList<>();
         for (int i = 0; i < 200; i++) {

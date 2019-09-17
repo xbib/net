@@ -13,6 +13,8 @@ import java.util.BitSet;
  *
  * This is typically done when encoding components of URLs. See {@link PercentEncoders} for pre-configured
  * PercentEncoder instances.
+ *
+ * This class is not thread-safe.
  */
 public class PercentEncoder {
 
