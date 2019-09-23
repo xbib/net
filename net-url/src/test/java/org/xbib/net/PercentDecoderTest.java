@@ -1,5 +1,6 @@
 package org.xbib.net;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.nio.charset.MalformedInputException;
@@ -22,7 +23,7 @@ class PercentDecoderTest {
 
     private static final int CODE_POINT_IN_BMP = 1;
 
-    private PercentDecoder decoder = new PercentDecoder(StandardCharsets.UTF_8.newDecoder());
+    private PercentDecoder decoder = new PercentDecoder();
 
     @Test
     void testDecodesWithoutPercents() throws Exception {
@@ -35,33 +36,24 @@ class PercentDecoderTest {
     }
 
     @Test
-    void testIncompletePercentPairNoNumbers() throws Exception {
-        try {
+    void testIncompletePercentPairNoNumbers() {
+        Assertions.assertThrows(MalformedInputException.class, () ->{
             decoder.decode("%");
-            fail();
-        } catch (IllegalArgumentException e) {
-            assertEquals("could not percent decode <%>: incomplete %-pair at position 0", e.getMessage());
-        }
+        });
     }
 
     @Test
-    void testIncompletePercentPairOneNumber() throws Exception {
-        try {
+    void testIncompletePercentPairOneNumber() {
+        Assertions.assertThrows(MalformedInputException.class, () ->{
             decoder.decode("%2");
-            fail();
-        } catch (IllegalArgumentException e) {
-            assertEquals("could not percent decode <%2>: incomplete %-pair at position 0", e.getMessage());
-        }
+        });
     }
 
     @Test
-    void testInvalidHex() throws Exception {
-        try {
+    void testInvalidHex() {
+        Assertions.assertThrows(MalformedInputException.class, () ->{
             decoder.decode("%xz");
-            fail();
-        } catch (IllegalArgumentException e) {
-            assertEquals("invalid %-tuple <%xz>", e.getMessage());
-        }
+        });
     }
 
     @Test

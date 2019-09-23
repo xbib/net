@@ -2064,8 +2064,7 @@
     "port": "",
     "pathname": "/foo%2zbar",
     "search": "",
-    "hash": "",
-    "failure": true
+    "hash": ""
   },
   {
     "input": "http://example.com/foo%2Â©zbar",
@@ -2080,8 +2079,7 @@
     "port": "",
     "pathname": "/foo%2%C3%82%C2%A9zbar",
     "search": "",
-    "hash": "",
-    "failure": true
+    "hash": ""
   },
   {
     "input": "http://example.com/foo%41%7a",
@@ -4607,8 +4605,7 @@
     "port": "",
     "pathname": "%1G",
     "search": "",
-    "hash": "",
-    "failure": true
+    "hash": ""
   },
   "# Hosts and percent-encoding",
   {

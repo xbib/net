@@ -11,6 +11,8 @@ import java.util.stream.Collectors;
 
 /**
  * Query parameter list, of limited size. Default is 1024 pairs.
+ *
+ * This class is not thread-safe.
  */
 @SuppressWarnings("serial")
 public class QueryParameters extends ArrayList<Pair<String, String>> {
@@ -40,7 +42,6 @@ public class QueryParameters extends ArrayList<Pair<String, String>> {
                 .onUnmappableCharacter(CodingErrorAction.REPLACE)
                 .onMalformedInput(CodingErrorAction.REPLACE)), max);
     }
-
 
     public QueryParameters(PercentDecoder percentDecoder) {
         this(percentDecoder, 1024);
@@ -82,10 +83,8 @@ public class QueryParameters extends ArrayList<Pair<String, String>> {
                 try {
                     add(percentDecoder.decode(pair.getFirst()),
                             percentDecoder.decode(pair.getSecond()));
-                } catch (MalformedInputException e) {
-                    // never thrown
-                } catch (UnmappableCharacterException e) {
-                   // never thrown
+                } catch (MalformedInputException | UnmappableCharacterException e) {
+                    throw new IllegalArgumentException(e);
                 }
             }
             s = pairs.getSecond();

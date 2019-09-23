@@ -870,6 +870,7 @@ public class URL implements Comparable<URL> {
             this.codingErrorAction = codingErrorAction;
             this.regNameEncoder = PercentEncoders.getRegNameEncoder(charset);
             CharsetDecoder charsetDecoder = charset.newDecoder()
+                    .onMalformedInput(codingErrorAction)
                     .onUnmappableCharacter(codingErrorAction);
             this.percentDecoder = new PercentDecoder(charsetDecoder);
             this.queryParams = new QueryParameters(percentDecoder);

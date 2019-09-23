@@ -34,7 +34,9 @@ public class PercentDecoder {
     private ByteBuffer encodedBuf;
 
     public PercentDecoder() {
-        this(StandardCharsets.UTF_8.newDecoder().onMalformedInput(CodingErrorAction.REPORT));
+        this(StandardCharsets.UTF_8.newDecoder()
+                .onUnmappableCharacter(CodingErrorAction.REPORT)
+                .onMalformedInput(CodingErrorAction.REPORT));
     }
 
     /**
@@ -52,8 +54,7 @@ public class PercentDecoder {
      * @param initialEncodedByteBufSize Initial size of buffer that holds encoded bytes
      * @param decodedCharBufSize        Size of buffer that encoded bytes are decoded into
      */
-    public PercentDecoder(CharsetDecoder charsetDecoder, int initialEncodedByteBufSize,
-                   int decodedCharBufSize) {
+    public PercentDecoder(CharsetDecoder charsetDecoder, int initialEncodedByteBufSize, int decodedCharBufSize) {
         this.outputBuf = new StringBuilder();
         this.encodedBuf = ByteBuffer.allocate(initialEncodedByteBufSize);
         this.decodedCharBuf = CharBuffer.allocate(decodedCharBufSize);
@@ -85,9 +86,7 @@ public class PercentDecoder {
                 continue;
             }
             if (i + 2 >= input.length()) {
-                throw new IllegalArgumentException("could not percent decode <"
-                        + input
-                        + ">: incomplete %-pair at position " + i);
+                throw new MalformedInputException(i);
             }
             if (encodedBuf.remaining() == 0) {
                 ByteBuffer largerBuf = ByteBuffer.allocate(encodedBuf.capacity() * 2);
@@ -97,19 +96,16 @@ public class PercentDecoder {
             }
             int c1 = input.charAt(++i);
             int c2 = input.charAt(++i);
-            encodedBuf.put(decode((char) c1, (char) c2));
+            byte b1 = (byte) decode((char) c1);
+            byte b2 = (byte) decode((char) c2);
+            /*if (b1 == -1 || b2 == -1) {
+                throw new MalformedInputException(i);
+            }*/
+            byte b = (byte) ((b1 & 0xf) << 4 | (b2 & 0xf));
+            encodedBuf.put(b);
         }
         handleEncodedBytes();
         return outputBuf.toString();
-    }
-
-    private static byte decode(char c1, char c2) {
-        byte b1 = (byte) decode(c1);
-        byte b2 = (byte) decode(c2);
-        if (b1 == -1 || b2 == -1) {
-            throw new IllegalArgumentException("invalid %-tuple <%" + c1 + c2 + ">");
-        }
-        return (byte) ((b1 & 0xf) << 4 | (b2 & 0xf));
     }
 
     private static int decode(char c) {

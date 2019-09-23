@@ -3,6 +3,7 @@ package org.xbib.net;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import java.nio.charset.Charset;
 import java.nio.charset.CodingErrorAction;
 import java.nio.charset.StandardCharsets;
 import java.util.Iterator;
@@ -442,6 +443,25 @@ class URLParserTest {
         assertEquals("/a/b", url.getPath());
         assertEquals("c=d", url.getQuery());
         assertEquals("e", url.getFragment());
+    }
+
+    @Test
+    void testUrlCharsetReplacementAndReport() {
+        Charset charset = StandardCharsets.UTF_8;
+        URL url = URL.builder()
+                .charset(charset, CodingErrorAction.REPLACE)
+                .path("/bla%PDblabla?a=b")
+                .build();
+        QueryParameters queryParameters = url.getQueryParams();
+        // %EF%BF%B = 0xFFFD  UNICODE REPLACEMENT CHARACTER
+        assertEquals("/bla%EF%BF%BDblabla", url.getPath());
+        assertEquals("[a=b]", queryParameters.toString());
+        Assertions.assertThrows(IllegalArgumentException.class, () -> {
+            URL.builder()
+                    .charset(charset, CodingErrorAction.REPORT)
+                    .path("/bla%PDblabla?a=b")
+                    .build();
+        });
     }
 
     private void assertUrlCompatibility(String url) throws Exception {
