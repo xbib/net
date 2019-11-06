@@ -84,7 +84,7 @@ public class QueryParameters extends ArrayList<Pair<String, String>> {
                     add(percentDecoder.decode(pair.getFirst()),
                             percentDecoder.decode(pair.getSecond()));
                 } catch (MalformedInputException | UnmappableCharacterException e) {
-                    throw new IllegalArgumentException(e);
+                    throw new IllegalArgumentException("name=" + pair.getFirst() + " value=" + pair.getSecond(), e);
                 }
             }
             s = pairs.getSecond();
