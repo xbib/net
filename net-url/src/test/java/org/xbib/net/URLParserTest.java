@@ -140,6 +140,14 @@ class URLParserTest {
     }
 
     @Test
+    void testBackslashHost() {
+        URL url = URL.from("https://malicious.com\\google.com");
+        assertEquals("malicious.com", url.getDecodedHost());
+        assertEquals("/google.com", url.getPath());
+        assertEquals("https://malicious.com/google.com", url.toExternalForm());
+    }
+
+    @Test
     void testQuery() {
         URL url = URL.from("http://auth@foo.bar:1/path?query");
         assertEquals("http://auth@foo.bar:1/path?query", url.toString());
