@@ -22,8 +22,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
@@ -48,8 +46,6 @@ import java.util.logging.Logger;
  *
  */
 public class URL implements Comparable<URL> {
-
-    private static final Logger logger = Logger.getLogger(URL.class.getName());
 
     private static final char SEPARATOR_CHAR = '/';
 
@@ -286,7 +282,6 @@ public class URL implements Comparable<URL> {
             return parser(charset, codingErrorAction).parse(input, resolve);
         } catch (URLSyntaxException | MalformedInputException | UnmappableCharacterException e) {
             if (disableException) {
-                logger.log(Level.WARNING, e.getMessage(), e);
                 return null;
             } else {
                 throw new IllegalArgumentException(e);
@@ -307,7 +302,6 @@ public class URL implements Comparable<URL> {
             return new Resolver(base).resolve(spec);
         } catch (URLSyntaxException | MalformedInputException | UnmappableCharacterException e) {
             if (disableException) {
-                logger.log(Level.WARNING, e.getMessage(), e);
                 return null;
             } else {
                 throw new IllegalArgumentException(e);
@@ -328,7 +322,6 @@ public class URL implements Comparable<URL> {
             return new Resolver(base).resolve(spec);
         } catch (URLSyntaxException e) {
             if (disableException) {
-                logger.log(Level.WARNING, e.getMessage(), e);
                 return null;
             } else {
                 throw new IllegalArgumentException(e);
@@ -363,7 +356,6 @@ public class URL implements Comparable<URL> {
             return URL.parser().parse(query.charAt(0) == QUESTION_CHAR ? query : QUESTION_CHAR + query).getQueryParams();
         } catch (URLSyntaxException | MalformedInputException | UnmappableCharacterException e) {
             if (disableException) {
-                logger.log(Level.WARNING, e.getMessage(), e);
                 return null;
             } else {
                 throw new IllegalArgumentException(e);
@@ -945,7 +937,6 @@ public class URL implements Comparable<URL> {
                 if (fatalResolveErrorsEnabled) {
                     throw new IllegalStateException(e);
                 }
-                logger.log(Level.WARNING, e.getMessage(), e);
                 if (e.getMessage() != null && !e.getMessage().endsWith("invalid IPv6 address") &&
                         hostname.charAt(0) != LEFT_BRACKET_CHAR &&
                         hostname.charAt(hostname.length() - 1) != RIGHT_BRACKET_CHAR) {
