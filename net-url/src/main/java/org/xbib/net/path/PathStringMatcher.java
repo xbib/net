@@ -10,7 +10,7 @@ import java.util.regex.Pattern;
 /**
  * Path string matcher.
  */
-class PathStringMatcher {
+public class PathStringMatcher {
 
     private static final Pattern GLOB_PATTERN = Pattern.compile("\\?|\\*|\\{((?:\\{[^/]+?\\}|[^/{}]|\\\\[{}])+?)\\}");
 
@@ -20,7 +20,7 @@ class PathStringMatcher {
 
     private final Pattern pattern;
 
-    PathStringMatcher(String pattern, boolean caseSensitive) {
+    public PathStringMatcher(String pattern, boolean caseSensitive) {
         StringBuilder patternBuilder = new StringBuilder();
         Matcher matcher = GLOB_PATTERN.matcher(pattern);
         int end = 0;
