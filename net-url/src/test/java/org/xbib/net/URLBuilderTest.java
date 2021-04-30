@@ -261,13 +261,17 @@ class URLBuilderTest {
     @Test
     void testMutator() {
         URL.Builder builder = URL.from("http://google.com:8008/foobar").mutator();
+        builder.queryParam("a%", "b%");
         builder.scheme("https");
-        assertEquals("https://google.com:8008/foobar", builder.build().toString());
+        URL url = builder.build();
+        assertEquals("/foobar?a%25=b%25", url.relativeReference());
+        assertEquals("https://google.com:8008/foobar?a%25=b%25", url.toExternalForm());
+        assertEquals("https://google.com:8008/foobar?a%=b%", url.toString());
     }
 
     @Test
     void testNewBuilder() {
-        URL url =  URL.from("http://google.com:8008/foobar");
+        URL url = URL.from("http://google.com:8008/foobar");
         URL.Builder builder = url.newBuilder()
                 .scheme(url.getScheme())
                 .schemeSpecificPart(url.getSchemeSpecificPart());
