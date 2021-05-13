@@ -29,6 +29,7 @@ subprojects {
     apply from: rootProject.file('gradle/compile/java.gradle')
     apply from: rootProject.file('gradle/test/junit5.gradle')
     apply from: rootProject.file('gradle/documentation/asciidoc.gradle')
-    apply from: rootProject.file('gradle/publish/publication.gradle')
+    apply from: rootProject.file('gradle/publish/maven.gradle')
+    apply from: rootProject.file('gradle/publish/ivy.gradle')
 }
 apply from: rootProject.file('gradle/publish/sonatype.gradle')
