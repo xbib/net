@@ -1,0 +1,21 @@
+The URI templates subpackages are a revised version of the work of
+
+https://github.com/fge/uri-template
+
+(Francis Galiegue , Version 0.9, as of 14 April 2014)
+
+License: Apache 2.0
+
+Ant-style Path Matcher is a work based on AntPathMatcherArrays
+
+https://github.com/azagniotov/ant-style-path-matcher
+
+(Alexander Zagniotov, Version as of 14 Feb 2022)
+
+License: MIT
+
+The org.xbib.net.buffer "DataBuffer" classes are taken from Spring Framework, Core, branch "main", as of 21-Jun-2022 (v5.3.21)
+
+https://github.com/spring-projects/spring-framework/tree/main/spring-core/src/main/java/org/springframework/core/io/buffer
+
+License: Apacche 2.0

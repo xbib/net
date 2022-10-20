@@ -1,0 +1,46 @@
+buildscript {
+    repositories {
+        maven {
+            url 'https://xbib.org/repository'
+        }
+    }
+    dependencies {
+        classpath "org.xbib.gradle.plugin:gradle-plugin-shadow:1.1.1"
+    }
+}
+
+plugins {
+    id "de.marcphilipp.nexus-publish" version "0.4.0"
+    id "io.codearte.nexus-staging" version "0.21.1"
+    id "org.xbib.gradle.plugin.asciidoctor" version "2.5.2.1"
+}
+
+wrapper {
+    gradleVersion = libs.versions.gradle.get()
+    distributionType = Wrapper.DistributionType.ALL
+}
+
+ext {
+    user = 'xbib'
+    name = 'net'
+    description = 'Network classes for Java'
+    inceptionYear = '2016'
+    url = 'https://github.com/' + user + '/' + name
+    scmUrl = 'https://github.com/' + user + '/' + name
+    scmConnection = 'scm:git:git://github.com/' + user + '/' + name + '.git'
+    scmDeveloperConnection = 'scm:git:ssh://git@github.com:' + user + '/' + name + '.git'
+    issueManagementSystem = 'Github'
+    issueManagementUrl = ext.scmUrl + '/issues'
+    licenseName = 'The Apache License, Version 2.0'
+    licenseUrl = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+}
+
+subprojects {
+    apply from: rootProject.file('gradle/ide/idea.gradle')
+    apply from: rootProject.file('gradle/repositories/maven.gradle')
+    apply from: rootProject.file('gradle/compile/java.gradle')
+    apply from: rootProject.file('gradle/test/junit5.gradle')
+    apply from: rootProject.file('gradle/documentation/asciidoc.gradle')
+    apply from: rootProject.file('gradle/publish/maven.gradle')
+}
+apply from: rootProject.file('gradle/publish/sonatype.gradle')

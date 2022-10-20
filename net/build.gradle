@@ -1,0 +1,4 @@
+dependencies {
+    api libs.datastructures.common
+    testImplementation libs.jackson
+}

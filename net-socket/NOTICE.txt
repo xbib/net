@@ -1,0 +1,5 @@
+Taken from
+
+https://github.com/OpenNMS/opennms/tree/269739ee8287cc18b5645de679b60015882809ed/core/icmp-jna
+
+License: Affero GPLv3

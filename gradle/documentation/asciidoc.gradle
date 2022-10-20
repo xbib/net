@@ -1,0 +1,13 @@
+apply plugin: 'org.xbib.gradle.plugin.asciidoctor'
+
+asciidoctor {
+    attributes 'source-highlighter': 'coderay',
+            toc: 'left',
+            doctype: 'book',
+            icons: 'font',
+            encoding: 'utf-8',
+            sectlink: true,
+            sectanchors: true,
+            linkattrs: true,
+            imagesdir: 'img'
+}

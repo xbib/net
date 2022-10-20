@@ -1,0 +1,4 @@
+dependencies {
+    api project(':net')
+    testImplementation project(':net-bouncycastle')
+}

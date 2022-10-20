@@ -1,0 +1,16 @@
+/.settings
+/.classpath
+/.project
+/.gradle
+**/data
+**/work
+**/logs
+**/.idea
+**/target
+**/out
+**/build
+.DS_Store
+*.iml
+*~
+*.key
+*.crt

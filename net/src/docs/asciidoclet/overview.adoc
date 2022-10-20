@@ -1,0 +1,4 @@
+= Net classes for Java
+Jörg Prante
+Version 1.0
+

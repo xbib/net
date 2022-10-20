@@ -1,0 +1,502 @@
+[
+    {
+        "jmhVersion" : "1.34",
+        "benchmark" : "org.xbib.net.benchmark.PathMatchingBenchmark.matchAllRoutesWithAntPathMatcher",
+        "mode" : "thrpt",
+        "threads" : 1,
+        "forks" : 5,
+        "jvm" : "/Library/Java/JavaVirtualMachines/zulu-17.jdk/Contents/Home/bin/java",
+        "jvmArgs" : [
+            "-Dfile.encoding=UTF-8",
+            "-Duser.country=DE",
+            "-Duser.language=de",
+            "-Duser.variant"
+        ],
+        "jdkVersion" : "17.0.2",
+        "vmName" : "OpenJDK 64-Bit Server VM",
+        "vmVersion" : "17.0.2+8-LTS",
+        "warmupIterations" : 5,
+        "warmupTime" : "10 s",
+        "warmupBatchSize" : 1,
+        "measurementIterations" : 5,
+        "measurementTime" : "10 s",
+        "measurementBatchSize" : 1,
+        "primaryMetric" : {
+            "score" : 979.0629333513093,
+            "scoreError" : 27.642716728605016,
+            "scoreConfidence" : [
+                951.4202166227043,
+                1006.7056500799143
+            ],
+            "scorePercentiles" : {
+                "0.0" : 879.6177196347368,
+                "50.0" : 996.1943219563238,
+                "90.0" : 1010.1573254891413,
+                "95.0" : 1011.419317810492,
+                "99.0" : 1011.8817472575878,
+                "99.9" : 1011.8817472575878,
+                "99.99" : 1011.8817472575878,
+                "99.999" : 1011.8817472575878,
+                "99.9999" : 1011.8817472575878,
+                "100.0" : 1011.8817472575878
+            },
+            "scoreUnit" : "ops/s",
+            "rawData" : [
+                [
+                    1009.2169360206196,
+                    1007.6289077910706,
+                    1010.3403157672683,
+                    979.6478990918882,
+                    927.4713639881832
+                ],
+                [
+                    954.1692363754581,
+                    1006.7576171864503,
+                    1008.6971779542434,
+                    987.6616019498011,
+                    1006.9774361173152
+                ],
+                [
+                    1003.6756349360693,
+                    1008.777218930438,
+                    996.8131753845925,
+                    1010.0353319703898,
+                    1011.8817472575878
+                ],
+                [
+                    996.1943219563238,
+                    987.4294465450744,
+                    980.0787394199706,
+                    924.6048449498232,
+                    955.5666395887631
+                ],
+                [
+                    1005.7277746036237,
+                    936.5475165296377,
+                    879.6177196347368,
+                    917.0897875515193,
+                    963.9649422818879
+                ]
+            ]
+        },
+        "secondaryMetrics" : {
+        }
+    },
+    {
+        "jmhVersion" : "1.34",
+        "benchmark" : "org.xbib.net.benchmark.PathMatchingBenchmark.matchAllRoutesWithPathPatternParser",
+        "mode" : "thrpt",
+        "threads" : 1,
+        "forks" : 5,
+        "jvm" : "/Library/Java/JavaVirtualMachines/zulu-17.jdk/Contents/Home/bin/java",
+        "jvmArgs" : [
+            "-Dfile.encoding=UTF-8",
+            "-Duser.country=DE",
+            "-Duser.language=de",
+            "-Duser.variant"
+        ],
+        "jdkVersion" : "17.0.2",
+        "vmName" : "OpenJDK 64-Bit Server VM",
+        "vmVersion" : "17.0.2+8-LTS",
+        "warmupIterations" : 5,
+        "warmupTime" : "10 s",
+        "warmupBatchSize" : 1,
+        "measurementIterations" : 5,
+        "measurementTime" : "10 s",
+        "measurementBatchSize" : 1,
+        "primaryMetric" : {
+            "score" : 44254.50565969629,
+            "scoreError" : 1524.9519049748324,
+            "scoreConfidence" : [
+                42729.553754721455,
+                45779.457564671124
+            ],
+            "scorePercentiles" : {
+                "0.0" : 41271.26175680116,
+                "50.0" : 43804.78755944657,
+                "90.0" : 48137.73981257094,
+                "95.0" : 48652.8016902135,
+                "99.0" : 48702.20603834606,
+                "99.9" : 48702.20603834606,
+                "99.99" : 48702.20603834606,
+                "99.999" : 48702.20603834606,
+                "99.9999" : 48702.20603834606,
+                "100.0" : 48702.20603834606
+            },
+            "scoreUnit" : "ops/s",
+            "rawData" : [
+                [
+                    43954.01874148045,
+                    43804.78755944657,
+                    43280.17445633301,
+                    44021.35079059644,
+                    43077.16644786855
+                ],
+                [
+                    41715.626689627716,
+                    43111.08050914323,
+                    42619.336800500045,
+                    41271.26175680116,
+                    43714.16736786474
+                ],
+                [
+                    43084.22399673246,
+                    41654.897785714944,
+                    43662.041021929304,
+                    44422.07541071771,
+                    45034.34913614275
+                ],
+                [
+                    44618.34940975135,
+                    44743.65546839248,
+                    42666.36782811372,
+                    44101.84625525753,
+                    43335.04048928811
+                ],
+                [
+                    48702.20603834606,
+                    47490.34864222843,
+                    45869.52757654424,
+                    47871.216435682116,
+                    48537.52487790418
+                ]
+            ]
+        },
+        "secondaryMetrics" : {
+        }
+    },
+    {
+        "jmhVersion" : "1.34",
+        "benchmark" : "org.xbib.net.benchmark.PathMatchingBenchmark.matchAndSortAllRoutesWithAntPathMatcher",
+        "mode" : "thrpt",
+        "threads" : 1,
+        "forks" : 5,
+        "jvm" : "/Library/Java/JavaVirtualMachines/zulu-17.jdk/Contents/Home/bin/java",
+        "jvmArgs" : [
+            "-Dfile.encoding=UTF-8",
+            "-Duser.country=DE",
+            "-Duser.language=de",
+            "-Duser.variant"
+        ],
+        "jdkVersion" : "17.0.2",
+        "vmName" : "OpenJDK 64-Bit Server VM",
+        "vmVersion" : "17.0.2+8-LTS",
+        "warmupIterations" : 5,
+        "warmupTime" : "10 s",
+        "warmupBatchSize" : 1,
+        "measurementIterations" : 5,
+        "measurementTime" : "10 s",
+        "measurementBatchSize" : 1,
+        "primaryMetric" : {
+            "score" : 950.1275103274515,
+            "scoreError" : 15.190556194806026,
+            "scoreConfidence" : [
+                934.9369541326455,
+                965.3180665222576
+            ],
+            "scorePercentiles" : {
+                "0.0" : 911.3943124100621,
+                "50.0" : 952.2968617887568,
+                "90.0" : 977.7307762395892,
+                "95.0" : 981.1789404332043,
+                "99.0" : 982.0691544544186,
+                "99.9" : 982.0691544544186,
+                "99.99" : 982.0691544544186,
+                "99.999" : 982.0691544544186,
+                "99.9999" : 982.0691544544186,
+                "100.0" : 982.0691544544186
+            },
+            "scoreUnit" : "ops/s",
+            "rawData" : [
+                [
+                    982.0691544544186,
+                    955.0374171216056,
+                    979.1017743837043,
+                    964.6624852400518,
+                    925.0276825554569
+                ],
+                [
+                    956.1755582451195,
+                    911.3943124100621,
+                    929.0652340073174,
+                    967.4455956409554,
+                    952.9508945384788
+                ],
+                [
+                    973.057696831325,
+                    966.6347503815825,
+                    936.0666443887872,
+                    976.8167774768458,
+                    951.504251121885
+                ],
+                [
+                    952.2968617887568,
+                    921.966200024008,
+                    916.1240790196013,
+                    933.0207219756703,
+                    945.3684132560395
+                ],
+                [
+                    939.5733852782138,
+                    975.007311710178,
+                    956.226440100797,
+                    940.4884972825927,
+                    946.1056189528312
+                ]
+            ]
+        },
+        "secondaryMetrics" : {
+        }
+    },
+    {
+        "jmhVersion" : "1.34",
+        "benchmark" : "org.xbib.net.benchmark.PathMatchingBenchmark.matchAndSortAllRoutesWithPathPatternParser",
+        "mode" : "thrpt",
+        "threads" : 1,
+        "forks" : 5,
+        "jvm" : "/Library/Java/JavaVirtualMachines/zulu-17.jdk/Contents/Home/bin/java",
+        "jvmArgs" : [
+            "-Dfile.encoding=UTF-8",
+            "-Duser.country=DE",
+            "-Duser.language=de",
+            "-Duser.variant"
+        ],
+        "jdkVersion" : "17.0.2",
+        "vmName" : "OpenJDK 64-Bit Server VM",
+        "vmVersion" : "17.0.2+8-LTS",
+        "warmupIterations" : 5,
+        "warmupTime" : "10 s",
+        "warmupBatchSize" : 1,
+        "measurementIterations" : 5,
+        "measurementTime" : "10 s",
+        "measurementBatchSize" : 1,
+        "primaryMetric" : {
+            "score" : 40031.37477838221,
+            "scoreError" : 1996.2389298981366,
+            "scoreConfidence" : [
+                38035.135848484075,
+                42027.61370828035
+            ],
+            "scorePercentiles" : {
+                "0.0" : 36433.00109114869,
+                "50.0" : 39320.61428369096,
+                "90.0" : 45155.11092333606,
+                "95.0" : 45599.71727569494,
+                "99.0" : 45693.3908403424,
+                "99.9" : 45693.3908403424,
+                "99.99" : 45693.3908403424,
+                "99.999" : 45693.3908403424,
+                "99.9999" : 45693.3908403424,
+                "100.0" : 45693.3908403424
+            },
+            "scoreUnit" : "ops/s",
+            "rawData" : [
+                [
+                    39599.68477777575,
+                    37973.60369831034,
+                    38396.27633481238,
+                    39253.010054103164,
+                    37429.51267783532
+                ],
+                [
+                    38067.106506328586,
+                    39124.57632651807,
+                    38262.53596403596,
+                    39303.94121151709,
+                    39504.46473802137
+                ],
+                [
+                    39794.17254168896,
+                    39705.71096962702,
+                    39652.38632950062,
+                    39579.80206238178,
+                    39512.01803650355
+                ],
+                [
+                    44115.77467607626,
+                    45004.42112232619,
+                    45381.14562485087,
+                    44725.72512753276,
+                    45693.3908403424
+                ],
+                [
+                    36433.00109114869,
+                    39320.61428369096,
+                    38484.66091818098,
+                    38495.814342280995,
+                    37971.019204165306
+                ]
+            ]
+        },
+        "secondaryMetrics" : {
+        }
+    },
+    {
+        "jmhVersion" : "1.34",
+        "benchmark" : "org.xbib.net.benchmark.PathMatchingBenchmark.matchStaticRoutesWithAntPathMatcher",
+        "mode" : "thrpt",
+        "threads" : 1,
+        "forks" : 5,
+        "jvm" : "/Library/Java/JavaVirtualMachines/zulu-17.jdk/Contents/Home/bin/java",
+        "jvmArgs" : [
+            "-Dfile.encoding=UTF-8",
+            "-Duser.country=DE",
+            "-Duser.language=de",
+            "-Duser.variant"
+        ],
+        "jdkVersion" : "17.0.2",
+        "vmName" : "OpenJDK 64-Bit Server VM",
+        "vmVersion" : "17.0.2+8-LTS",
+        "warmupIterations" : 5,
+        "warmupTime" : "10 s",
+        "warmupBatchSize" : 1,
+        "measurementIterations" : 5,
+        "measurementTime" : "10 s",
+        "measurementBatchSize" : 1,
+        "primaryMetric" : {
+            "score" : 8205.295027193253,
+            "scoreError" : 253.93643368708845,
+            "scoreConfidence" : [
+                7951.358593506165,
+                8459.23146088034
+            ],
+            "scorePercentiles" : {
+                "0.0" : 7494.992406948476,
+                "50.0" : 8250.043607694692,
+                "90.0" : 8682.981256843032,
+                "95.0" : 8702.07708088446,
+                "99.0" : 8703.611244566133,
+                "99.9" : 8703.611244566133,
+                "99.99" : 8703.611244566133,
+                "99.999" : 8703.611244566133,
+                "99.9999" : 8703.611244566133,
+                "100.0" : 8703.611244566133
+            },
+            "scoreUnit" : "ops/s",
+            "rawData" : [
+                [
+                    7776.33432977133,
+                    7796.534803257248,
+                    7976.205818850183,
+                    7750.053487676609,
+                    8023.12289153653
+                ],
+                [
+                    7849.010784866861,
+                    7494.992406948476,
+                    7888.447757517585,
+                    7982.353388245457,
+                    8308.311812674916
+                ],
+                [
+                    8046.8394027785125,
+                    8184.99855687572,
+                    8209.36631211148,
+                    8363.572625644612,
+                    8460.14147216783
+                ],
+                [
+                    8658.496160722716,
+                    8654.928791158243,
+                    8703.611244566133,
+                    8698.497365627227,
+                    8672.637184320234
+                ],
+                [
+                    8296.063727961213,
+                    8396.558144577311,
+                    8250.043607694692,
+                    8381.721189986161,
+                    8309.5324122941
+                ]
+            ]
+        },
+        "secondaryMetrics" : {
+        }
+    },
+    {
+        "jmhVersion" : "1.34",
+        "benchmark" : "org.xbib.net.benchmark.PathMatchingBenchmark.matchStaticRoutesWithPathPatternParser",
+        "mode" : "thrpt",
+        "threads" : 1,
+        "forks" : 5,
+        "jvm" : "/Library/Java/JavaVirtualMachines/zulu-17.jdk/Contents/Home/bin/java",
+        "jvmArgs" : [
+            "-Dfile.encoding=UTF-8",
+            "-Duser.country=DE",
+            "-Duser.language=de",
+            "-Duser.variant"
+        ],
+        "jdkVersion" : "17.0.2",
+        "vmName" : "OpenJDK 64-Bit Server VM",
+        "vmVersion" : "17.0.2+8-LTS",
+        "warmupIterations" : 5,
+        "warmupTime" : "10 s",
+        "warmupBatchSize" : 1,
+        "measurementIterations" : 5,
+        "measurementTime" : "10 s",
+        "measurementBatchSize" : 1,
+        "primaryMetric" : {
+            "score" : 365562.56886055216,
+            "scoreError" : 18569.95078039208,
+            "scoreConfidence" : [
+                346992.61808016006,
+                384132.51964094426
+            ],
+            "scorePercentiles" : {
+                "0.0" : 325787.95505597815,
+                "50.0" : 374718.5719088665,
+                "90.0" : 392889.71549621335,
+                "95.0" : 398253.89062451763,
+                "99.0" : 399176.92717245553,
+                "99.9" : 399176.92717245553,
+                "99.99" : 399176.92717245553,
+                "99.999" : 399176.92717245553,
+                "99.9999" : 399176.92717245553,
+                "100.0" : 399176.92717245553
+            },
+            "scoreUnit" : "ops/s",
+            "rawData" : [
+                [
+                    388662.8727349311,
+                    390749.43337413616,
+                    387249.9287947881,
+                    386499.16250676767,
+                    374425.2685252388
+                ],
+                [
+                    352727.7248253849,
+                    349601.7502852739,
+                    351124.6614028987,
+                    333424.47001959843,
+                    333542.1583066851
+                ],
+                [
+                    327552.12555473513,
+                    325787.95505597815,
+                    335012.9126031102,
+                    331770.3252415796,
+                    335493.0603334665
+                ],
+                [
+                    399176.92717245553,
+                    396100.1386793292,
+                    381384.6900987156,
+                    372390.3028315935,
+                    376181.92271467706
+                ],
+                [
+                    374718.5719088665,
+                    382122.1544260723,
+                    385231.46982420154,
+                    384140.7704616707,
+                    383993.4638316473
+                ]
+            ]
+        },
+        "secondaryMetrics" : {
+        }
+    }
+]
+
+

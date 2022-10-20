@@ -1,0 +1,4 @@
+dependencies {
+    api project(':net-security')
+    api libs.bouncycastle
+}
