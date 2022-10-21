@@ -3,13 +3,10 @@ package org.xbib.net;
 import org.junit.jupiter.api.Test;
 
 import java.net.SocketException;
-import java.util.logging.Logger;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class URLBuilderTest {
-
-    private static final Logger logger = Logger.getLogger(URLBuilderTest.class.getName());
 
     @Test
     void testNoUrlParts() {
