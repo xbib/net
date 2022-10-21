@@ -19,3 +19,9 @@ The org.xbib.net.buffer "DataBuffer" classes are taken from Spring Framework, Co
 https://github.com/spring-projects/spring-framework/tree/main/spring-core/src/main/java/org/springframework/core/io/buffer
 
 License: Apacche 2.0
+
+The IRI class is a modified version taken from org.apache.abdera.i18n.text
+
+https://abdera.apache.org
+
+License: Apacche 2.0
