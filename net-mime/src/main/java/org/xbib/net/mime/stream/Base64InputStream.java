@@ -11,7 +11,7 @@ public class Base64InputStream extends FilterInputStream {
 
     private static final byte[] EMPTY = new byte[0];
 
-    private static final int BUFFER_SIZE = 2048;
+    private static final int BUFFER_SIZE = 8192;
 
     private final Base64.Coder coder;
 
@@ -97,7 +97,7 @@ public class Base64InputStream extends FilterInputStream {
             return 0;
         }
         long bytes = Math.min(n, outputEnd-outputStart);
-        outputStart += bytes;
+        outputStart = outputStart + (int)bytes;
         return bytes;
     }
 
@@ -123,7 +123,7 @@ public class Base64InputStream extends FilterInputStream {
         }
         int bytes = Math.min(len, outputEnd-outputStart);
         System.arraycopy(coder.output, outputStart, b, off, bytes);
-        outputStart += bytes;
+        outputStart = outputStart + bytes;
         return bytes;
     }
 

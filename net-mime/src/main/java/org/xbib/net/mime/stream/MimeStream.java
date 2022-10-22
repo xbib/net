@@ -11,7 +11,7 @@ public class MimeStream {
 
     public static InputStream decode(InputStream inputStream, String encoding) throws MimeException {
         if (encoding.equalsIgnoreCase("base64"))
-            return new BASE64DecoderStream(inputStream);
+            return new Base64DecoderStream(inputStream);
         else if (encoding.equalsIgnoreCase("quoted-printable"))
             return new QuotedPrintableInputStream(inputStream);
         else if (encoding.equalsIgnoreCase("binary") ||

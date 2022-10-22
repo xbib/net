@@ -13,7 +13,7 @@ import java.io.InputStream;
  * any input stream and read bytes from this filter. The decoding
  * is done as the bytes are read out.
  */
-final class BASE64DecoderStream extends FilterInputStream {
+final class Base64DecoderStream extends FilterInputStream {
     /**
      * This character array provides the character to value map
      * based on RFC1521.
@@ -41,12 +41,17 @@ final class BASE64DecoderStream extends FilterInputStream {
 
     // buffer of decoded bytes for single byte reads
     private final byte[] buffer = new byte[3];
+
     // buffer for almost 8K of typical 76 chars + CRLF lines,
     // used by getByte method.  this buffer contains encoded bytes.
     private final byte[] input_buffer = new byte[78 * 105];
+
     private int bufsize = 0;    // size of the cache
+
     private int index = 0;    // index into the cache
+
     private int input_pos = 0;
+
     private int input_len = 0;
 
     /**
@@ -57,7 +62,7 @@ final class BASE64DecoderStream extends FilterInputStream {
      *
      * @param in the input stream
      */
-    public BASE64DecoderStream(InputStream in) {
+    public Base64DecoderStream(InputStream in) {
         super(in);
     }
 
@@ -75,7 +80,6 @@ final class BASE64DecoderStream extends FilterInputStream {
         if (size == 0) {
             return inbuf;
         }
-
         if (inbuf[inbuf.length - 1] == '=') {
             size--;
             if (inbuf[inbuf.length - 2] == '=') {
@@ -83,7 +87,6 @@ final class BASE64DecoderStream extends FilterInputStream {
             }
         }
         byte[] outbuf = new byte[size];
-
         int inpos = 0, outpos = 0;
         size = inbuf.length;
         while (size > 0) {
@@ -173,7 +176,6 @@ final class BASE64DecoderStream extends FilterInputStream {
         if (index >= bufsize) {
             bufsize = index = 0;
         }
-
         int bsize = (len / 3) * 3;    // round down to multiple of 3 bytes
         if (bsize > 0) {
             int size = 0;
@@ -184,7 +186,6 @@ final class BASE64DecoderStream extends FilterInputStream {
             }
             off += size;
             len -= size;
-
             if (size != bsize) {    // hit EOF?
                 if (off == off0) {
                     return -1;
@@ -193,7 +194,6 @@ final class BASE64DecoderStream extends FilterInputStream {
                 }
             }
         }
-
         // finish up with a partial read if necessary
         for (; len > 0; len--) {
             int c = read();
@@ -202,7 +202,6 @@ final class BASE64DecoderStream extends FilterInputStream {
             }
             buf[off++] = (byte) c;
         }
-
         if (off == off0) {
             return -1;
         } else {
@@ -292,50 +291,35 @@ final class BASE64DecoderStream extends FilterInputStream {
                                             " before padding character (=)" +
                                             recentChars());
                         }
-
-                        // didn't get any characters before padding character?
-                        if (got == 0) {
-                            return pos - pos0;
-                        }
                         atEOF = false;    // need to keep reading
                     }
-
                     // pad partial result with zeroes
-
                     // how many bytes will we produce on output?
                     // (got always < 4, so size always < 3)
                     int size = got - 1;
-                    if (size == 0) {
-                        size = 1;
-                    }
-
                     // handle the one padding character we've seen
                     got++;
                     val <<= 6;
-
                     while (got < 4) {
-                        if (!atEOF) {
-                            // consume the rest of the padding characters,
-                            // filling with zeroes
-                            i = getByte();
-                            if (i == -1) {
-                                throw new MimeException(
-                                        "BASE64Decoder: Error in encoded " +
-                                                "stream: hit EOF while looking for " +
-                                                "padding characters (=)" +
-                                                recentChars());
-                            } else if (i != -2) {
-                                throw new MimeException(
-                                        "BASE64Decoder: Error in encoded " +
-                                                "stream: found valid base64 " +
-                                                "character after a padding character " +
-                                                "(=)" + recentChars());
-                            }
+                        // consume the rest of the padding characters,
+                        // filling with zeroes
+                        i = getByte();
+                        if (i == -1) {
+                            throw new MimeException(
+                                    "BASE64Decoder: Error in encoded " +
+                                            "stream: hit EOF while looking for " +
+                                            "padding characters (=)" +
+                                            recentChars());
+                        } else if (i != -2) {
+                            throw new MimeException(
+                                    "BASE64Decoder: Error in encoded " +
+                                            "stream: found valid base64 " +
+                                            "character after a padding character " +
+                                            "(=)" + recentChars());
                         }
                         val <<= 6;
                         got++;
                     }
-
                     // now pull out however many valid bytes we got
                     val >>= 8;        // always skip first one
                     if (size == 2) {
@@ -353,7 +337,6 @@ final class BASE64DecoderStream extends FilterInputStream {
                     val |= i;
                 }
             }
-
             // read 4 valid characters, now extract 3 bytes
             outbuf[pos + 2] = (byte) (val & 0xff);
             val >>= 8;
@@ -424,7 +407,7 @@ final class BASE64DecoderStream extends FilterInputStream {
                         errstr.append("\\t");
                         break;
                     default:
-                        if (c >= ' ' && c < 0177) {
+                        if (c >= ' ' && c < 127) {
                             errstr.append(c);
                         } else {
                             errstr.append("\\").append((int) c);

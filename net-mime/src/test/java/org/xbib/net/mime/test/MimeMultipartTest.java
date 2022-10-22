@@ -17,10 +17,11 @@ public class MimeMultipartTest {
 
     @Test
     public void multiPartTest() throws MimeException, IOException {
-        InputStream inputStream = getClass().getResourceAsStream("/org/xbib/net/mime/test/msg.txt");
-        Objects.requireNonNull(inputStream);
-        MimeMultipartParser parser = new MimeMultipartParser("multipart/mixed; boundary=\"----=_Part_4_910054940.1065629194743\"; charset=\"ISO-8859-1\"");
-        parser.parse(ByteBuffer.wrap(inputStream.readAllBytes()),
-                e -> logger.log(Level.INFO, e.getHeaders().toString() + " length = " + e.getLength() + " content = " + e.getCharset().decode(e.getBody())));
+        try (InputStream inputStream = getClass().getResourceAsStream("/org/xbib/net/mime/test/msg.txt")) {
+            Objects.requireNonNull(inputStream);
+            MimeMultipartParser parser = new MimeMultipartParser("multipart/mixed; boundary=\"----=_Part_4_910054940.1065629194743\"; charset=\"ISO-8859-1\"");
+            parser.parse(ByteBuffer.wrap(inputStream.readAllBytes()),
+                    e -> logger.log(Level.INFO, e.getHeaders().toString() + " length = " + e.getLength() + " content = " + e.getCharset().decode(e.getBody())));
+        }
     }
 }
