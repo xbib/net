@@ -1,6 +1,5 @@
 package org.xbib.net.security;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.io.ByteArrayInputStream;
@@ -9,7 +8,6 @@ import java.nio.charset.StandardCharsets;
 import java.security.PrivateKey;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.fail;
 
 public class PrivateKeyReaderTest {
 
@@ -20,8 +18,6 @@ public class PrivateKeyReaderTest {
             PrivateKeyReader privateKeyReader = new PrivateKeyReader();
             PrivateKey privateKey = privateKeyReader.readPrivateKey(inputStream, null);
             assertEquals("PKCS#8", privateKey.getFormat());
-        } else {
-            fail();
         }
     }
 
@@ -32,8 +28,6 @@ public class PrivateKeyReaderTest {
             PrivateKeyReader privateKeyReader = new PrivateKeyReader();
             PrivateKey privateKey = privateKeyReader.readPrivateKey(inputStream, null);
             assertEquals("PKCS#8", privateKey.getFormat());
-        } else {
-            fail();
         }
     }
 
@@ -44,8 +38,6 @@ public class PrivateKeyReaderTest {
             PrivateKeyReader privateKeyReader = new PrivateKeyReader();
             PrivateKey privateKey = privateKeyReader.readPrivateKey(inputStream, null);
             assertEquals("PKCS#8", privateKey.getFormat());
-        } else {
-            fail();
         }
     }
 
@@ -56,8 +48,6 @@ public class PrivateKeyReaderTest {
             PrivateKeyReader privateKeyReader = new PrivateKeyReader();
             PrivateKey privateKey = privateKeyReader.readPrivateKey(inputStream, null);
             assertEquals("PKCS#8", privateKey.getFormat());
-        } else {
-            fail();
         }
     }
 
