@@ -6,7 +6,6 @@ import org.xbib.net.security.ssl.exception.GenericIOException;
 
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLSocketFactory;
-import javax.net.ssl.X509ExtendedTrustManager;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
@@ -34,21 +33,15 @@ class CertificateExtractorUtils {
     private static CertificateExtractorUtils instance;
 
     private final SSLFactory sslFactory;
-    private final SSLSocketFactory unsafeSslSocketFactory;
+    private final SSLSocketFactory sslSocketFactory;
     private final SSLSocketFactory certificateCapturingSslSocketFactory;
     private final List<X509Certificate> certificatesCollector;
 
     private CertificateExtractorUtils() {
         certificatesCollector = new ArrayList<>();
-
-        X509ExtendedTrustManager certificateCapturingTrustManager = TrustManagerUtils.createCertificateCapturingTrustManager(certificatesCollector);
-
-        sslFactory = SSLFactory.builder()
-                .withTrustMaterial(certificateCapturingTrustManager)
-                .build();
-
+        sslFactory = SSLFactory.builder().build();
         certificateCapturingSslSocketFactory = sslFactory.getSslSocketFactory();
-        unsafeSslSocketFactory = SSLSocketUtils.createUnsafeSslSocketFactory();
+        sslSocketFactory = SSLSocketUtils.createSslSocketFactory(sslFactory.getSslContext(), sslFactory.getSslParameters());
     }
 
     static CertificateExtractorUtils getInstance() {
@@ -127,7 +120,7 @@ class CertificateExtractorUtils {
             URL url = uri.toURL();
             URLConnection connection = url.openConnection();
             if (connection instanceof HttpsURLConnection) {
-                ((HttpsURLConnection) connection).setSSLSocketFactory(unsafeSslSocketFactory);
+                ((HttpsURLConnection) connection).setSSLSocketFactory(sslSocketFactory);
             }
 
             InputStream inputStream = connection.getInputStream();

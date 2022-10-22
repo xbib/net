@@ -10,7 +10,6 @@ import org.xbib.net.security.ssl.trustmanager.DummyX509ExtendedTrustManager;
 import org.xbib.net.security.ssl.trustmanager.EnhanceableX509ExtendedTrustManager;
 import org.xbib.net.security.ssl.trustmanager.HotSwappableX509ExtendedTrustManager;
 import org.xbib.net.security.ssl.trustmanager.TrustManagerFactoryWrapper;
-import org.xbib.net.security.ssl.trustmanager.UnsafeX509ExtendedTrustManager;
 import org.xbib.net.security.ssl.trustmanager.X509TrustManagerWrapper;
 
 import javax.net.ssl.ManagerFactoryParameters;
@@ -156,16 +155,8 @@ public final class TrustManagerUtils {
         }
     }
 
-    public static X509ExtendedTrustManager createUnsafeTrustManager() {
-        return UnsafeX509ExtendedTrustManager.getInstance();
-    }
-
     public static X509ExtendedTrustManager createDummyTrustManager() {
         return DummyX509ExtendedTrustManager.getInstance();
-    }
-
-    public static X509ExtendedTrustManager createCertificateCapturingTrustManager(List<X509Certificate> certificatesCollector) {
-        return createCertificateCapturingTrustManager(TrustManagerUtils.createUnsafeTrustManager(), certificatesCollector);
     }
 
     public static X509ExtendedTrustManager createCertificateCapturingTrustManager(X509TrustManager baseTrustManager, List<X509Certificate> certificatesCollector) {
@@ -328,42 +319,29 @@ public final class TrustManagerUtils {
 
         public X509ExtendedTrustManager build() {
             ValidationUtils.requireNotEmpty(trustManagers, () -> new GenericTrustManagerException(EMPTY_TRUST_MANAGER_EXCEPTION));
-
             X509ExtendedTrustManager baseTrustManager;
-
-            Optional<X509ExtendedTrustManager> unsafeTrustManager = trustManagers.stream()
-                    .filter(UnsafeX509ExtendedTrustManager.class::isInstance)
-                    .findAny();
-
-            if (unsafeTrustManager.isPresent()) {
-                baseTrustManager = unsafeTrustManager.get();
+            if (trustManagers.size() == 1) {
+                baseTrustManager = trustManagers.get(0);
             } else {
-                if (trustManagers.size() == 1) {
-                    baseTrustManager = trustManagers.get(0);
-                } else {
-                    baseTrustManager = trustManagers.stream()
-                            .map(TrustManagerUtils::unwrapIfPossible)
-                            .flatMap(Collection::stream)
-                            .filter(trustManager -> trustManager.getAcceptedIssuers().length > 0)
-                            .collect(Collectors.collectingAndThen(Collectors.toList(), CompositeX509ExtendedTrustManager::new));
-                }
-
-                if (chainAndAuthTypeValidator != null
-                        || chainAndAuthTypeWithSocketValidator != null
-                        || chainAndAuthTypeWithSSLEngineValidator != null) {
-                    baseTrustManager = TrustManagerUtils.createEnhanceableTrustManager(
-                            baseTrustManager,
-                            chainAndAuthTypeValidator,
-                            chainAndAuthTypeWithSocketValidator,
-                            chainAndAuthTypeWithSSLEngineValidator
-                    );
-                }
+                baseTrustManager = trustManagers.stream()
+                        .map(TrustManagerUtils::unwrapIfPossible)
+                        .flatMap(Collection::stream)
+                        .filter(trustManager -> trustManager.getAcceptedIssuers().length > 0)
+                        .collect(Collectors.collectingAndThen(Collectors.toList(), CompositeX509ExtendedTrustManager::new));
             }
-
+            if (chainAndAuthTypeValidator != null
+                    || chainAndAuthTypeWithSocketValidator != null
+                    || chainAndAuthTypeWithSSLEngineValidator != null) {
+                baseTrustManager = TrustManagerUtils.createEnhanceableTrustManager(
+                        baseTrustManager,
+                        chainAndAuthTypeValidator,
+                        chainAndAuthTypeWithSocketValidator,
+                        chainAndAuthTypeWithSSLEngineValidator
+                );
+            }
             if (swappableTrustManagerEnabled) {
                 baseTrustManager = TrustManagerUtils.createSwappableTrustManager(baseTrustManager);
             }
-
             return baseTrustManager;
         }
     }

@@ -31,15 +31,12 @@ public final class SSLContextUtils {
         return createSslContext(keyManagers, trustManagers, secureRandom, DEFAULT_SSL_CONTEXT_ALGORITHM, (Provider) null);
     }
 
-    public static SSLContext createSslContext(
-            List<? extends X509KeyManager> keyManagers,
+    public static SSLContext createSslContext(  List<? extends X509KeyManager> keyManagers,
             List<? extends X509TrustManager> trustManagers,
             SecureRandom secureRandom,
             String sslContextAlgorithm,
             Provider securityProvider) {
-
-        return createSslContext(
-                !keyManagers.isEmpty() ? KeyManagerUtils.combine(keyManagers) : null,
+        return createSslContext(!keyManagers.isEmpty() ? KeyManagerUtils.combine(keyManagers) : null,
                 !trustManagers.isEmpty() ? TrustManagerUtils.combine(trustManagers) : null,
                 secureRandom,
                 sslContextAlgorithm,
@@ -54,9 +51,7 @@ public final class SSLContextUtils {
             SecureRandom secureRandom,
             String sslContextAlgorithm,
             String securityProviderName) {
-
-        return createSslContext(
-                !keyManagers.isEmpty() ? KeyManagerUtils.combine(keyManagers) : null,
+        return createSslContext(!keyManagers.isEmpty() ? KeyManagerUtils.combine(keyManagers) : null,
                 !trustManagers.isEmpty() ? TrustManagerUtils.combine(trustManagers) : null,
                 secureRandom,
                 sslContextAlgorithm,
@@ -65,16 +60,13 @@ public final class SSLContextUtils {
         );
     }
 
-    public static SSLContext createSslContext(
-            X509KeyManager keyManager,
+    public static SSLContext createSslContext(X509KeyManager keyManager,
             X509TrustManager trustManager,
             SecureRandom secureRandom,
             String sslContextAlgorithm,
             String securityProviderName,
             Provider securityProvider) {
-
-        return createSslContext(
-                keyManager != null ? KeyManagerUtils.toArray(keyManager) : null,
+        return createSslContext(keyManager != null ? KeyManagerUtils.toArray(keyManager) : null,
                 trustManager != null ? TrustManagerUtils.toArray(trustManager) : null,
                 secureRandom,
                 sslContextAlgorithm,
@@ -83,14 +75,12 @@ public final class SSLContextUtils {
         );
     }
 
-    private static SSLContext createSslContext(
-            X509ExtendedKeyManager[] keyManagers,
+    private static SSLContext createSslContext(X509ExtendedKeyManager[] keyManagers,
             X509ExtendedTrustManager[] trustManagers,
             SecureRandom secureRandom,
             String sslContextAlgorithm,
             String securityProviderName,
             Provider securityProvider) {
-
         try {
             SSLContext sslContext;
             if (nonNull(securityProvider)) {
@@ -100,12 +90,10 @@ public final class SSLContextUtils {
             } else {
                 sslContext = SSLContext.getInstance(sslContextAlgorithm);
             }
-
             sslContext.init(keyManagers, trustManagers, secureRandom);
             return sslContext;
         } catch (NoSuchAlgorithmException | KeyManagementException | NoSuchProviderException e) {
             throw new GenericSSLContextException(e);
         }
     }
-
 }

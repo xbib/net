@@ -197,16 +197,6 @@ public final class SSLFactory {
             );
         }
 
-        /**
-         * A shorter method for using the unsafe trust material
-         *
-         * @see Builder#withTrustingAllCertificatesWithoutValidation()
-         * @return {@link Builder}
-         */
-        public Builder withUnsafeTrustMaterial() {
-            return withTrustingAllCertificatesWithoutValidation();
-        }
-
         public Builder withDummyTrustMaterial() {
             trustManagers.add(TrustManagerUtils.createDummyTrustManager());
             return this;
@@ -680,11 +670,6 @@ public final class SSLFactory {
 
         public <T extends SecureRandom> Builder withSecureRandom(T secureRandom) {
             this.secureRandom = secureRandom;
-            return this;
-        }
-
-        public Builder withTrustingAllCertificatesWithoutValidation() {
-            trustManagers.add(TrustManagerUtils.createUnsafeTrustManager());
             return this;
         }
 

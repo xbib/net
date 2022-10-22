@@ -29,10 +29,6 @@ public class CryptUtil {
         return encodeHex(b);
     }
 
-    public static String sha(String plainText) throws NoSuchAlgorithmException {
-        return digest(Codec.BASE64, plainText.getBytes(StandardCharsets.UTF_8), null, Algo.SHA.algo, Algo.SHA.prefix);
-    }
-
     public static String sha256(String plainText) throws NoSuchAlgorithmException {
         return digest(Codec.BASE64, plainText.getBytes(StandardCharsets.UTF_8), null, Algo.SHA256.algo, Algo.SHA256.prefix);
     }
@@ -51,18 +47,6 @@ public class CryptUtil {
 
     public static String ssha512(String plainText, byte[] salt) throws NoSuchAlgorithmException {
         return digest(Codec.BASE64, plainText.getBytes(StandardCharsets.UTF_8), salt, Algo.SSHA512.algo, Algo.SSHA512.prefix);
-    }
-
-    public static String hmacSHA1(Charset charset, String plainText, String secret) throws NoSuchAlgorithmException, InvalidKeyException {
-        return hmac(HMac.HMAC_SHA1, Codec.BASE64, plainText.getBytes(charset), secret.getBytes(charset));
-    }
-
-    public static String hmacSHA1(Charset charset, byte[] plainText, String secret) throws InvalidKeyException, NoSuchAlgorithmException {
-        return hmac(HMac.HMAC_SHA1, Codec.BASE64, plainText, secret.getBytes(charset));
-    }
-
-    public static String hmacSHA1(byte[] plainText, byte[] secret) throws InvalidKeyException, NoSuchAlgorithmException {
-        return hmac(HMac.HMAC_SHA1, Codec.BASE64, plainText, secret);
     }
 
     public static String hmacSHA256(Charset charset, String plainText, String secret) throws NoSuchAlgorithmException, InvalidKeyException {
