@@ -1,0 +1,3 @@
+This IRI implementation is taken from Daniel Fuchs' writeup for java.net.IRI
+
+http://cr.openjdk.java.net/%7Edfuchs/writeups/updating-uri/

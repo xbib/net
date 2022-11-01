@@ -38,10 +38,7 @@ import java.util.Objects;
  * The reason for the name {@code URL} is merely because of the popularity of the name, which
  * overweighs the URI or IRI popularity.
  *
- * [source,java]
- * --
  * URL url = URL.http().resolveFromHost("google.com").build();
- * --
  *
  */
 public class URL implements Comparable<URL> {

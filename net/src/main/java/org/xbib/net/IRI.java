@@ -8,6 +8,7 @@ import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
 import org.xbib.net.scheme.Scheme;
 import org.xbib.net.scheme.SchemeRegistry;
 import org.xbib.net.util.CharUtils;
