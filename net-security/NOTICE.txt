@@ -2,9 +2,10 @@
 All credits for the private key reader go to the original author Zhihong Zhang <zhihong@gmail.com>
 
 org.xbib.net.security.ssl is based on
-
 https://github.com/Hakky54/sslcontext-kickstart
-
 by Hakan Altındağ
-
 Apache License 2.0
+
+The EdDSA implementation in org.xbib.net.security.eddsa is taken from
+https://github.com/str4d/ed25519-java
+CC 1.0 License
