@@ -18,9 +18,9 @@ public class EdDSASecurityProvider extends Provider {
 
     protected void setup() {
         // See https://docs.oracle.com/javase/8/docs/technotes/guides/security/crypto/HowToImplAProvider.html
-        put("KeyFactory." + EdDSAKey.KEY_ALGORITHM, "org.xbib.io.sshd.eddsa.KeyFactory");
-        put("KeyPairGenerator." + EdDSAKey.KEY_ALGORITHM, "org.xbib.io.sshd.eddsa.KeyPairGenerator");
-        put("Signature." + EdDSAEngine.SIGNATURE_ALGORITHM, "org.xbib.io.sshd.eddsa.EdDSAEngine");
+        put("KeyFactory." + EdDSAKey.KEY_ALGORITHM, "org.xbib.net.security.eddsa.KeyFactory");
+        put("KeyPairGenerator." + EdDSAKey.KEY_ALGORITHM, "org.xbib.net.security.eddsa.KeyPairGenerator");
+        put("Signature." + EdDSAEngine.SIGNATURE_ALGORITHM, "org.xbib.net.security.eddsa.EdDSAEngine");
 
         // OID Mappings
         // See section "Mapping from OID to name".
