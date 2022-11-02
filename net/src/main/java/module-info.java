@@ -15,7 +15,7 @@ module org.xbib.net {
     exports org.xbib.net.util;
     requires transitive org.xbib.datastructures.common;
     requires java.management;
-    requires java.logging;
+    requires transitive java.logging;
     uses DataBufferFactory;
     provides DataBufferFactory with DefaultDataBufferFactory;
 }

@@ -70,44 +70,45 @@ public final class SelfSignedCertificate {
      * @param fqdn a fully qualified domain name
      * @param random the {@link SecureRandom} to use
      * @param bits the number of bits of the generated private key
-     * @throws NoSuchAlgorithmException if algorithm does not exist
-     * @throws NoSuchProviderException if provider does not exist
-     * @throws OperatorCreationException if provider does not exist
      * @throws IOException if generation fails
      */
     public void generate(String fqdn, SecureRandom random, int bits)
-            throws IOException, NoSuchProviderException, NoSuchAlgorithmException, OperatorCreationException {
-        KeyPairGenerator keyGen = KeyPairGenerator.getInstance("RSA", "BC");
-        keyGen.initialize(bits, random);
-        KeyPair keypair = keyGen.generateKeyPair();
-        this.key = keypair.getPrivate();
-        X500Name name = new X500Name("CN=" + fqdn);
-        SubjectPublicKeyInfo subjectPublicKeyInfo = SubjectPublicKeyInfo.getInstance(keypair.getPublic().getEncoded());
-        X509v3CertificateBuilder certificateBuilder =
-                new X509v3CertificateBuilder(name, BigInteger.valueOf(System.currentTimeMillis()),
-                        DEFAULT_NOT_BEFORE, DEFAULT_NOT_AFTER, name, subjectPublicKeyInfo);
-        AlgorithmIdentifier sigAlgId =
-                new DefaultSignatureAlgorithmIdentifierFinder().find("SHA256WithRSAEncryption");
-        AlgorithmIdentifier digestAlgId =
-                new DefaultDigestAlgorithmIdentifierFinder().find(sigAlgId);
-        AsymmetricKeyParameter caPrivateKeyParameters = PrivateKeyFactory.createKey(key.getEncoded());
-        ContentSigner contentSigner = new BcRSAContentSignerBuilder(sigAlgId, digestAlgId)
-                .build(caPrivateKeyParameters);
-        this.cert = certificateBuilder.build(contentSigner);
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        outputStream.write(BEGIN_KEY.getBytes(StandardCharsets.US_ASCII));
-        outputStream.write('\n');
-        writeEncoded(key.getEncoded(), outputStream);
-        outputStream.write(END_KEY.getBytes(StandardCharsets.US_ASCII));
-        outputStream.write('\n');
-        this.keyBytes = outputStream.toByteArray();
-        outputStream = new ByteArrayOutputStream();
-        outputStream.write(BEGIN_CERT.getBytes(StandardCharsets.US_ASCII));
-        outputStream.write('\n');
-        writeEncoded(cert.getEncoded(), outputStream);
-        outputStream.write(END_CERT.getBytes(StandardCharsets.US_ASCII));
-        outputStream.write('\n');
-        this.certBytes = outputStream.toByteArray();
+            throws IOException {
+        try {
+            KeyPairGenerator keyGen = KeyPairGenerator.getInstance("RSA", "BC");
+            keyGen.initialize(bits, random);
+            KeyPair keypair = keyGen.generateKeyPair();
+            this.key = keypair.getPrivate();
+            X500Name name = new X500Name("CN=" + fqdn);
+            SubjectPublicKeyInfo subjectPublicKeyInfo = SubjectPublicKeyInfo.getInstance(keypair.getPublic().getEncoded());
+            X509v3CertificateBuilder certificateBuilder =
+                    new X509v3CertificateBuilder(name, BigInteger.valueOf(System.currentTimeMillis()),
+                            DEFAULT_NOT_BEFORE, DEFAULT_NOT_AFTER, name, subjectPublicKeyInfo);
+            AlgorithmIdentifier sigAlgId =
+                    new DefaultSignatureAlgorithmIdentifierFinder().find("SHA256WithRSAEncryption");
+            AlgorithmIdentifier digestAlgId =
+                    new DefaultDigestAlgorithmIdentifierFinder().find(sigAlgId);
+            AsymmetricKeyParameter caPrivateKeyParameters = PrivateKeyFactory.createKey(key.getEncoded());
+            ContentSigner contentSigner = new BcRSAContentSignerBuilder(sigAlgId, digestAlgId)
+                    .build(caPrivateKeyParameters);
+            this.cert = certificateBuilder.build(contentSigner);
+            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            outputStream.write(BEGIN_KEY.getBytes(StandardCharsets.US_ASCII));
+            outputStream.write('\n');
+            writeEncoded(key.getEncoded(), outputStream);
+            outputStream.write(END_KEY.getBytes(StandardCharsets.US_ASCII));
+            outputStream.write('\n');
+            this.keyBytes = outputStream.toByteArray();
+            outputStream = new ByteArrayOutputStream();
+            outputStream.write(BEGIN_CERT.getBytes(StandardCharsets.US_ASCII));
+            outputStream.write('\n');
+            writeEncoded(cert.getEncoded(), outputStream);
+            outputStream.write(END_CERT.getBytes(StandardCharsets.US_ASCII));
+            outputStream.write('\n');
+            this.certBytes = outputStream.toByteArray();
+        } catch (NoSuchProviderException | NoSuchAlgorithmException | OperatorCreationException e) {
+            throw new IOException(e);
+        }
     }
 
     /**

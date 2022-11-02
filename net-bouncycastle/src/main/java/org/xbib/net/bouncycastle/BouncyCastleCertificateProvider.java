@@ -5,7 +5,6 @@ import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.openssl.PEMKeyPair;
 import org.bouncycastle.openssl.PEMParser;
 import org.bouncycastle.openssl.jcajce.JcaPEMKeyConverter;
-import org.bouncycastle.operator.OperatorCreationException;
 import org.xbib.net.security.CertificateProvider;
 
 import java.io.IOException;
@@ -13,8 +12,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.security.KeyPair;
-import java.security.NoSuchAlgorithmException;
-import java.security.NoSuchProviderException;
 import java.security.PrivateKey;
 import java.security.Provider;
 import java.security.SecureRandom;
@@ -55,12 +52,8 @@ public class BouncyCastleCertificateProvider implements CertificateProvider {
 
     @Override
     public Map.Entry<PrivateKey, Collection<? extends X509Certificate>> provideSelfSigned(String fullQualifiedDomainName) throws CertificateException, IOException {
-        try {
-            SelfSignedCertificate selfSignedCertificate = new SelfSignedCertificate();
-            selfSignedCertificate.generate(fullQualifiedDomainName, secureRandom, 2048);
-            return Map.entry(selfSignedCertificate.getPrivateKey(), List.of(selfSignedCertificate.getCertificate()));
-        } catch (NoSuchProviderException | NoSuchAlgorithmException | OperatorCreationException e) {
-            throw new IOException(e);
-        }
+        SelfSignedCertificate selfSignedCertificate = new SelfSignedCertificate();
+        selfSignedCertificate.generate(fullQualifiedDomainName, secureRandom, 2048);
+        return Map.entry(selfSignedCertificate.getPrivateKey(), List.of(selfSignedCertificate.getCertificate()));
     }
 }

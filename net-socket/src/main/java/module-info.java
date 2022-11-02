@@ -1,6 +1,6 @@
 module org.xbib.net.socket {
     requires java.logging;
-    requires com.sun.jna;
+    requires transitive com.sun.jna;
     exports org.xbib.net.socket;
     exports org.xbib.net.socket.v4;
     exports org.xbib.net.socket.v4.bsd;

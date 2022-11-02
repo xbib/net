@@ -11,5 +11,6 @@ module org.xbib.net.security {
     exports org.xbib.net.security.eddsa.spec;
     exports org.xbib.net.security.signatures;
     exports org.xbib.net.security.ssl;
+    exports org.xbib.net.security.ssl.trustmanager;
     exports org.xbib.net.security.util;
 }
