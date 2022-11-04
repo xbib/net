@@ -21,16 +21,6 @@ jar {
     duplicatesStrategy = DuplicatesStrategy.INCLUDE
 }
 
-tasks.withType(JavaCompile) {
-    options.compilerArgs.add('-Xlint:all')
-    options.encoding = 'UTF-8'
-}
-
-tasks.withType(Javadoc) {
-    options.addStringOption('Xdoclint:none', '-quiet')
-    options.encoding = 'UTF-8'
-}
-
 task sourcesJar(type: Jar, dependsOn: classes) {
     classifier 'sources'
     from sourceSets.main.allSource
@@ -43,4 +33,14 @@ task javadocJar(type: Jar, dependsOn: javadoc) {
 
 artifacts {
     archives sourcesJar, javadocJar
+}
+
+tasks.withType(JavaCompile) {
+    options.compilerArgs.add('-Xlint:all')
+    options.encoding = 'UTF-8'
+}
+
+tasks.withType(Javadoc) {
+    options.addStringOption('Xdoclint:none', '-quiet')
+    options.encoding = 'UTF-8'
 }
