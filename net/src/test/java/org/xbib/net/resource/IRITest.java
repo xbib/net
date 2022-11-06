@@ -1,5 +1,6 @@
 package org.xbib.net.resource;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.xbib.net.IRI;
 
@@ -8,8 +9,8 @@ import java.net.URISyntaxException;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
+@Disabled
 class IRITest {
 
     @Test
