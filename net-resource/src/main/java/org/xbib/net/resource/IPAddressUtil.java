@@ -30,6 +30,9 @@ public class IPAddressUtil {
     private final static int INADDR16SZ = 16;
     private final static int INT16SZ = 2;
 
+    public IPAddressUtil() {
+    }
+
     /*
      * Converts IPv4 address in its textual presentation form
      * into its numeric binary form.

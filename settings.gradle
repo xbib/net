@@ -1,3 +1,17 @@
+pluginManagement {
+    repositories {
+        mavenLocal()
+        mavenCentral {
+            metadataSources {
+                mavenPom()
+                artifact()
+                ignoreGradleMetadataRedirection()
+            }
+        }
+        gradlePluginPortal()
+    }
+}
+
 dependencyResolutionManagement {
     versionCatalogs {
         libs {
