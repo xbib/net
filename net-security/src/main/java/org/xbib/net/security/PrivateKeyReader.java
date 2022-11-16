@@ -1,8 +1,13 @@
 package org.xbib.net.security;
 
+import java.security.KeyPair;
+import java.security.PublicKey;
+import java.security.spec.KeySpec;
 import org.xbib.net.security.eddsa.EdDSAPrivateKey;
+import org.xbib.net.security.eddsa.EdDSAPublicKey;
 import org.xbib.net.security.eddsa.spec.EdDSANamedCurveTable;
 import org.xbib.net.security.eddsa.spec.EdDSAPrivateKeySpec;
+import org.xbib.net.security.eddsa.spec.EdDSAPublicKeySpec;
 import org.xbib.net.security.util.Asn1Object;
 import org.xbib.net.security.util.DerParser;
 import org.xbib.net.security.util.DerUtils;
@@ -73,35 +78,87 @@ public class PrivateKeyReader {
     public PrivateKeyReader() {
     }
 
-    public PrivateKey readPrivateKey(InputStream inputStream, String password)
+    public KeySpec parse(InputStream inputStream, String password)
             throws IOException, NoSuchAlgorithmException, InvalidKeySpecException,
             InvalidAlgorithmParameterException, NoSuchPaddingException, InvalidKeyException {
         Objects.requireNonNull(inputStream);
         byte[] key = inputStream.readAllBytes();
         if (indexOf(key, BEGIN_PRIVATE_KEY,0, key.length) >= 0) {
             byte[] keyBytes = extract(key, BEGIN_PRIVATE_KEY, END_PRIVATE_KEY);
-            EncodedKeySpec keySpec = generateKeySpec(keyBytes, password != null ? password.toCharArray() : null);
-            return KeyFactory.getInstance("RSA").generatePrivate(keySpec);
+            return generateKeySpec(keyBytes, password != null ? password.toCharArray() : null);
         }
         if (indexOf(key, BEGIN_RSA_PRIVATE_KEY,0, key.length) >= 0) {
             byte[] keyBytes = extract(key, BEGIN_RSA_PRIVATE_KEY, END_RSA_PRIVATE_KEY);
-            RSAPrivateCrtKeySpec keySpec = getRSAKeySpec(keyBytes);
-            return KeyFactory.getInstance("RSA").generatePrivate(keySpec);
+            return getRSAKeySpec(keyBytes);
         }
         if (indexOf(key, BEGIN_DSA_PRIVATE_KEY,0, key.length) >= 0) {
             byte[] keyBytes = extract(key, BEGIN_DSA_PRIVATE_KEY, END_DSA_PRIVATE_KEY);
-            DSAPrivateKeySpec keySpec = getDSAKeySpec(keyBytes);
-            return KeyFactory.getInstance("DSA").generatePrivate(keySpec);
+            return getDSAKeySpec(keyBytes);
         }
         if (indexOf(key, BEGIN_EC_PRIVATE_KEY,0, key.length) >= 0) {
             byte[] keyBytes = extract(key, BEGIN_EC_PRIVATE_KEY, END_EC_PRIVATE_KEY);
-            ECPrivateKeySpec keySpec = getECKeySpec(keyBytes);
-            return KeyFactory.getInstance("EC").generatePrivate(keySpec);
+            return getECKeySpec(keyBytes);
         }
         if (indexOf(key, BEGIN_OPENSSH_PRIVATE_KEY,0, key.length) >= 0) {
             byte[] keyBytes = extract(key, BEGIN_OPENSSH_PRIVATE_KEY, END_OPENSSH_PRIVATE_KEY);
             byte[] sk = Arrays.copyOfRange(keyBytes, 0, 32);
-            return new EdDSAPrivateKey(new EdDSAPrivateKeySpec(sk, EdDSANamedCurveTable.getByName("Ed25519")));
+            return new EdDSAPrivateKeySpec(sk, EdDSANamedCurveTable.getByName("Ed25519"));
+        }
+        throw new IOException("invalid PEM input stream");
+    }
+
+    public PrivateKey readPrivateKey(InputStream inputStream, String password)
+            throws IOException, NoSuchAlgorithmException, InvalidKeySpecException,
+            InvalidAlgorithmParameterException, NoSuchPaddingException, InvalidKeyException {
+        KeySpec keySpec = parse(inputStream, password);
+        if (keySpec instanceof EncodedKeySpec) {
+            return KeyFactory.getInstance("RSA").generatePrivate(keySpec);
+        }
+        if (keySpec instanceof RSAPrivateCrtKeySpec) {
+            return KeyFactory.getInstance("RSA").generatePrivate(keySpec);
+        }
+        if (keySpec instanceof DSAPrivateKeySpec) {
+            return KeyFactory.getInstance("DSA").generatePrivate(keySpec);
+        }
+        if (keySpec instanceof ECPrivateKeySpec) {
+            return KeyFactory.getInstance("EC").generatePrivate(keySpec);
+        }
+        if (keySpec instanceof EdDSAPrivateKeySpec) {
+            return new EdDSAPrivateKey((EdDSAPrivateKeySpec) keySpec);
+        }
+        throw new IOException("invalid PEM");
+    }
+
+    public KeyPair generateFrom(InputStream inputStream, String password)
+            throws IOException, NoSuchAlgorithmException, InvalidKeySpecException,
+            InvalidAlgorithmParameterException, NoSuchPaddingException, InvalidKeyException {
+        KeySpec keySpec = parse(inputStream, password);
+        PrivateKey privateKey = null;
+        PublicKey publicKey = null;
+        if (keySpec instanceof EncodedKeySpec) {
+            privateKey = KeyFactory.getInstance("RSA").generatePrivate(keySpec);
+            publicKey = KeyFactory.getInstance("RSA").generatePublic(keySpec);
+        }
+        if (keySpec instanceof RSAPrivateCrtKeySpec) {
+            privateKey = KeyFactory.getInstance("RSA").generatePrivate(keySpec);
+            publicKey = KeyFactory.getInstance("RSA").generatePublic(keySpec);
+        }
+        if (keySpec instanceof DSAPrivateKeySpec) {
+            privateKey = KeyFactory.getInstance("DSA").generatePrivate(keySpec);
+            publicKey = KeyFactory.getInstance("DSA").generatePublic(keySpec);
+        }
+        if (keySpec instanceof ECPrivateKeySpec) {
+            privateKey = KeyFactory.getInstance("EC").generatePrivate(keySpec);
+            publicKey = KeyFactory.getInstance("EC").generatePublic(keySpec);
+        }
+        if (keySpec instanceof EdDSAPrivateKeySpec) {
+            EdDSAPrivateKeySpec privateKeySpec = (EdDSAPrivateKeySpec) keySpec;
+            privateKey = new EdDSAPrivateKey(privateKeySpec);
+            EdDSAPublicKeySpec publicKeySpec = new EdDSAPublicKeySpec(privateKeySpec.getA(), privateKeySpec.getParams());
+            publicKey = new EdDSAPublicKey(publicKeySpec);
+        }
+        if (publicKey != null && privateKey != null) {
+            return new KeyPair(publicKey, privateKey);
         }
         throw new IOException("invalid PEM");
     }
