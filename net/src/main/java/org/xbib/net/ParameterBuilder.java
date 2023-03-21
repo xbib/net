@@ -32,7 +32,7 @@ public class ParameterBuilder implements PairValidator {
 
     private final List<Pair<String, Object>> list;
 
-    String domain;
+    protected String domain;
 
     final Map<String, Parameter> parameterMap;
 
@@ -118,7 +118,7 @@ public class ParameterBuilder implements PairValidator {
         return this;
     }
 
-    public ParameterBuilder enablePercentDeccoding() {
+    public ParameterBuilder enablePercentDecoding() {
         this.enablePercentDecoding = true;
         charset(StandardCharsets.UTF_8);
         return this;
@@ -172,11 +172,10 @@ public class ParameterBuilder implements PairValidator {
     }
 
     public ParameterBuilder add(Parameter parameter) {
-        if (domain.equals(parameter.getDomain())) {
-            parameter.stream(domain).forEach(this::add);
-        } else {
-            parameterMap.putIfAbsent(parameter.getDomain(), parameter);
+        if (parameterMap.containsKey(parameter.getDomain())) {
+            throw new IllegalArgumentException("unable to add domain " + parameter.getDomain());
         }
+        parameterMap.putIfAbsent(parameter.getDomain(), parameter);
         return this;
     }
 

@@ -147,12 +147,12 @@ class PathResolverTest {
                 .add("GET", "test/{two}", 4321)
                 .build();
         pathResolver.resolve("GET", "test/foo", result -> {
-            if (result.getParameter().containsKey("PATH", "one")) {
+            if (result.getParameter().containsKey("one", "PATH")) {
                 assertThat(result.getValue(), is(1234));
-                assertThat(result.getParameter().get("PATH", "one"), is("foo"));
+                assertThat(result.getParameter().get("one", "PATH"), is("foo"));
             } else {
                 assertThat(result.getValue(), is(4321));
-                assertThat(result.getParameter().get("PATH", "two"), is("foo"));
+                assertThat(result.getParameter().get("two", "PATH"), is("foo"));
             }
         });
     }

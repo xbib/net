@@ -1,5 +1,6 @@
 package org.xbib.net;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -7,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.xbib.datastructures.common.ImmutableList;
@@ -44,10 +46,6 @@ public class Parameter implements Iterable<Pair<String, Object>>, Comparable<Par
         return EMPTY;
     }
 
-    public static Parameter of(String domain) {
-        return Parameter.builder().domain(domain).build();
-    }
-
     public static Parameter of(Map<String, Object> map) {
         return Parameter.builder().enableSort().add(map).build();
     }
@@ -75,31 +73,46 @@ public class Parameter implements Iterable<Pair<String, Object>>, Comparable<Par
 
     @Override
     public int compareTo(Parameter o) {
-        return toString().compareTo(o.toString());
+        return list.toString().compareTo(o.list.toString());
     }
 
     @Override
     public String toString() {
-        return list.toString();
+        return allToString();
     }
 
+    public String getDomain() {
+        return builder.domain;
+    }
+
+
     @SuppressWarnings("unchecked")
-    public String getAsString(String domain, String key) {
-        Object object = get(domain, key);
+    public String getAsString(String key, String... domains) {
+        Object object = get(key, domains);
         if (object instanceof Collection) {
             Collection<Object> collection = (Collection<Object>) object;
-            object = collection.iterator().next();
+            Iterator<Object> iterator = collection.iterator();
+            if (iterator.hasNext()) {
+                object = iterator.next();
+            } else {
+                object = null;
+            }
             return object != null ? object.toString() : null;
         }
         return object != null ? object instanceof String ? (String) object : object.toString() : null;
     }
 
     @SuppressWarnings("unchecked")
-    public Integer getAsInteger(String domain, String key) {
-        Object object = get(domain, key);
+    public Integer getAsInteger(String key, String... domains) {
+        Object object = get(key, domains);
         if (object instanceof Collection) {
             Collection<Object> collection = (Collection<Object>) object;
-            object = collection.iterator().next();
+            Iterator<Object> iterator = collection.iterator();
+            if (iterator.hasNext()) {
+                object = iterator.next();
+            } else {
+                object = null;
+            }
             return object != null ? Integer.parseInt(object.toString()) : null;
         }
         try {
@@ -110,11 +123,16 @@ public class Parameter implements Iterable<Pair<String, Object>>, Comparable<Par
     }
 
     @SuppressWarnings("unchecked")
-    public Boolean getAsBoolean(String domain, String key) {
-        Object object = get(domain, key);
+    public Boolean getAsBoolean(String key, String... domains) {
+        Object object = get(key, domains);
         if (object instanceof Collection) {
             Collection<Object> collection = (Collection<Object>) object;
-            object = collection.iterator().next();
+            Iterator<Object> iterator = collection.iterator();
+            if (iterator.hasNext()) {
+                object = iterator.next();
+            } else {
+                object = null;
+            }
             return object != null ? Boolean.parseBoolean(object.toString()) : null;
         }
         try {
@@ -127,9 +145,7 @@ public class Parameter implements Iterable<Pair<String, Object>>, Comparable<Par
     public String allToString() {
         StringBuilder sb = new StringBuilder();
         sb.append(list.toString());
-        if (!builder.parameterMap.isEmpty()) {
-            builder.parameterMap.forEach((key, value) -> sb.append(" ").append(key).append(" -> ").append(value));
-        }
+        builder.parameterMap.forEach((key, value) -> sb.append(" ").append(key).append(" -> ").append(value));
         return sb.toString();
     }
 
@@ -162,57 +178,102 @@ public class Parameter implements Iterable<Pair<String, Object>>, Comparable<Par
         return object;
     }
 
-    public String getDomain() {
-        return builder.domain;
-    }
-
-    public Stream<Pair<String, Object>> stream(String domain) {
-        if (!builder.domain.equals(domain)) {
-            throw new IllegalArgumentException("domain mismatch");
-        }
-        return list.stream();
-    }
-
-    public List<Object> getAll(String domain, String key) {
-        Optional<Parameter> optional = builder.parameterMap.values().stream().filter(p -> domain.equals(p.getDomain())).findFirst();
-        if (optional.isPresent()) {
-            return optional.get().getAll(domain, key);
-        } else {
-            if (!builder.domain.equals(domain)) {
-                throw new IllegalArgumentException("domain mismatch");
+    public List<Object> getAllDomain(String... domains) {
+        Parameter parameter = null;
+        for (String domain : domains) {
+            if (builder.parameterMap.containsKey(domain)) {
+                parameter = builder.parameterMap.get(domain);
+            }
+            if (parameter != null) {
+                List<Object> list = parameter.getAllDomain(domains);
+                if (list != null) {
+                    return list;
+                }
             }
             return list.stream()
-                    .filter(p -> key.equals(p.getKey()))
                     .map(Pair::getValue)
                     .collect(Collectors.toList());
         }
+        return null;
     }
 
-    public boolean containsKey(String domain, String key) {
-        Optional<Parameter> optional = builder.parameterMap.values().stream().filter(p -> domain.equals(p.getDomain())).findFirst();
-        if (optional.isPresent()) {
-            return optional.get().containsKey(domain, key);
-        } else {
-            if (!builder.domain.equals(domain)) {
-                throw new IllegalArgumentException("domain mismatch");
+    public boolean isPresent(String... domains) {
+        Parameter parameter = null;
+        for (String domain : domains) {
+            if (builder.parameterMap.containsKey(domain)) {
+                parameter = builder.parameterMap.get(domain);
             }
-            return list.stream().anyMatch(p -> key.equals(p.getKey()));
+            if (parameter != null) {
+                boolean b = parameter.isPresent(domains);
+                if (b) {
+                    return true;
+                }
+            }
+            return list.stream().findAny().isPresent();
         }
+        return false;
     }
 
-    public Object get(String domain, String key) {
-        Optional<Parameter> optional = builder.parameterMap.values().stream().filter(p -> domain.equals(p.getDomain())).findFirst();
-        if (optional.isPresent()) {
-            return optional.get().getAll(domain, key);
-        } else {
-            if (!builder.domain.equals(domain)) {
-                throw new IllegalArgumentException("domain mismatch");
+    public List<Object> getAll(String key, String... domains) {
+        Parameter parameter = null;
+        for (String domain : domains) {
+            if (builder.parameterMap.containsKey(domain)) {
+                parameter = builder.parameterMap.get(domain);
+            }
+            if (parameter != null) {
+                List<Object> list = parameter.getAll(key, domains);
+                if (list != null) {
+                    return list;
+                }
             }
             return list.stream()
-                    .filter(p -> key.equals(p.getKey()))
+                    .filter(p -> p.getKey().equals(key))
                     .map(Pair::getValue)
-                    .findFirst().orElse(null);
+                    .collect(Collectors.toList());
         }
+        return null;
+    }
+
+    public boolean containsKey(String key, String... domains) {
+        Parameter parameter = null;
+        for (String domain : domains) {
+            if (builder.parameterMap.containsKey(domain)) {
+                parameter = builder.parameterMap.get(domain);
+            }
+            if (parameter != null) {
+                boolean b = parameter.containsKey(key, domains);
+                if (b) {
+                    return true;
+                }
+            }
+            return list.stream()
+                    .anyMatch(p -> key.equals(p.getKey()));
+        }
+        return false;
+    }
+
+    public Object get(String key, String... domains) {
+        Parameter parameter = null;
+        for (String domain : domains) {
+            if (builder.parameterMap.containsKey(domain)) {
+                parameter = builder.parameterMap.get(domain);
+            }
+            if (parameter != null) {
+                Object object = parameter.get(key, domains);
+                if (object != null) {
+                    return object;
+                }
+            } else {
+                Optional<Object> optional = list.stream()
+                        .filter(p -> key.equals(p.getKey()))
+                        .map(Pair::getValue)
+                        .findFirst();
+                if (optional.isPresent()) {
+                    return optional.get();
+                }
+            }
+        }
+        return null;
     }
 
     public String getAsQueryString() {

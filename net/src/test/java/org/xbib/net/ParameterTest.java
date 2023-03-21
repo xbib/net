@@ -17,8 +17,7 @@ public class ParameterTest {
     public void testEmptyBuilder() {
         Parameter parameter = Parameter.builder().build();
         assertNotNull(parameter);
-        assertEquals("DEFAULT", parameter.getDomain());
-        assertFalse(parameter.containsKey("DEFAULT", "param1"));
+        assertFalse(parameter.containsKey("param1", "DEFAULT"));
     }
 
     @Test
@@ -27,8 +26,7 @@ public class ParameterTest {
                 .add("Hello", "World")
                 .build();
         assertNotNull(parameter);
-        assertEquals("DEFAULT", parameter.getDomain());
-        assertTrue(parameter.containsKey("DEFAULT", "Hello"));
+        assertTrue(parameter.containsKey("Hello", "DEFAULT"));
     }
 
     @Test
@@ -40,9 +38,8 @@ public class ParameterTest {
                 .add("Hello", "World")
                 .build();
         assertNotNull(parameter);
-        assertEquals("DEFAULT", parameter.getDomain());
-        assertTrue(parameter.containsKey("DEFAULT", "Hello"));
-        assertEquals(List.of("World", "World", "World"), parameter.getAll("DEFAULT", "Hello"));
+        assertTrue(parameter.containsKey("Hello", "DEFAULT"));
+        assertEquals(List.of("World", "World", "World"), parameter.getAll("Hello", "DEFAULT"));
     }
 
     @Test
@@ -57,8 +54,8 @@ public class ParameterTest {
                 .build();
         assertNotNull(parameter);
         assertEquals("HEADER", parameter.getDomain());
-        assertTrue(parameter.containsKey("HEADER", "content-type"));
-        assertEquals(List.of("close"), parameter.getAll("HEADER", "connection"));
+        assertTrue(parameter.containsKey("content-type", "HEADER"));
+        assertEquals(List.of("close"), parameter.getAll( "connection", "HEADER"));
     }
 
     @Test
@@ -112,7 +109,7 @@ public class ParameterTest {
                 .build();
         URLBuilder mutator = url.mutator();
         mutator.path(requestPath);
-        httpParameter.stream("DEFAULT").forEach(e -> mutator.queryParam(e.getKey(), e.getValue()));
+        httpParameter.forEach(e -> mutator.queryParam(e.getKey(), e.getValue()));
         url = mutator.build();
         assertEquals("http://localhost/path?operation=searchRetrieve&query=iss%20%3D%2000280836&recordSchema=MARC21plus-1-xml&version=1.1",
                 url.toExternalForm());
@@ -124,9 +121,9 @@ public class ParameterTest {
         String body = "a=b&c=d&e=f";
         queryParameters.addPercentEncodedBody(body);
         Parameter parameter = queryParameters.build();
-        assertEquals("b", parameter.getAll("DEFAULT", "a").get(0));
-        assertEquals("d", parameter.getAll("DEFAULT", "c").get(0));
-        assertEquals("f", parameter.getAll("DEFAULT", "e").get(0));
+        assertEquals("b", parameter.getAll("a", "DEFAULT").get(0));
+        assertEquals("d", parameter.getAll("c", "DEFAULT").get(0));
+        assertEquals("f", parameter.getAll("e", "DEFAULT").get(0));
     }
 
     @Test
@@ -140,14 +137,14 @@ public class ParameterTest {
             String body = String.join("&", list);
             queryParameters.addPercentEncodedBody(body);
             Parameter parameter = queryParameters.build();
-            assertEquals("b0", parameter.getAll("DEFAULT", "a0").get(0));
-            assertEquals("b99", parameter.getAll("DEFAULT", "a99").get(0));
-            assertEquals("[]", parameter.getAll("DEFAULT", "a100").toString());
+            assertEquals("b0", parameter.getAll("a0", "DEFAULT").get(0));
+            assertEquals("b99", parameter.getAll("a99", "DEFAULT").get(0));
+            assertEquals("[]", parameter.getAll("a100", "DEFAULT").toString());
         });
     }
 
     @Test
-    void testSubDomains() {
+    void testDomains() {
         Parameter p1 = Parameter.builder().domain("A").add("a", "a").build();
         Parameter p2 = Parameter.builder().domain("B").add("b", "b").build();
         Parameter p3 = Parameter.builder().domain("C").add("c", "c").build();
@@ -156,8 +153,16 @@ public class ParameterTest {
                 .add(p2)
                 .add(p3)
                 .build();
-        assertEquals("[a]", p.get("A", "a").toString());
-        assertEquals("[b]", p.get("B", "b").toString());
-        assertEquals("[c]", p.get("C", "c").toString());
+        assertEquals("a", p.get("a", "A").toString());
+        assertEquals("b", p.get("b", "B").toString());
+        assertEquals("c", p.get("c", "C").toString());
+        assertEquals("[] A -> [a=a] B -> [b=b] C -> [c=c]", p.toString());
+        assertEquals("a", p.get("a", "A", "B", "C"));
+        assertEquals("b", p.get("b", "A", "B", "C"));
+        assertEquals("c", p.get("c", "A", "B", "C"));
+        assertTrue(p.isPresent("A"));
+        assertTrue(p.isPresent("B"));
+        assertTrue(p.isPresent("C"));
+        assertFalse(p.isPresent("D"));
     }
 }

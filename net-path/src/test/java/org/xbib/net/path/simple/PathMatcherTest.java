@@ -314,13 +314,13 @@ class PathMatcherTest {
     void extractUriTemplateVariablesRegex() {
         Parameter result = pathMatcher.extractUriTemplateVariables("{symbolicName:[\\w\\.]+}-{version:[\\w\\.]+}.jar",
                         "com.example-1.0.0.jar");
-        assertEquals("com.example", result.getAll("DEFAULT", "symbolicName").get(0));
-        assertEquals("1.0.0", result.getAll("DEFAULT", "version").get(0));
+        assertEquals("com.example", result.getAll("symbolicName", "DEFAULT").get(0));
+        assertEquals("1.0.0", result.getAll("version", "DEFAULT").get(0));
 
         result = pathMatcher.extractUriTemplateVariables("{symbolicName:[\\w\\.]+}-sources-{version:[\\w\\.]+}.jar",
                 "com.example-sources-1.0.0.jar");
-        assertEquals("com.example", result.getAll("DEFAULT", "symbolicName").get(0));
-        assertEquals("1.0.0", result.getAll("DEFAULT", "version").get(0));
+        assertEquals("com.example", result.getAll("symbolicName", "DEFAULT").get(0));
+        assertEquals("1.0.0", result.getAll("version", "DEFAULT").get(0));
     }
 
     @Test
@@ -328,21 +328,21 @@ class PathMatcherTest {
         Parameter result = pathMatcher.extractUriTemplateVariables(
                 "{symbolicName:[\\p{L}\\.]+}-sources-{version:[\\p{N}\\.]+}.jar",
                 "com.example-sources-1.0.0.jar");
-        assertEquals("com.example", result.getAll("DEFAULT", "symbolicName").get(0));
-        assertEquals("1.0.0", result.getAll("DEFAULT", "version").get(0));
+        assertEquals("com.example", result.getAll("symbolicName", "DEFAULT").get(0));
+        assertEquals("1.0.0", result.getAll("version", "DEFAULT").get(0));
         result = pathMatcher.extractUriTemplateVariables(
                 "{symbolicName:[\\w\\.]+}-sources-{version:[\\d\\.]+}-{year:\\d{4}}{month:\\d{2}}{day:\\d{2}}.jar",
                 "com.example-sources-1.0.0-20100220.jar");
-        assertEquals("com.example", result.getAll("DEFAULT", "symbolicName").get(0));
-        assertEquals("1.0.0", result.getAll("DEFAULT", "version").get(0));
-        assertEquals("2010", result.getAll("DEFAULT", "year").get(0));
-        assertEquals("02", result.getAll("DEFAULT", "month").get(0));
-        assertEquals("20", result.getAll("DEFAULT", "day").get(0));
+        assertEquals("com.example", result.getAll("symbolicName",  "DEFAULT").get(0));
+        assertEquals("1.0.0", result.getAll("version", "DEFAULT").get(0));
+        assertEquals("2010", result.getAll("year", "DEFAULT").get(0));
+        assertEquals("02", result.getAll("month", "DEFAULT").get(0));
+        assertEquals("20", result.getAll("day", "DEFAULT").get(0));
         result = pathMatcher.extractUriTemplateVariables(
                 "{symbolicName:[\\p{L}\\.]+}-sources-{version:[\\p{N}\\.\\{\\}]+}.jar",
                 "com.example-sources-1.0.0.{12}.jar");
-        assertEquals("com.example", result.getAll("DEFAULT", "symbolicName").get(0));
-        assertEquals("1.0.0.{12}", result.getAll("DEFAULT", "version").get(0));
+        assertEquals("com.example", result.getAll("symbolicName", "DEFAULT").get(0));
+        assertEquals("1.0.0.{12}", result.getAll("version", "DEFAULT").get(0));
     }
 
     @Test

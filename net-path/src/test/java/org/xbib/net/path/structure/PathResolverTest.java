@@ -14,7 +14,6 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
@@ -116,7 +115,7 @@ class PathResolverTest {
                 .build();
         pathResolver.resolve("GET", "one/two/three/four", result -> {
             assertThat(result.getValue(), anyOf(equalTo(1234), equalTo(4321)));
-            if (result.getParameter().containsKey("PATH", "three")) {
+            if (result.getParameter().containsKey("three", "PATH")) {
                 assertThat(result.getParameter(), is(Parameter.of("PATH", Map.of("three", "three"))));
             } else {
                 assertThat(result.getParameter(), is(Parameter.of("PATH", Map.of("one", "one", "two", "two", "four", "four"))));
@@ -231,7 +230,7 @@ class PathResolverTest {
     }
 
     private void assertSuccessfulResolution(PathResolver<Integer> pathResolver, String path, Integer value) {
-        assertSuccessfulResolution(pathResolver, "GET", path, value, Parameter.of("PATH"));
+        assertSuccessfulResolution(pathResolver, "GET", path, value, Parameter.builder().domain("PATH").build());
     }
 
     private void assertSuccessfulResolution(PathResolver<Integer> pathResolver, String method, String path, Integer value,
