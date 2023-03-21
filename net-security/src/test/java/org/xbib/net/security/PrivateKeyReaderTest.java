@@ -87,4 +87,14 @@ public class PrivateKeyReaderTest {
         assertEquals("PKCS#8", privateKey.getFormat());
         assertEquals("RSA", privateKey.getAlgorithm());
     }
+
+    @Test
+    public void testKey() throws Exception {
+        InputStream inputStream = getClass().getResourceAsStream("/test.key");
+        if (inputStream != null) {
+            PrivateKeyReader privateKeyReader = new PrivateKeyReader();
+            PrivateKey privateKey = privateKeyReader.readPrivateKey(inputStream, null);
+            assertEquals("PKCS#8", privateKey.getFormat());
+        }
+    }
 }
