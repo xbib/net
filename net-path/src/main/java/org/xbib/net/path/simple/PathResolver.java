@@ -83,7 +83,9 @@ public class PathResolver<T> implements org.xbib.net.path.PathResolver<T> {
             }
         } else if (builder.infoMap.containsKey(method)) {
             Info<T> info = builder.infoMap.get(method);
-            ParameterBuilder parameterBuilder = Parameter.builder().domain("PATH").enableSort();
+            ParameterBuilder parameterBuilder = Parameter.builder()
+                    .domain(Parameter.Domain.PATH)
+                    .enableSort();
             for (int i = 0; i < info.parameterNames.size(); i++) {
                 parameterBuilder.add(info.parameterNames.get(i), parameters.get(i));
             }

@@ -25,7 +25,7 @@ class PathResolverTest {
                 .add( "GET", "/static/{file}", 1234)
                 .build();
         assertSuccessfulResolution(pathResolver, "GET", "/static/test.txt", 1234,
-                Parameter.of("PATH", Map.of("file", "test.txt")));
+                Parameter.of(Parameter.Domain.PATH, Map.of("file", "test.txt")));
     }
 
     @Test
@@ -68,7 +68,7 @@ class PathResolverTest {
                 .add("GET", "discovery/{version}/rest", 1234)
                 .build();
         assertSuccessfulResolution(pathResolver, "GET", "discovery/v1/rest", 1234,
-                Parameter.of("PATH", Map.of("version", "v1")));
+                Parameter.of(Parameter.Domain.PATH, Map.of("version", "v1")));
     }
 
     @Test
@@ -77,7 +77,7 @@ class PathResolverTest {
                 .add("GET", "discovery/{discovery_version}/apis/{api}/{format}", 1234)
                 .build();
         assertSuccessfulResolution(pathResolver, "GET", "discovery/v1/apis/test/rest", 1234,
-                Parameter.of("PATH", Map.of("discovery_version", "v1", "api", "test", "format", "rest")));
+                Parameter.of(Parameter.Domain.PATH, Map.of("discovery_version", "v1", "api", "test", "format", "rest")));
     }
 
     @Test
@@ -87,13 +87,13 @@ class PathResolverTest {
                 .add("GET", "discovery/{version}/rpc", 4321)
                 .build();
         assertSuccessfulResolution(pathResolver, "GET", "discovery/v1/rest", 1234,
-                Parameter.of("PATH", Map.of("version", "v1")));
+                Parameter.of(Parameter.Domain.PATH, Map.of("version", "v1")));
         assertSuccessfulResolution(pathResolver, "GET", "discovery/v2/rest", 1234,
-                Parameter.of("PATH", Map.of("version", "v2")));
+                Parameter.of(Parameter.Domain.PATH, Map.of("version", "v2")));
         assertSuccessfulResolution(pathResolver, "GET", "discovery/v1/rpc", 4321,
-                Parameter.of("PATH", Map.of("version", "v1")));
+                Parameter.of(Parameter.Domain.PATH, Map.of("version", "v1")));
         assertSuccessfulResolution(pathResolver, "GET", "discovery/v2/rpc", 4321,
-                Parameter.of("PATH", Map.of("version", "v2")));
+                Parameter.of(Parameter.Domain.PATH, Map.of("version", "v2")));
     }
 
     @Test
@@ -103,7 +103,7 @@ class PathResolverTest {
                 .add("GET", "one/two", 4321)
                 .build();
         assertSuccessfulResolution(pathResolver, "GET", "one/three", 1234,
-                Parameter.of("PATH", Map.of("one", "one")));
+                Parameter.of(Parameter.Domain.PATH, Map.of("one", "one")));
         assertSuccessfulResolution(pathResolver, "one/two", 4321);
     }
 
@@ -115,15 +115,15 @@ class PathResolverTest {
                 .build();
         pathResolver.resolve("GET", "one/two/three/four", result -> {
             assertThat(result.getValue(), anyOf(equalTo(1234), equalTo(4321)));
-            if (result.getParameter().containsKey("three", "PATH")) {
-                assertThat(result.getParameter(), is(Parameter.of("PATH", Map.of("three", "three"))));
+            if (result.getParameter().containsKey("three", Parameter.Domain.PATH)) {
+                assertThat(result.getParameter(), is(Parameter.of(Parameter.Domain.PATH, Map.of("three", "three"))));
             } else {
-                assertThat(result.getParameter(), is(Parameter.of("PATH", Map.of("one", "one", "two", "two", "four", "four"))));
+                assertThat(result.getParameter(), is(Parameter.of(Parameter.Domain.PATH, Map.of("one", "one", "two", "two", "four", "four"))));
             }
         });
         pathResolver.resolve("GET", "one/two/three/five", result -> {
             assertThat(result.getValue(), equalTo(1234));
-            assertThat(result.getParameter(), is(Parameter.of("PATH", Map.of("one", "one", "two", "two", "four", "five"))));
+            assertThat(result.getParameter(), is(Parameter.of(Parameter.Domain.PATH, Map.of("one", "one", "two", "two", "four", "five"))));
         });
     }
 
@@ -137,10 +137,10 @@ class PathResolverTest {
         pathResolver.resolve("GET", "test/foo", result -> {
             assertThat(result.getValue(), anyOf(equalTo(1234), equalTo(4321)));
             if (result.getValue() == 1234) {
-                assertThat(result.getParameter(), is(Parameter.of("PATH", Map.of("one", "foo"))));
+                assertThat(result.getParameter(), is(Parameter.of(Parameter.Domain.PATH, Map.of("one", "foo"))));
             }
             if (result.getValue() == 4321) {
-                assertThat(result.getParameter(), is(Parameter.of("PATH", Map.of("two", "foo"))));
+                assertThat(result.getParameter(), is(Parameter.of(Parameter.Domain.PATH, Map.of("two", "foo"))));
             }
             count.incrementAndGet();
         });
@@ -156,11 +156,11 @@ class PathResolverTest {
         AtomicInteger count = new AtomicInteger();
         pathResolver.resolve("GET", "test/foo", result -> {
             assertThat(result.getValue(), anyOf(equalTo(1234), equalTo(4321)));
-            if (result.getParameter().containsKey("PATH", "one")) {
-                assertThat(result.getParameter().get("PATH", "one"), is("foo"));
+            if (result.getParameter().containsKey( "one", Parameter.Domain.PATH)) {
+                assertThat(result.getParameter().get( "one", Parameter.Domain.PATH), is("foo"));
             }
-            if (result.getParameter().containsKey("PATH", "two")) {
-                assertThat(result.getParameter().get("PATH", "two"), is("foo"));
+            if (result.getParameter().containsKey("two", Parameter.Domain.PATH)) {
+                assertThat(result.getParameter().get( "two", Parameter.Domain.PATH), is("foo"));
             }
             count.incrementAndGet();
         });
@@ -230,7 +230,7 @@ class PathResolverTest {
     }
 
     private void assertSuccessfulResolution(PathResolver<Integer> pathResolver, String path, Integer value) {
-        assertSuccessfulResolution(pathResolver, "GET", path, value, Parameter.builder().domain("PATH").build());
+        assertSuccessfulResolution(pathResolver, "GET", path, value, Parameter.builder().domain(Parameter.Domain.PATH).build());
     }
 
     private void assertSuccessfulResolution(PathResolver<Integer> pathResolver, String method, String path, Integer value,

@@ -24,8 +24,6 @@ public class PathResolver<T> implements org.xbib.net.path.PathResolver<T> {
 
     private static final Logger logger = Logger.getLogger(PathResolver.class.getName());
 
-    private static final String PATH_DOMAIN = "PATH";
-
     private final Builder<T> builder;
 
     private final Map<PathSegment, PathResolver<T>> children;
@@ -44,7 +42,7 @@ public class PathResolver<T> implements org.xbib.net.path.PathResolver<T> {
         Objects.requireNonNull(path, "path");
         List<PathSegment> pathSegments = PathMatcher.tokenize(PathNormalizer.normalize(path),
                 builder.pathSeparator, builder.trimTokens, builder.caseSensitive);
-        ParameterBuilder parameterBuilder = Parameter.builder().domain(PATH_DOMAIN).enableSort();
+        ParameterBuilder parameterBuilder = Parameter.builder().domain(Parameter.Domain.PATH).enableSort();
         resolve(pathSegments, 0, parameterBuilder, listener);
     }
 
@@ -63,7 +61,7 @@ public class PathResolver<T> implements org.xbib.net.path.PathResolver<T> {
             List<PathResolver<T>> list = new ArrayList<>();
             boolean shortCircuit = match(segment, list, pb);
             if (list.isEmpty()) {
-                pb = Parameter.builder().domain(PATH_DOMAIN).enableSort();
+                pb = Parameter.builder().domain(Parameter.Domain.PATH).enableSort();
             }
             if (shortCircuit) {
                 PathResolver<T> pathResolver = list.get(list.size() - 1);
@@ -71,7 +69,7 @@ public class PathResolver<T> implements org.xbib.net.path.PathResolver<T> {
                     T value = pathResolver.builder.value;
                     if (listener != null) {
                         listener.onResult(new Result<>(value, pb.build(), pathResolver.builder.method));
-                        pb = Parameter.builder().domain(PATH_DOMAIN).enableSort();
+                        pb = Parameter.builder().domain(Parameter.Domain.PATH).enableSort();
                     }
                 }
             } else {
@@ -84,7 +82,7 @@ public class PathResolver<T> implements org.xbib.net.path.PathResolver<T> {
                 T value = builder.value;
                 if (listener != null) {
                     listener.onResult(new Result<>(value, pb.build(), builder.method));
-                    pb = Parameter.builder().domain(PATH_DOMAIN).enableSort();
+                    pb = Parameter.builder().domain(Parameter.Domain.PATH).enableSort();
                 }
             }
         }
@@ -221,7 +219,7 @@ public class PathResolver<T> implements org.xbib.net.path.PathResolver<T> {
             Objects.requireNonNull(pathSpec, "pathSpec");
             Objects.requireNonNull(value, "value");
             PathMatcher pathMatcher = new PathMatcher(pathSpec, pathSeparator, trimTokens, caseSensitive, true,
-                    Parameter.builder().domain(PATH_DOMAIN).enableSort());
+                    Parameter.builder().domain(Parameter.Domain.PATH).enableSort());
             add(pathMatcher.getAnalyzedSegments(), value, method, 0);
             return this;
         }

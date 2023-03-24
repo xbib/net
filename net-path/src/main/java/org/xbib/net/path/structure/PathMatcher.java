@@ -30,7 +30,7 @@ public class PathMatcher extends Path {
 
     public PathMatcher() {
         this(null, "/", true, true, true,
-                Parameter.builder().domain("PATH").enableSort());
+                Parameter.builder().domain(Parameter.Domain.PATH).enableSort());
     }
 
     public PathMatcher(String pathSpec,
@@ -47,7 +47,7 @@ public class PathMatcher extends Path {
 
     public static PathMatcher of(String pathSpec) {
         return new PathMatcher(pathSpec, "/", true, true, true,
-                Parameter.builder().domain("PATH").enableSort());
+                Parameter.builder().domain(Parameter.Domain.PATH).enableSort());
     }
 
     public void setPathSeparator(String pathSeparator) {
