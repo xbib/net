@@ -32,9 +32,9 @@ public class ParameterBuilder implements PairValidator {
 
     private final List<Pair<String, Object>> list;
 
-    protected String domain;
+    protected Parameter.Domain domain;
 
-    final Map<String, Parameter> parameterMap;
+    final Map<Parameter.Domain, Parameter> parameterMap;
 
     private Charset charset;
 
@@ -65,7 +65,7 @@ public class ParameterBuilder implements PairValidator {
     ParameterBuilder() {
         this.list = new ArrayList<>();
         this.parameterMap = new HashMap<>();
-        this.domain = "DEFAULT";
+        this.domain = Parameter.Domain.DEFAULT;
         this.limit = 0;
     }
 
@@ -139,7 +139,7 @@ public class ParameterBuilder implements PairValidator {
         return this;
     }
 
-    public ParameterBuilder domain(String domain) {
+    public ParameterBuilder domain(Parameter.Domain domain) {
         this.domain = domain;
         return this;
     }

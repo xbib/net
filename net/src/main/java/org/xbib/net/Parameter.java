@@ -1,6 +1,5 @@
 package org.xbib.net;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -8,15 +7,22 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import org.xbib.datastructures.common.ImmutableList;
 import org.xbib.datastructures.common.LinkedHashSetMultiMap;
 import org.xbib.datastructures.common.MultiMap;
 import org.xbib.datastructures.common.Pair;
 
 public class Parameter implements Iterable<Pair<String, Object>>, Comparable<Parameter> {
+
+    public enum Domain {
+        DEFAULT,
+        QUERY,
+        FORM,
+        PATH,
+        HEADER,
+        COOKIE
+    }
 
     private static final Parameter EMPTY = Parameter.builder().build();
 
@@ -50,7 +56,7 @@ public class Parameter implements Iterable<Pair<String, Object>>, Comparable<Par
         return Parameter.builder().enableSort().add(map).build();
     }
 
-    public static Parameter of(String domain, Map<String, Object> map) {
+    public static Parameter of(Domain domain, Map<String, Object> map) {
         return Parameter.builder().domain(domain).enableSort().add(map).build();
     }
 
@@ -81,13 +87,12 @@ public class Parameter implements Iterable<Pair<String, Object>>, Comparable<Par
         return allToString();
     }
 
-    public String getDomain() {
+    public Domain getDomain() {
         return builder.domain;
     }
 
-
     @SuppressWarnings("unchecked")
-    public String getAsString(String key, String... domains) {
+    public String getAsString(String key, Domain... domains) {
         Object object = get(key, domains);
         if (object instanceof Collection) {
             Collection<Object> collection = (Collection<Object>) object;
@@ -103,7 +108,7 @@ public class Parameter implements Iterable<Pair<String, Object>>, Comparable<Par
     }
 
     @SuppressWarnings("unchecked")
-    public Integer getAsInteger(String key, String... domains) {
+    public Integer getAsInteger(String key, Domain... domains) {
         Object object = get(key, domains);
         if (object instanceof Collection) {
             Collection<Object> collection = (Collection<Object>) object;
@@ -123,7 +128,7 @@ public class Parameter implements Iterable<Pair<String, Object>>, Comparable<Par
     }
 
     @SuppressWarnings("unchecked")
-    public Boolean getAsBoolean(String key, String... domains) {
+    public Boolean getAsBoolean(String key, Domain... domains) {
         Object object = get(key, domains);
         if (object instanceof Collection) {
             Collection<Object> collection = (Collection<Object>) object;
@@ -178,9 +183,9 @@ public class Parameter implements Iterable<Pair<String, Object>>, Comparable<Par
         return object;
     }
 
-    public List<Object> getAllDomain(String... domains) {
+    public List<Object> getAllDomain(Domain... domains) {
         Parameter parameter = null;
-        for (String domain : domains) {
+        for (Domain domain : domains) {
             if (builder.parameterMap.containsKey(domain)) {
                 parameter = builder.parameterMap.get(domain);
             }
@@ -197,9 +202,9 @@ public class Parameter implements Iterable<Pair<String, Object>>, Comparable<Par
         return null;
     }
 
-    public boolean isPresent(String... domains) {
+    public boolean isPresent(Domain... domains) {
         Parameter parameter = null;
-        for (String domain : domains) {
+        for (Domain domain : domains) {
             if (builder.parameterMap.containsKey(domain)) {
                 parameter = builder.parameterMap.get(domain);
             }
@@ -214,9 +219,18 @@ public class Parameter implements Iterable<Pair<String, Object>>, Comparable<Par
         return false;
     }
 
-    public List<Object> getAll(String key, String... domains) {
+    public Parameter getDomain(Domain... domains) {
+        for (Domain domain : domains) {
+            if (builder.parameterMap.containsKey(domain)) {
+                return builder.parameterMap.get(domain);
+            }
+        }
+        return null;
+    }
+
+    public List<Object> getAll(String key, Domain... domains) {
         Parameter parameter = null;
-        for (String domain : domains) {
+        for (Domain domain : domains) {
             if (builder.parameterMap.containsKey(domain)) {
                 parameter = builder.parameterMap.get(domain);
             }
@@ -234,9 +248,9 @@ public class Parameter implements Iterable<Pair<String, Object>>, Comparable<Par
         return null;
     }
 
-    public boolean containsKey(String key, String... domains) {
+    public boolean containsKey(String key, Domain... domains) {
         Parameter parameter = null;
-        for (String domain : domains) {
+        for (Domain domain : domains) {
             if (builder.parameterMap.containsKey(domain)) {
                 parameter = builder.parameterMap.get(domain);
             }
@@ -252,9 +266,9 @@ public class Parameter implements Iterable<Pair<String, Object>>, Comparable<Par
         return false;
     }
 
-    public Object get(String key, String... domains) {
+    public Object get(String key, Domain... domains) {
         Parameter parameter = null;
-        for (String domain : domains) {
+        for (Domain domain : domains) {
             if (builder.parameterMap.containsKey(domain)) {
                 parameter = builder.parameterMap.get(domain);
             }

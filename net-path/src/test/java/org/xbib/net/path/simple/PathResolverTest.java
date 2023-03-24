@@ -1,6 +1,7 @@
 package org.xbib.net.path.simple;
 
 import org.junit.jupiter.api.Test;
+import org.xbib.net.Parameter;
 
 import java.util.Collections;
 import java.util.Map;
@@ -147,12 +148,12 @@ class PathResolverTest {
                 .add("GET", "test/{two}", 4321)
                 .build();
         pathResolver.resolve("GET", "test/foo", result -> {
-            if (result.getParameter().containsKey("one", "PATH")) {
+            if (result.getParameter().containsKey("one", Parameter.Domain.PATH)) {
                 assertThat(result.getValue(), is(1234));
-                assertThat(result.getParameter().get("one", "PATH"), is("foo"));
+                assertThat(result.getParameter().get("one", Parameter.Domain.PATH), is("foo"));
             } else {
                 assertThat(result.getValue(), is(4321));
-                assertThat(result.getParameter().get("two", "PATH"), is("foo"));
+                assertThat(result.getParameter().get("two", Parameter.Domain.PATH), is("foo"));
             }
         });
     }
