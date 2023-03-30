@@ -259,12 +259,10 @@ public class DefaultDataBuffer implements DataBuffer {
 	public DefaultDataBuffer write(byte[] source, int offset, int length) {
 		Objects.requireNonNull(source, "Byte array must not be null");
 		ensureCapacity(length);
-
 		ByteBuffer tmp = this.byteBuffer.duplicate();
 		int limit = this.writePosition + length;
 		tmp.clear().position(this.writePosition).limit(limit);
 		tmp.put(source, offset, length);
-
 		this.writePosition += length;
 		return this;
 	}
@@ -319,7 +317,6 @@ public class DefaultDataBuffer implements DataBuffer {
 	@Override
 	public ByteBuffer asByteBuffer(int index, int length) {
 		checkIndex(index, length);
-
 		ByteBuffer duplicate = this.byteBuffer.duplicate();
 		duplicate.position(index);
 		duplicate.limit(index + length);
@@ -429,6 +426,11 @@ public class DefaultDataBuffer implements DataBuffer {
 			String message = String.format(format, args);
 			throw new IndexOutOfBoundsException(message);
 		}
+	}
+
+	@Override
+	public void release() {
+		// nothing to do
 	}
 
 	private class DefaultDataBufferInputStream extends InputStream {

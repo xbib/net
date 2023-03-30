@@ -24,12 +24,4 @@ public interface PooledDataBuffer extends DataBuffer {
 	 */
 	PooledDataBuffer touch(Object hint);
 
-	/**
-	 * Decrease the reference count for this buffer by one,
-	 * and deallocate it once the count reaches zero.
-	 * @return {@code true} if the buffer was deallocated;
-	 * {@code false} otherwise
-	 */
-	boolean release();
-
 }

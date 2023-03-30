@@ -3,29 +3,17 @@ package org.xbib.net.buffer;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.ReadableByteChannel;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class DataBufferUtil {
-
-    private static final Logger logger = Logger.getLogger(DataBufferUtil.class.getName());
 
     private DataBufferUtil() {
     }
 
     public static boolean release(DataBuffer dataBuffer) {
-        if (dataBuffer instanceof PooledDataBuffer) {
-            PooledDataBuffer pooledDataBuffer = (PooledDataBuffer) dataBuffer;
+        if (dataBuffer instanceof PooledDataBuffer pooledDataBuffer) {
             if (pooledDataBuffer.isAllocated()) {
-                try {
-                    return pooledDataBuffer.release();
-                }
-                catch (IllegalStateException ex) {
-                    if (logger.isLoggable(Level.FINER)) {
-                        logger.log(Level.FINER, "failed to release PooledDataBuffer " + dataBuffer, ex);
-                    }
-                    return false;
-                }
+                pooledDataBuffer.release();
+                return true;
             }
         }
         return false;
@@ -38,8 +26,7 @@ public class DataBufferUtil {
      */
     @SuppressWarnings("unchecked")
     public static <T extends DataBuffer> T retain(T dataBuffer) {
-        if (dataBuffer instanceof PooledDataBuffer) {
-            PooledDataBuffer pooledDataBuffer = (PooledDataBuffer) dataBuffer;
+        if (dataBuffer instanceof PooledDataBuffer pooledDataBuffer) {
             return (T) pooledDataBuffer.retain();
         }
         else {

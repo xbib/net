@@ -30,7 +30,7 @@ import java.util.function.IntPredicate;
  * <p>The {@linkplain #capacity() capacity} of a {@code DataBuffer} is expanded on demand,
  * similar to {@code StringBuilder}.
  */
-public interface DataBuffer {
+public interface DataBuffer extends Releasable {
 
 	/**
 	 * Return the {@link DataBufferFactory} that created this buffer.
