@@ -115,6 +115,7 @@ application/exi					exi
 # application/font-sfnt
 application/font-tdpfr				pfr
 application/font-woff				woff
+font/woff2				woff2
 # application/framework-attributes+xml
 # application/geo+json
 application/gml+xml				gml
