@@ -156,9 +156,9 @@ public class ParameterTest {
         assertEquals("a", p.get("a", Parameter.Domain.QUERY).toString());
         assertEquals("b", p.get("b", Parameter.Domain.FORM).toString());
         assertEquals("c", p.get("c", Parameter.Domain.HEADER).toString());
-        assertEquals("a", p.get("a", Parameter.Domain.QUERY, Parameter.Domain.FORM, Parameter.Domain.HEADER));
-        assertEquals("b", p.get("b", Parameter.Domain.QUERY, Parameter.Domain.FORM, Parameter.Domain.HEADER));
-        assertEquals("c", p.get("c", Parameter.Domain.QUERY, Parameter.Domain.FORM, Parameter.Domain.HEADER));
+        assertEquals("a", p.get("a", Parameter.Domain.QUERY));
+        assertEquals("b", p.get("b", Parameter.Domain.FORM));
+        assertEquals("c", p.get("c", Parameter.Domain.HEADER));
         assertTrue(p.isPresent(Parameter.Domain.QUERY));
         assertTrue(p.isPresent(Parameter.Domain.FORM));
         assertTrue(p.isPresent(Parameter.Domain.HEADER));

@@ -92,8 +92,8 @@ public class Parameter implements Iterable<Pair<String, Object>>, Comparable<Par
     }
 
     @SuppressWarnings("unchecked")
-    public String getAsString(String key, Domain... domains) {
-        Object object = get(key, domains);
+    public String getAsString(String key, Domain domain) {
+        Object object = get(key, domain);
         if (object instanceof Collection) {
             Collection<Object> collection = (Collection<Object>) object;
             Iterator<Object> iterator = collection.iterator();
@@ -108,8 +108,8 @@ public class Parameter implements Iterable<Pair<String, Object>>, Comparable<Par
     }
 
     @SuppressWarnings("unchecked")
-    public Integer getAsInteger(String key, Domain... domains) {
-        Object object = get(key, domains);
+    public Integer getAsInteger(String key, Domain domain) {
+        Object object = get(key, domain);
         if (object instanceof Collection) {
             Collection<Object> collection = (Collection<Object>) object;
             Iterator<Object> iterator = collection.iterator();
@@ -128,8 +128,8 @@ public class Parameter implements Iterable<Pair<String, Object>>, Comparable<Par
     }
 
     @SuppressWarnings("unchecked")
-    public Boolean getAsBoolean(String key, Domain... domains) {
-        Object object = get(key, domains);
+    public Boolean getAsBoolean(String key, Domain domain) {
+        Object object = get(key, domain);
         if (object instanceof Collection) {
             Collection<Object> collection = (Collection<Object>) object;
             Iterator<Object> iterator = collection.iterator();
@@ -183,18 +183,15 @@ public class Parameter implements Iterable<Pair<String, Object>>, Comparable<Par
         return object;
     }
 
-    public List<Object> getAllDomain(Domain... domains) {
+    public List<Object> getAllDomain(Domain domain) {
         Parameter parameter = null;
-        for (Domain domain : domains) {
-            if (builder.parameterMap.containsKey(domain)) {
-                parameter = builder.parameterMap.get(domain);
-            }
-            if (parameter != null) {
-                List<Object> list = parameter.getAllDomain(domains);
-                if (list != null) {
-                    return list;
-                }
-            }
+        if (builder.parameterMap.containsKey(domain)) {
+            parameter = builder.parameterMap.get(domain);
+        }
+        if (parameter != null) {
+            return parameter.getAllDomain(domain);
+        }
+        if (getDomain().equals(domain)) {
             return list.stream()
                     .map(Pair::getValue)
                     .collect(Collectors.toList());
@@ -202,44 +199,39 @@ public class Parameter implements Iterable<Pair<String, Object>>, Comparable<Par
         return null;
     }
 
-    public boolean isPresent(Domain... domains) {
+    public boolean isPresent(Domain domain) {
         Parameter parameter = null;
-        for (Domain domain : domains) {
-            if (builder.parameterMap.containsKey(domain)) {
-                parameter = builder.parameterMap.get(domain);
-            }
-            if (parameter != null) {
-                boolean b = parameter.isPresent(domains);
-                if (b) {
-                    return true;
-                }
-            }
+        if (builder.parameterMap.containsKey(domain)) {
+            parameter = builder.parameterMap.get(domain);
+        }
+        if (parameter != null) {
+            return parameter.isPresent(domain);
+        }
+        if (getDomain().equals(domain)) {
             return list.stream().findAny().isPresent();
         }
         return false;
     }
 
-    public Parameter getDomain(Domain... domains) {
-        for (Domain domain : domains) {
-            if (builder.parameterMap.containsKey(domain)) {
-                return builder.parameterMap.get(domain);
-            }
+    public Parameter getDomain(Domain domain) {
+        if (builder.parameterMap.containsKey(domain)) {
+            return builder.parameterMap.get(domain);
+        }
+        if (getDomain().equals(domain)) {
+            return this;
         }
         return null;
     }
 
-    public List<Object> getAll(String key, Domain... domains) {
+    public List<Object> getAll(String key, Domain domain) {
         Parameter parameter = null;
-        for (Domain domain : domains) {
-            if (builder.parameterMap.containsKey(domain)) {
-                parameter = builder.parameterMap.get(domain);
-            }
-            if (parameter != null) {
-                List<Object> list = parameter.getAll(key, domains);
-                if (list != null) {
-                    return list;
-                }
-            }
+        if (builder.parameterMap.containsKey(domain)) {
+            parameter = builder.parameterMap.get(domain);
+        }
+        if (parameter != null) {
+            return parameter.getAll(key, domain);
+        }
+        if (getDomain().equals(domain)) {
             return list.stream()
                     .filter(p -> p.getKey().equals(key))
                     .map(Pair::getValue)
@@ -248,43 +240,36 @@ public class Parameter implements Iterable<Pair<String, Object>>, Comparable<Par
         return null;
     }
 
-    public boolean containsKey(String key, Domain... domains) {
+    public boolean containsKey(String key, Domain domain) {
         Parameter parameter = null;
-        for (Domain domain : domains) {
-            if (builder.parameterMap.containsKey(domain)) {
-                parameter = builder.parameterMap.get(domain);
-            }
-            if (parameter != null) {
-                boolean b = parameter.containsKey(key, domains);
-                if (b) {
-                    return true;
-                }
-            }
+        if (builder.parameterMap.containsKey(domain)) {
+            parameter = builder.parameterMap.get(domain);
+        }
+        if (parameter != null) {
+            return parameter.containsKey(key, domain);
+        }
+        if (getDomain().equals(domain)) {
             return list.stream()
                     .anyMatch(p -> key.equals(p.getKey()));
         }
         return false;
     }
 
-    public Object get(String key, Domain... domains) {
+    public Object get(String key, Domain domain) {
         Parameter parameter = null;
-        for (Domain domain : domains) {
-            if (builder.parameterMap.containsKey(domain)) {
-                parameter = builder.parameterMap.get(domain);
-            }
-            if (parameter != null) {
-                Object object = parameter.get(key, domains);
-                if (object != null) {
-                    return object;
-                }
-            } else {
-                Optional<Object> optional = list.stream()
-                        .filter(p -> key.equals(p.getKey()))
-                        .map(Pair::getValue)
-                        .findFirst();
-                if (optional.isPresent()) {
-                    return optional.get();
-                }
+        if (builder.parameterMap.containsKey(domain)) {
+            parameter = builder.parameterMap.get(domain);
+        }
+        if (parameter != null) {
+            return parameter.get(key, domain);
+        }
+        if (getDomain().equals(domain)) {
+            Optional<Object> optional = list.stream()
+                    .filter(p -> key.equals(p.getKey()))
+                    .map(Pair::getValue)
+                    .findFirst();
+            if (optional.isPresent()) {
+                return optional.get();
             }
         }
         return null;
