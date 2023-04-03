@@ -75,6 +75,21 @@ class URLBuilderTest {
     }
 
     @Test
+    void testQueryParamEncodedWithSpaces() {
+        assertUrl(URL.http()
+                .resolveFromHost("foo.com")
+                .queryParam(" foo ", " bar ")
+                .build()
+                .toExternalForm(), "http://foo.com?%20foo%20=%20bar%20");
+    }
+
+    @Test
+    void testFromUrlQueryParamEncodedWithSpaces() {
+        assertUrl(URL.from("http://foo.com? foo = bar ")
+                .toExternalForm(), "http://foo.com?%20foo%20=%20bar%20");
+    }
+
+    @Test
     void testQueryParamsDuplicated() {
         assertUrl(URL.http().resolveFromHost("foo.com")
                 .queryParam("foo", "bar")

@@ -412,6 +412,20 @@ class URLParserTest {
     }
 
     @Test
+    void testQuerySpaces() throws Exception {
+        URL url = URL.parser().parse("http://foo.com? foo = bar ");
+        assertEquals(" foo = bar ", url.getQuery());
+        assertEquals(" foo = bar ", url.getDecodedQuery());
+    }
+
+    @Test
+    void testQuerySpacesPercentEncoded() throws Exception {
+        URL url = URL.parser().parse("http://foo.com?%20foo%20=%20bar%20");
+        assertEquals("%20foo%20=%20bar%20", url.getQuery());
+        assertEquals(" foo = bar ", url.getDecodedQuery());
+    }
+
+    @Test
     void testAnotherPlus() throws Exception {
         URL url = URL.parser().parse("http://foo.com/has+plus;plusMtx=pl+us?plusQp=pl%2Bus#plus+frag");
         assertEquals("/has+plus;plusMtx=pl+us", url.getPath());

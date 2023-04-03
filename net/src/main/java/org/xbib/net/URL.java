@@ -611,7 +611,7 @@ public class URL implements Comparable<URL> {
         return sb.length() == 0 ? null : sb.toString();
     }
 
-    private void appendQuery(StringBuilder sb, boolean withEncoding, boolean withQuestionMark) {
+    private void appendQuery(StringBuilder sb, boolean encoded, boolean withQuestionMark) {
         // a given query has priority
         if (!isNullOrEmpty(builder.query)) {
             if (withQuestionMark) {
@@ -627,10 +627,10 @@ public class URL implements Comparable<URL> {
             while (it.hasNext()) {
                 Pair<String, Object> queryParam = it.next();
                 try {
-                    String k = withEncoding ? queryParamEncoder.encode(queryParam.getKey()) : queryParam.getKey();
+                    String k = encoded ? queryParamEncoder.encode(queryParam.getKey()) : queryParam.getKey();
                     sb.append(k);
                     if (queryParam.getValue() != null) {
-                        Object v = withEncoding && queryParam.getValue() instanceof CharSequence ?
+                        Object v = encoded && queryParam.getValue() instanceof CharSequence ?
                                 queryParamEncoder.encode((CharSequence) queryParam.getValue()) : queryParam.getValue();
                         sb.append(EQUAL_CHAR).append(v);
                     }
