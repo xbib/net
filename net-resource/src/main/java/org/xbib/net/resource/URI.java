@@ -1117,7 +1117,7 @@ public final class URI extends ResourceIdentifier
      * against this URI.
      *
      * <p> This convenience method works as if invoking it were equivalent to
-     * evaluating the expression {@link #resolve(java.net.URI)
+     * evaluating the expression {@link #resolve(URI)
      * resolve}{@code (URI.}{@link #create(String) create}{@code (str))}. </p>
      *
      * @param  str   The string to be parsed into a URI
