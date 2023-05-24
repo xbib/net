@@ -16,21 +16,19 @@ wrapper {
 }
 
 ext {
-    user = 'xbib'
+    user = 'joerg'
     name = 'net'
     description = 'Network classes for Java'
     inceptionYear = '2016'
-    url = 'https://github.com/' + user + '/' + name
-    scmUrl = 'https://github.com/' + user + '/' + name
-    scmConnection = 'scm:git:git://github.com/' + user + '/' + name + '.git'
-    scmDeveloperConnection = 'scm:git:ssh://git@github.com:' + user + '/' + name + '.git'
+    url = 'https://xbib.org/' + user + '/' + name
+    scmUrl = 'https://xbib.org/' + user + '/' + name
+    scmConnection = 'scm:git:git://xbib.org/' + user + '/' + name + '.git'
+    scmDeveloperConnection = 'scm:git:ssh://forgejo@xbib.org:' + user + '/' + name + '.git'
     issueManagementSystem = 'Github'
     issueManagementUrl = ext.scmUrl + '/issues'
     licenseName = 'The Apache License, Version 2.0'
     licenseUrl = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
 }
-
-apply plugin: "io.github.gradle-nexus.publish-plugin"
 
 subprojects {
     apply from: rootProject.file('gradle/ide/idea.gradle')
@@ -44,4 +42,5 @@ subprojects {
     apply from: rootProject.file('gradle/publish/maven.gradle')
 }
 apply from: rootProject.file('gradle/publish/sonatype.gradle')
+apply from: rootProject.file('gradle/publish/forgejo.gradle')
 apply from: rootProject.file('gradle/quality/cyclonedx.gradle')

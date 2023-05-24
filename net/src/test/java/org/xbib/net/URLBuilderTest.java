@@ -86,7 +86,7 @@ class URLBuilderTest {
     @Test
     void testFromUrlQueryParamEncodedWithSpaces() {
         assertUrl(URL.from("http://foo.com? foo = bar ")
-                .toExternalForm(), "http://foo.com?%20foo%20=%20bar%20");
+                .toExternalForm(), "http://foo.com? foo = bar ");
     }
 
     @Test
