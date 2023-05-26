@@ -25,7 +25,6 @@ dependencyResolutionManagement {
             library('jackson', 'com.fasterxml.jackson.core', 'jackson-databind').version('2.14.3')
             library('jna', 'net.java.dev.jna', 'jna').version('5.13.0')
             library('datastructures-common', 'org.xbib', 'datastructures-common').version('2.3.0')
-            plugin('publish', 'com.gradle.plugin-publish').version('0.18.0')
         }
     }
 }
