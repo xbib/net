@@ -2,6 +2,7 @@ package org.xbib.net.path.simple;
 
 import org.xbib.net.Parameter;
 import org.xbib.net.ParameterBuilder;
+import org.xbib.net.ParameterException;
 import org.xbib.net.util.CharMatcher;
 
 import java.util.ArrayList;
@@ -53,7 +54,7 @@ public class PathResolver<T> implements org.xbib.net.path.PathResolver<T> {
      * @param resultListener result listener
      */
     @Override
-    public void resolve(String method, String path, ResultListener<T> resultListener) {
+    public void resolve(String method, String path, ResultListener<T> resultListener) throws ParameterException {
         Objects.requireNonNull(method, "method");
         Objects.requireNonNull(path, "path");
         resolve(method, builder.pathMatcher.tokenize(path), 0, new ArrayList<>(), resultListener);
@@ -68,7 +69,7 @@ public class PathResolver<T> implements org.xbib.net.path.PathResolver<T> {
                          List<String> pathSegments,
                          int index,
                          List<String> parameters,
-                         ResultListener<T> resultListener) {
+                         ResultListener<T> resultListener) throws ParameterException {
         if (index < pathSegments.size()) {
             String segment = pathSegments.get(index);
             PathResolver<T> child = children.get(segment);

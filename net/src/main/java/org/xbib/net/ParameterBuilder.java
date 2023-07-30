@@ -65,7 +65,7 @@ public class ParameterBuilder implements PairValidator {
     ParameterBuilder() {
         this.list = new ArrayList<>();
         this.parameterMap = new HashMap<>();
-        this.domain = Parameter.Domain.DEFAULT;
+        this.domain = Parameter.Domain.UNDEFINED;
         this.limit = 0;
     }
 

@@ -82,7 +82,7 @@ public class URLBuilder {
                 .onMalformedInput(codingErrorAction)
                 .onUnmappableCharacter(codingErrorAction);
         this.percentDecoder = new PercentDecoder(charsetDecoder);
-        this.queryParams = Parameter.builder();
+        this.queryParams = Parameter.builder().domain(Parameter.Domain.QUERY);
         return this;
     }
 
@@ -300,7 +300,6 @@ public class URLBuilder {
             }
         }
     }
-
 
     /**
      *  A path segment with associated matrix params, if any.

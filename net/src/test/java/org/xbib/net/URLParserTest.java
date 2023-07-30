@@ -327,7 +327,7 @@ class URLParserTest {
         assertEquals("path", pathSegment.getSegment());
         assertEquals("p2", pathSegment.getMatrixParams().get(0).getKey());
         assertEquals("v2", pathSegment.getMatrixParams().get(0).getValue());
-        assertEquals("v3", url.getQueryParams().getAll("q1", Parameter.Domain.DEFAULT).get(0));
+        assertEquals("v3", url.getQueryParams().getAll("q1", Parameter.Domain.QUERY).get(0));
     }
 
     @Test
