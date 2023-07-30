@@ -1,10 +1,11 @@
 package org.xbib.net.path;
 
 import org.xbib.net.Parameter;
+import org.xbib.net.ParameterException;
 
 public interface PathResolver<T> {
 
-    void resolve(String method, String path, ResultListener<T> listener);
+    void resolve(String method, String path, ResultListener<T> listener) throws ParameterException;
 
     interface Builder<T> {
 
@@ -25,7 +26,7 @@ public interface PathResolver<T> {
     @FunctionalInterface
     interface ResultListener<T> {
 
-        void onResult(Result<T> result);
+        void onResult(Result<T> result) throws ParameterException;
 
     }
 }

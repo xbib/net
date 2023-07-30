@@ -50,11 +50,11 @@ public class PathMatcher {
     }
 
     public Parameter extractUriTemplateVariables(String pattern, String path) {
-        ParameterBuilder queryParameters = Parameter.builder();
-        if (!doMatch(pattern, path, true, queryParameters)) {
+        ParameterBuilder uriParameters = Parameter.builder().domain(Parameter.Domain.PATH);
+        if (!doMatch(pattern, path, true, uriParameters)) {
             throw new IllegalStateException("Pattern \"" + pattern + "\" is not a match for \"" + path + "\"");
         }
-        return queryParameters.build();
+        return uriParameters.build();
     }
 
     public PathComparator getPatternComparator(String path) {

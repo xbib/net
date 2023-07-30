@@ -17,33 +17,35 @@ public class ParameterTest {
     public void testEmptyBuilder() {
         Parameter parameter = Parameter.builder().build();
         assertNotNull(parameter);
-        assertFalse(parameter.containsKey("param1", Parameter.Domain.DEFAULT));
+        assertFalse(parameter.containsKey("param1", Parameter.Domain.UNDEFINED));
     }
 
     @Test
     public void testSingleParameter() {
         Parameter parameter = Parameter.builder()
+                .domain(Parameter.Domain.QUERY)
                 .add("Hello", "World")
                 .build();
         assertNotNull(parameter);
-        assertTrue(parameter.containsKey("Hello", Parameter.Domain.DEFAULT));
+        assertTrue(parameter.containsKey("Hello", Parameter.Domain.QUERY));
     }
 
     @Test
-    public void testDuplicateParameter() {
+    public void testDuplicateParameter() throws Exception {
         Parameter parameter = Parameter.builder()
+                .domain(Parameter.Domain.QUERY)
                 .enableDuplicates()
                 .add("Hello", "World")
                 .add("Hello", "World")
                 .add("Hello", "World")
                 .build();
         assertNotNull(parameter);
-        assertTrue(parameter.containsKey("Hello", Parameter.Domain.DEFAULT));
-        assertEquals(List.of("World", "World", "World"), parameter.getAll("Hello", Parameter.Domain.DEFAULT));
+        assertTrue(parameter.containsKey("Hello", Parameter.Domain.QUERY));
+        assertEquals(List.of("World", "World", "World"), parameter.getAll("Hello", Parameter.Domain.QUERY));
     }
 
     @Test
-    public void testHttpHeaderParameter() {
+    public void testHttpHeaderParameter() throws Exception {
         Parameter parameter = Parameter.builder()
                 .charset(StandardCharsets.US_ASCII)
                 .lowercase()
@@ -116,20 +118,20 @@ public class ParameterTest {
     }
 
     @Test
-    void testSimpleParse() {
-        ParameterBuilder queryParameters = Parameter.builder();
+    void testSimpleParse() throws Exception {
+        ParameterBuilder queryParameters = Parameter.builder().domain(Parameter.Domain.QUERY);
         String body = "a=b&c=d&e=f";
         queryParameters.addPercentEncodedBody(body);
         Parameter parameter = queryParameters.build();
-        assertEquals("b", parameter.getAll("a", Parameter.Domain.DEFAULT).get(0));
-        assertEquals("d", parameter.getAll("c", Parameter.Domain.DEFAULT).get(0));
-        assertEquals("f", parameter.getAll("e", Parameter.Domain.DEFAULT).get(0));
+        assertEquals("b", parameter.getAll("a", Parameter.Domain.QUERY).get(0));
+        assertEquals("d", parameter.getAll("c", Parameter.Domain.QUERY).get(0));
+        assertEquals("f", parameter.getAll("e", Parameter.Domain.QUERY).get(0));
     }
 
     @Test
     void testParseExceedingParamLimit() {
         Assertions.assertThrows(IllegalArgumentException.class, () -> {
-            ParameterBuilder queryParameters = Parameter.builder().limit(100);
+            ParameterBuilder queryParameters = Parameter.builder().domain(Parameter.Domain.QUERY).limit(100);
             List<String> list = new ArrayList<>();
             for (int i = 0; i < 200; i++) {
                 list.add("a" + i + "=b" + i);
@@ -137,18 +139,19 @@ public class ParameterTest {
             String body = String.join("&", list);
             queryParameters.addPercentEncodedBody(body);
             Parameter parameter = queryParameters.build();
-            assertEquals("b0", parameter.getAll("a0", Parameter.Domain.DEFAULT).get(0));
-            assertEquals("b99", parameter.getAll("a99", Parameter.Domain.DEFAULT).get(0));
-            assertEquals("[]", parameter.getAll("a100", Parameter.Domain.DEFAULT).toString());
+            assertEquals("b0", parameter.getAll("a0", Parameter.Domain.QUERY).get(0));
+            assertEquals("b99", parameter.getAll("a99", Parameter.Domain.QUERY).get(0));
+            assertEquals("[]", parameter.getAll("a100", Parameter.Domain.QUERY).toString());
         });
     }
 
     @Test
-    void testDomains() {
+    void testDomains() throws ParameterException {
         Parameter p1 = Parameter.builder().domain(Parameter.Domain.QUERY).add("a", "a").build();
         Parameter p2 = Parameter.builder().domain(Parameter.Domain.FORM).add("b", "b").build();
         Parameter p3 = Parameter.builder().domain(Parameter.Domain.HEADER).add("c", "c").build();
         Parameter p = Parameter.builder()
+                .domain(Parameter.Domain.QUERY)
                 .add(p1)
                 .add(p2)
                 .add(p3)
@@ -162,6 +165,5 @@ public class ParameterTest {
         assertTrue(p.isPresent(Parameter.Domain.QUERY));
         assertTrue(p.isPresent(Parameter.Domain.FORM));
         assertTrue(p.isPresent(Parameter.Domain.HEADER));
-        assertFalse(p.isPresent(Parameter.Domain.DEFAULT));
     }
 }

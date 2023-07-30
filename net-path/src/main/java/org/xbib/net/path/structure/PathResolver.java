@@ -4,6 +4,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.xbib.net.Parameter;
 import org.xbib.net.ParameterBuilder;
+import org.xbib.net.ParameterException;
 import org.xbib.net.PathNormalizer;
 
 import java.util.ArrayList;
@@ -37,7 +38,7 @@ public class PathResolver<T> implements org.xbib.net.path.PathResolver<T> {
     }
 
     @Override
-    public void resolve(String method, String path, ResultListener<T> listener) {
+    public void resolve(String method, String path, ResultListener<T> listener) throws ParameterException {
         Objects.requireNonNull(method, "method");
         Objects.requireNonNull(path, "path");
         List<PathSegment> pathSegments = PathMatcher.tokenize(PathNormalizer.normalize(path),
@@ -54,7 +55,7 @@ public class PathResolver<T> implements org.xbib.net.path.PathResolver<T> {
     private ParameterBuilder resolve(List<PathSegment> pathSegments,
                          int index,
                          ParameterBuilder parameterBuilder,
-                         ResultListener<T> listener) {
+                         ResultListener<T> listener) throws ParameterException {
         ParameterBuilder pb = parameterBuilder;
         if (index < pathSegments.size()) {
             PathSegment segment = pathSegments.get(index);

@@ -21,7 +21,7 @@ public class PathDecoder {
         String path = pos > 0 ? pathAndQuery.substring(0, pos) : pathAndQuery;
         this.query = pos > 0 ? pathAndQuery.substring(pos + 1) : null;
         this.path = PathNormalizer.normalize(path);
-        this.params = Parameter.builder().enablePercentDecoding();
+        this.params = Parameter.builder().domain(Parameter.Domain.PATH).enablePercentDecoding();
         if (query != null) {
             parse(query);
         }

@@ -2,6 +2,7 @@ package org.xbib.net.path.simple;
 
 import org.junit.jupiter.api.Test;
 import org.xbib.net.Parameter;
+import org.xbib.net.ParameterException;
 
 import java.util.Collections;
 import java.util.Map;
@@ -18,7 +19,7 @@ import static org.junit.jupiter.api.Assertions.fail;
 class PathResolverTest {
 
     @Test
-    void simple() {
+    void simple() throws ParameterException {
         PathResolver<Integer> pathResolver = PathResolver.<Integer>builder()
                 .add("GET", "explorer", 1234)
                 .build();
@@ -29,7 +30,7 @@ class PathResolverTest {
     }
 
     @Test
-    void name() {
+    void name() throws ParameterException {
         PathResolver<Integer> pathResolver = PathResolver.<Integer>builder()
                 .add("GET", "/static/{file}", 1234)
                 .add("HEAD", "/static/{file}", 1234)
@@ -39,7 +40,7 @@ class PathResolverTest {
     }
 
     @Test
-    void glob() {
+    void glob() throws ParameterException {
         PathResolver<Integer> trie = PathResolver.<Integer>builder()
                 .add("GET", "/static/**", 1234)
                 .build();
@@ -48,7 +49,7 @@ class PathResolverTest {
     }
 
     @Test
-    void sharedPrefix() {
+    void sharedPrefix() throws ParameterException {
         PathResolver<Integer> trie = PathResolver.<Integer>builder()
                 .add("GET", "discovery/v1/rest", 1234)
                 .add("GET", "discovery/v2/rest", 4321)
@@ -61,7 +62,7 @@ class PathResolverTest {
     }
 
     @Test
-    void prefix() {
+    void prefix() throws ParameterException {
         PathResolver<Integer> trie = PathResolver.<Integer>builder()
                 .add("GET", "discovery", 1234)
                 .add("GET", "discovery/v1", 4321)
@@ -72,7 +73,7 @@ class PathResolverTest {
     }
 
     @Test
-    void parameter() {
+    void parameter() throws ParameterException {
         PathResolver<Integer> trie = PathResolver.<Integer>builder()
                 .add("GET", "discovery/{version}/rest", 1234)
                 .build();
@@ -81,7 +82,7 @@ class PathResolverTest {
     }
 
     @Test
-    void multipleParameters() {
+    void multipleParameters() throws ParameterException {
         PathResolver<Integer> trie = PathResolver.<Integer>builder()
                 .add("GET", "discovery/{discovery_version}/apis/{api}/{format}", 1234)
                 .build();
@@ -90,7 +91,7 @@ class PathResolverTest {
     }
 
     @Test
-    void sharedParameterPrefix() {
+    void sharedParameterPrefix() throws ParameterException {
         PathResolver<Integer> trie = PathResolver.<Integer>builder()
                 .add("GET", "discovery/{version}/rest", 1234)
                 .add("GET", "discovery/{version}/rpc", 4321)
@@ -102,7 +103,7 @@ class PathResolverTest {
     }
 
     @Test
-    void testResolveParameterAfterLiteral() {
+    void testResolveParameterAfterLiteral() throws ParameterException {
         PathResolver<Integer> trie = PathResolver.<Integer>builder()
                 .add("GET", "{one}/three", 1234)
                 .add("GET", "one/two", 4321)
@@ -112,7 +113,7 @@ class PathResolverTest {
     }
 
     @Test
-    void testResolveBacktrack() {
+    void testResolveBacktrack() throws ParameterException {
         PathResolver<Integer> trie = PathResolver.<Integer>builder()
                 .add("GET", "{one}/{two}/three/{four}", 1234)
                 .add("GET", "one/two/{three}/four", 4321)
@@ -122,7 +123,7 @@ class PathResolverTest {
     }
 
     @Test
-    void pathMethodsWithDifferentParameterNames() {
+    void pathMethodsWithDifferentParameterNames() throws ParameterException {
         PathResolver<Integer> trie = PathResolver.<Integer>builder()
                 .add("GET", "test/{one}", 1234)
                 .add("PUT", "test/{two}", 4321)
@@ -142,7 +143,7 @@ class PathResolverTest {
     }
 
     @Test
-    void laxDuplicatePath() {
+    void laxDuplicatePath() throws ParameterException {
         PathResolver<Integer> pathResolver = PathResolver.<Integer>builder(false)
                 .add("GET", "test/{one}", 1234)
                 .add("GET", "test/{two}", 4321)
@@ -186,6 +187,8 @@ class PathResolverTest {
             fail("expected NullPointerException");
         } catch (NullPointerException e) {
             // expected
+        } catch (ParameterException e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -223,7 +226,7 @@ class PathResolverTest {
     }
 
     @Test
-    void testFallback() {
+    void testFallback() throws ParameterException {
         AtomicInteger counter = new AtomicInteger(0);
         org.xbib.net.path.PathResolver<Integer> trie = PathResolver.<Integer>builder()
                 .add("GET", "/test/{one}", 1)
@@ -247,16 +250,16 @@ class PathResolverTest {
         }
     }
 
-    private void assertSuccessfulGetResolution(PathResolver<Integer> trie, String path, Integer value) {
+    private void assertSuccessfulGetResolution(PathResolver<Integer> trie, String path, Integer value) throws ParameterException {
         assertSuccessfulResolution(trie, "GET", path, value);
     }
 
-    private void assertSuccessfulResolution(PathResolver<Integer> trie, String method, String path, Integer value) {
+    private void assertSuccessfulResolution(PathResolver<Integer> trie, String method, String path, Integer value) throws ParameterException {
         assertSuccessfulResolution(trie, method, path, Set.of(value), Collections.emptyMap());
     }
 
     private void assertSuccessfulGetResolution(PathResolver<Integer> trie, String path, Integer value,
-                                               Map<String, String> rawParameters) {
+                                               Map<String, String> rawParameters) throws ParameterException {
         assertSuccessfulResolution(trie, "GET", path, Set.of(value), rawParameters);
     }
 
@@ -264,18 +267,18 @@ class PathResolverTest {
                                             String method,
                                             String path,
                                             Set<Integer> values,
-                                            Map<String, String> rawParameters) {
+                                            Map<String, String> rawParameters) throws ParameterException {
         trie.resolve(method, path, result -> {
             assertTrue(values.contains(result.getValue()));
             //assertThat(result.getRawParameters(), is(rawParameters));
         });
     }
 
-    private void assertFailedGetResolution(PathResolver<Integer> trie, String path) {
+    private void assertFailedGetResolution(PathResolver<Integer> trie, String path) throws ParameterException {
         assertFailedGetResolution(trie, "GET", path);
     }
 
-    private void assertFailedGetResolution(PathResolver<Integer> trie, String method, String path) {
+    private void assertFailedGetResolution(PathResolver<Integer> trie, String method, String path) throws ParameterException {
         trie.resolve(method, path, r-> { fail(); });
     }
 }

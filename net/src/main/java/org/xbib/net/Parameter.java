@@ -16,7 +16,7 @@ import org.xbib.datastructures.common.Pair;
 public class Parameter implements Iterable<Pair<String, Object>>, Comparable<Parameter> {
 
     public enum Domain {
-        DEFAULT,
+        UNDEFINED,
         QUERY,
         FORM,
         PATH,
@@ -92,7 +92,7 @@ public class Parameter implements Iterable<Pair<String, Object>>, Comparable<Par
     }
 
     @SuppressWarnings("unchecked")
-    public String getAsString(String key, Domain domain) {
+    public String getAsString(String key, Domain domain) throws ParameterException {
         Object object = get(key, domain);
         if (object instanceof Collection) {
             Collection<Object> collection = (Collection<Object>) object;
@@ -108,7 +108,7 @@ public class Parameter implements Iterable<Pair<String, Object>>, Comparable<Par
     }
 
     @SuppressWarnings("unchecked")
-    public Integer getAsInteger(String key, Domain domain) {
+    public Integer getAsInteger(String key, Domain domain) throws ParameterException {
         Object object = get(key, domain);
         if (object instanceof Collection) {
             Collection<Object> collection = (Collection<Object>) object;
@@ -128,7 +128,7 @@ public class Parameter implements Iterable<Pair<String, Object>>, Comparable<Par
     }
 
     @SuppressWarnings("unchecked")
-    public Boolean getAsBoolean(String key, Domain domain) {
+    public Boolean getAsBoolean(String key, Domain domain) throws ParameterException {
         Object object = get(key, domain);
         if (object instanceof Collection) {
             Collection<Object> collection = (Collection<Object>) object;
@@ -147,49 +147,35 @@ public class Parameter implements Iterable<Pair<String, Object>>, Comparable<Par
         }
     }
 
-    public String allToString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append(list.toString());
-        builder.parameterMap.forEach((key, value) -> sb.append(" ").append(key).append(" -> ").append(value));
-        return sb.toString();
-    }
-
     public boolean hasElements() {
         return !list.isEmpty();
     }
 
-    public MultiMap<String, Object> asMultiMap() {
+    public MultiMap<String, Object> asMultiMap() throws ParameterException{
+        if (getDomain() == Domain.UNDEFINED) {
+            throw new ParameterException("undefined domain");
+        }
         MultiMap<String, Object> multiMap = new LinkedHashSetMultiMap<>();
         this.forEach(p -> multiMap.put(p.getKey(), p.getValue()));
         return multiMap;
     }
 
-    public Map<String, Object> asSingleValuedMap() {
+    public Map<String, Object> asSingleValuedMap() throws ParameterException {
+        if (getDomain() == Domain.UNDEFINED) {
+            throw new ParameterException("undefined domain");
+        }
         Map<String, Object> map = new LinkedHashMap<>();
         this.forEach(p -> map.put(p.getKey(), createValue(p.getValue())));
         return map;
     }
 
-    @SuppressWarnings("unchecked")
-    private static Object createValue(Object object) {
-        if (object instanceof Collection) {
-            Collection<Object> collection = (Collection<Object>) object;
-            if (collection.size() == 1) {
-                return collection.iterator().next();
-            } else {
-                return collection;
-            }
-        }
-        return object;
-    }
-
-    public List<Object> getAllDomain(Domain domain) {
+    public List<Object> getAllInDomain(Domain domain) {
         Parameter parameter = null;
         if (builder.parameterMap.containsKey(domain)) {
             parameter = builder.parameterMap.get(domain);
         }
         if (parameter != null) {
-            return parameter.getAllDomain(domain);
+            return parameter.getAllInDomain(domain);
         }
         if (getDomain().equals(domain)) {
             return list.stream()
@@ -213,7 +199,10 @@ public class Parameter implements Iterable<Pair<String, Object>>, Comparable<Par
         return false;
     }
 
-    public Parameter getDomain(Domain domain) {
+    public Parameter get(Domain domain) throws ParameterException {
+        if (getDomain() == Domain.UNDEFINED) {
+            throw new ParameterException("undefined domain");
+        }
         if (builder.parameterMap.containsKey(domain)) {
             return builder.parameterMap.get(domain);
         }
@@ -223,7 +212,10 @@ public class Parameter implements Iterable<Pair<String, Object>>, Comparable<Par
         return null;
     }
 
-    public List<Object> getAll(String key, Domain domain) {
+    public List<Object> getAll(String key, Domain domain) throws Exception {
+        if (getDomain() == Domain.UNDEFINED) {
+            throw new ParameterException("undefined domain");
+        }
         Parameter parameter = null;
         if (builder.parameterMap.containsKey(domain)) {
             parameter = builder.parameterMap.get(domain);
@@ -255,7 +247,10 @@ public class Parameter implements Iterable<Pair<String, Object>>, Comparable<Par
         return false;
     }
 
-    public Object get(String key, Domain domain) {
+    public Object get(String key, Domain domain) throws ParameterException {
+        if (getDomain() == Domain.UNDEFINED) {
+            throw new ParameterException("undefined domain");
+        }
         Parameter parameter = null;
         if (builder.parameterMap.containsKey(domain)) {
             parameter = builder.parameterMap.get(domain);
@@ -277,5 +272,25 @@ public class Parameter implements Iterable<Pair<String, Object>>, Comparable<Par
 
     public String getAsQueryString() {
         return queryString;
+    }
+
+    private String allToString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append(list.toString());
+        builder.parameterMap.forEach((key, value) -> sb.append(" ").append(key).append(" -> ").append(value));
+        return sb.toString();
+    }
+
+    @SuppressWarnings("unchecked")
+    private static Object createValue(Object object) {
+        if (object instanceof Collection) {
+            Collection<Object> collection = (Collection<Object>) object;
+            if (collection.size() == 1) {
+                return collection.iterator().next();
+            } else {
+                return collection;
+            }
+        }
+        return object;
     }
 }
