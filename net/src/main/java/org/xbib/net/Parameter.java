@@ -200,11 +200,11 @@ public class Parameter implements Iterable<Pair<String, Object>>, Comparable<Par
     }
 
     public Parameter get(Domain domain) throws ParameterException {
-        if (getDomain() == Domain.UNDEFINED) {
-            throw new ParameterException("undefined domain");
-        }
         if (builder.parameterMap.containsKey(domain)) {
             return builder.parameterMap.get(domain);
+        }
+        if (getDomain() == Domain.UNDEFINED) {
+            throw new ParameterException("undefined domain");
         }
         if (getDomain().equals(domain)) {
             return this;
@@ -213,15 +213,15 @@ public class Parameter implements Iterable<Pair<String, Object>>, Comparable<Par
     }
 
     public List<Object> getAll(String key, Domain domain) throws Exception {
-        if (getDomain() == Domain.UNDEFINED) {
-            throw new ParameterException("undefined domain");
-        }
         Parameter parameter = null;
         if (builder.parameterMap.containsKey(domain)) {
             parameter = builder.parameterMap.get(domain);
         }
         if (parameter != null) {
             return parameter.getAll(key, domain);
+        }
+        if (getDomain() == Domain.UNDEFINED) {
+            throw new ParameterException("undefined domain");
         }
         if (getDomain().equals(domain)) {
             return list.stream()
@@ -248,15 +248,15 @@ public class Parameter implements Iterable<Pair<String, Object>>, Comparable<Par
     }
 
     public Object get(String key, Domain domain) throws ParameterException {
-        if (getDomain() == Domain.UNDEFINED) {
-            throw new ParameterException("undefined domain");
-        }
         Parameter parameter = null;
         if (builder.parameterMap.containsKey(domain)) {
             parameter = builder.parameterMap.get(domain);
         }
         if (parameter != null) {
             return parameter.get(key, domain);
+        }
+        if (getDomain() == Domain.UNDEFINED) {
+            throw new ParameterException("undefined domain, please specify domain for parameter " + this);
         }
         if (getDomain().equals(domain)) {
             Optional<Object> optional = list.stream()
