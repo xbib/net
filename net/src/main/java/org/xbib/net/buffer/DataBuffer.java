@@ -337,4 +337,7 @@ public interface DataBuffer extends Releasable {
 	 */
 	String toString(int index, int length, Charset charset);
 
+	default DataBuffer wrap(DataBufferFactory dataBufferFactory, byte[] bytes) {
+		return dataBufferFactory.wrap(bytes);
+	}
 }
