@@ -72,14 +72,19 @@ public class URLParser {
     }
 
     String parseScheme(URLBuilder builder, String input) {
-        Pair<String, String> p = URL.indexOf(URL.COLON_CHAR, input);
+        // there may be colons in query params, so
+        // check if input contains query (question mark) and save query for later return
+        int pos = input.indexOf(URL.QUESTION_CHAR);
+        String string = pos > 0 ? input.substring(0, pos) : input;
+        String query = pos > 0 ? input.substring(pos) : "";
+        Pair<String, String> p = URL.indexOf(URL.COLON_CHAR, string);
         if (p.getValue() == null) {
             return input;
         }
         if (!URL.isNullOrEmpty(p.getKey())) {
             builder.scheme(p.getKey());
         }
-        return p.getValue();
+        return p.getValue() + query;
     }
 
     String parseUserInfo(URLBuilder builder, String input)
