@@ -486,6 +486,15 @@ class URLParserTest {
         });
     }
 
+    @Test
+    void testUrlWithUnencodedUrlAsParam() {
+        URL url = URL.from("/path?a=http://example.com");
+        Parameter queryParameters = url.getQueryParams();
+        // %EF%BF%B = 0xFFFD  UNICODE REPLACEMENT CHARACTER
+        assertEquals("/path", url.getPath());
+        assertEquals("[a=http://example.com]", queryParameters.toString());
+    }
+
     private void assertUrlCompatibility(String url) throws Exception {
         String s = URL.from(url).toExternalForm();
         assertEquals(s, URL.from(s).toExternalForm());
