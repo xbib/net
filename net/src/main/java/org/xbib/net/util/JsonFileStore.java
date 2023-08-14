@@ -7,9 +7,12 @@ import org.xbib.net.PercentEncoders;
 import java.io.IOException;
 import java.io.Writer;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.attribute.FileTime;
+import java.nio.file.SimpleFileVisitor;
+import java.nio.file.StandardOpenOption;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Map;
@@ -31,11 +34,12 @@ public class JsonFileStore implements Store<Map<String, Object>> {
 
     private final Path path;
 
-    public JsonFileStore(String name, Path path) throws IOException {
+    public JsonFileStore(String name, Path path, long expireAfterSeconds) throws IOException {
         this.name = name;
         this.path = path;
         this.lock = new ReentrantReadWriteLock();
         Files.createDirectories(path);
+        purge(expireAfterSeconds);
     }
 
     @Override
@@ -48,7 +52,7 @@ public class JsonFileStore implements Store<Map<String, Object>> {
         AtomicLong size = new AtomicLong(0L);
         try (Stream<Path> stream = Files.walk(path)) {
             stream.forEach(p -> {
-                if (Files.isRegularFile(p)) {
+                if (Files.isRegularFile(p) && Files.isReadable(p)) {
                     size.incrementAndGet();
                 }
             });
@@ -57,9 +61,9 @@ public class JsonFileStore implements Store<Map<String, Object>> {
     }
 
     @Override
-    public void readAll(String key, Consumer<Map<String, Object>> consumer) throws IOException {
+    public void readAll(String prefix, Consumer<Map<String, Object>> consumer) throws IOException {
         Objects.requireNonNull(consumer);
-        try (Stream<Path> stream = Files.walk(path.resolve(key))) {
+        try (Stream<Path> stream = Files.walk(path.resolve(prefix))) {
             stream.forEach(p -> {
                 try {
                     consumer.accept(read(p.getFileName().toString()));
@@ -76,7 +80,12 @@ public class JsonFileStore implements Store<Map<String, Object>> {
         try {
             readLock.lock();
             PercentEncoder percentEncoder = PercentEncoders.getUnreservedEncoder(StandardCharsets.UTF_8);
-            return JsonUtil.toMap(Files.readString(path.resolve(percentEncoder.encode(key))));
+            Path p = path.resolve(percentEncoder.encode(key));
+            if (Files.isRegularFile(p) && Files.isReadable(p)) {
+                return JsonUtil.toMap(Files.readString(p));
+            } else {
+                return null;
+            }
         } finally {
             readLock.unlock();
         }
@@ -92,7 +101,61 @@ public class JsonFileStore implements Store<Map<String, Object>> {
             if (!Files.exists(p.getParent())) {
                 Files.createDirectories(p.getParent());
             }
-            try (Writer writer = Files.newBufferedWriter(p)) {
+            try (Writer writer = Files.newBufferedWriter(p, StandardOpenOption.CREATE_NEW)) {
+                writer.write(JsonUtil.toString(map));
+            }
+        } finally {
+            writeLock.unlock();
+        }
+    }
+
+    @Override
+    public void write(String prefix, String key, Map<String, Object> map) throws IOException {
+        ReentrantReadWriteLock.WriteLock writeLock = lock.writeLock();
+        try {
+            writeLock.lock();
+            PercentEncoder percentEncoder = PercentEncoders.getUnreservedEncoder(StandardCharsets.UTF_8);
+            Path p = path.resolve(prefix).resolve(percentEncoder.encode(key));
+            if (!Files.exists(p.getParent())) {
+                Files.createDirectories(p.getParent());
+            }
+            try (Writer writer = Files.newBufferedWriter(p, StandardOpenOption.CREATE_NEW)) {
+                writer.write(JsonUtil.toString(map));
+            }
+        } finally {
+            writeLock.unlock();
+        }
+    }
+
+    @Override
+    public void update(String key, Map<String, Object> map) throws IOException {
+        ReentrantReadWriteLock.WriteLock writeLock = lock.writeLock();
+        try {
+            writeLock.lock();
+            PercentEncoder percentEncoder = PercentEncoders.getUnreservedEncoder(StandardCharsets.UTF_8);
+            Path p = path.resolve(percentEncoder.encode(key));
+            if (!Files.exists(p.getParent())) {
+                Files.createDirectories(p.getParent());
+            }
+            try (Writer writer = Files.newBufferedWriter(p, StandardOpenOption.CREATE)) {
+                writer.write(JsonUtil.toString(map));
+            }
+        } finally {
+            writeLock.unlock();
+        }
+    }
+
+    @Override
+    public void update(String prefix, String key, Map<String, Object> map) throws IOException {
+        ReentrantReadWriteLock.WriteLock writeLock = lock.writeLock();
+        try {
+            writeLock.lock();
+            PercentEncoder percentEncoder = PercentEncoders.getUnreservedEncoder(StandardCharsets.UTF_8);
+            Path p = path.resolve(prefix).resolve(percentEncoder.encode(key));
+            if (!Files.exists(p.getParent())) {
+                Files.createDirectories(p.getParent());
+            }
+            try (Writer writer = Files.newBufferedWriter(p, StandardOpenOption.CREATE)) {
                 writer.write(JsonUtil.toString(map));
             }
         } finally {
@@ -119,8 +182,7 @@ public class JsonFileStore implements Store<Map<String, Object>> {
             try (Stream<Path> stream = Files.walk(path)) {
                 stream.forEach(p -> {
                     try {
-                        FileTime fileTime = Files.getLastModifiedTime(p);
-                        Duration duration = Duration.between(fileTime.toInstant(), instant);
+                        Duration duration = Duration.between(Files.getLastModifiedTime(p).toInstant(), instant);
                         if (duration.toSeconds() > expiredAfterSeconds) {
                             Files.delete(p);
                         }
@@ -130,5 +192,22 @@ public class JsonFileStore implements Store<Map<String, Object>> {
                 });
             }
         }
+    }
+
+    @Override
+    public void destroy() throws IOException {
+        Files.walkFileTree(path, new SimpleFileVisitor<>() {
+            @Override
+            public FileVisitResult postVisitDirectory(Path dir, IOException exc) throws IOException {
+                Files.delete(dir);
+                return FileVisitResult.CONTINUE;
+            }
+
+            @Override
+            public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+                Files.delete(file);
+                return FileVisitResult.CONTINUE;
+            }
+        });
     }
 }
