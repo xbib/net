@@ -438,12 +438,12 @@ public class URL implements Comparable<URL> {
         return externalStringRepresentation;
     }
 
-    public java.net.URL toURL() throws MalformedURLException {
-        return new java.net.URL(toString());
-    }
-
     public URI toURI() {
         return URI.create(toString());
+    }
+
+    public java.net.URL toURL() throws MalformedURLException {
+        return toURI().toURL();
     }
 
     public Path toPath() {

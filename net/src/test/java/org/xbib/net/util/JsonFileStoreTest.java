@@ -22,7 +22,7 @@ public class JsonFileStoreTest {
     @BeforeAll
     public static void before() throws IOException {
         Path path = Files.createTempDirectory("jsonstore");
-        jsonFileStore = new JsonFileStore("test", path, 3600L);
+        jsonFileStore = new JsonFileStore("test", path);
     }
 
     @AfterAll

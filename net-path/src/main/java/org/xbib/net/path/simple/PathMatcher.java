@@ -30,11 +30,16 @@ public class PathMatcher {
     }
 
     public PathMatcher(String pathSeparator) {
-        setPathSeparator(pathSeparator);
+        this.pathSeparator = pathSeparator;
+        update();
     }
 
     public void setPathSeparator(String pathSeparator) {
-        this.pathSeparator = pathSeparator != null ? pathSeparator : DEFAULT_PATH_SEPARATOR;
+        this.pathSeparator = pathSeparator;
+        update();
+    }
+
+    private void update() {
         this.endsOnWildCard = this.pathSeparator + "*";
         this.endsOnDoubleWildCard = this.pathSeparator + "**";
         this.caseSensitive = true;

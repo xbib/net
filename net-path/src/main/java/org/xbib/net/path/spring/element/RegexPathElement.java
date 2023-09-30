@@ -38,8 +38,7 @@ public class RegexPathElement extends PathElement {
 		this.pattern = buildPattern(regex, completePattern);
 	}
 
-
-	public Pattern buildPattern(char[] regex, char[] completePattern) {
+	private Pattern buildPattern(char[] regex, char[] completePattern) {
 		StringBuilder patternBuilder = new StringBuilder();
 		String text = new String(regex);
 		Matcher matcher = GLOB_PATTERN.matcher(text);

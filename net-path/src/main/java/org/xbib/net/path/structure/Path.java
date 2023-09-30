@@ -52,7 +52,7 @@ public class Path {
         return new Path(pathSpec);
     }
 
-    public void init(String pathSpec, String pathSeparator, boolean trimTokens, boolean caseSensitive) {
+    protected final void init(String pathSpec, String pathSeparator, boolean trimTokens, boolean caseSensitive) {
         this.pathSpec = PathNormalizer.normalize(pathSpec);
         this.pathSeparator = pathSeparator;
         this.trimTokens = trimTokens;
@@ -140,11 +140,11 @@ public class Path {
         return Objects.hash(pathSpec, parameterCount, singleWildcards, doubleWildcards, catchAllPattern, prefixPattern, length);
     }
 
-    public List<PathSegment> tokenize(String string) {
+    protected final List<PathSegment> tokenize(String string) {
         return tokenize(string, pathSeparator, trimTokens, caseSensitive);
     }
 
-    public static List<PathSegment> tokenize(String string, String pathSeparator, boolean trimTokens, boolean caseSensitive) {
+    protected static List<PathSegment> tokenize(String string, String pathSeparator, boolean trimTokens, boolean caseSensitive) {
         List<PathSegment> pathSegments = new ArrayList<>();
         if (string == null) {
             return pathSegments;
@@ -155,7 +155,7 @@ public class Path {
             if (trimTokens) {
                 token = token.trim();
             }
-            if (token.length() > 0) {
+            if (!token.isEmpty()) {
                 if (!caseSensitive) {
                     token = token.toLowerCase(Locale.ROOT);
                 }
