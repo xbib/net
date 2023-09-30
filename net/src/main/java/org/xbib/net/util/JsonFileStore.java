@@ -34,12 +34,11 @@ public class JsonFileStore implements Store<Map<String, Object>> {
 
     private final Path path;
 
-    public JsonFileStore(String name, Path path, long expireAfterSeconds) throws IOException {
+    public JsonFileStore(String name, Path path) throws IOException {
         this.name = name;
         this.path = path;
         this.lock = new ReentrantReadWriteLock();
         Files.createDirectories(path);
-        purge(expireAfterSeconds);
     }
 
     @Override

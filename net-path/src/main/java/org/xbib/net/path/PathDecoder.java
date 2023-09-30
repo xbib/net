@@ -23,10 +23,10 @@ public class PathDecoder {
         this.path = PathNormalizer.normalize(path);
         this.params = Parameter.builder().domain(Parameter.Domain.PATH).enablePercentDecoding();
         if (query != null) {
-            parse(query);
+            this.params.add(query);
         }
         if (queryString != null) {
-            parse(queryString);
+            this.params.add(queryString);
         }
     }
 

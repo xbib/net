@@ -1180,44 +1180,30 @@ public final class URI extends ResourceIdentifier
      *          or if some other error occurred while constructing the URL
      */
     public URL toURL() throws MalformedURLException {
-        return fromURI(this);
-    }
-
-    /**
-     * Creates a URL from a URI, as if by invoking {@code uri.toURL()}.
-     *
-     * @see java.net.URI#toURL()
-     */
-    static URL fromURI(URI uri) throws MalformedURLException {
-        if (!uri.isAbsolute()) {
+        if (!isAbsolute()) {
             throw new IllegalArgumentException("URI is not absolute");
         }
-        String protocol = uri.getScheme();
-
+        String protocol = getScheme();
         // In general we need to go via Handler.parseURL, but for the jrt
         // protocol we enforce that the Handler is not overrideable and can
         // optimize URI to URL conversion.
         //
         // Case-sensitive comparison for performance; malformed protocols will
         // be handled correctly by the slow path.
-        if (protocol.equals("jrt") && !uri.isOpaque()
-                && uri.getRawFragment() == null) {
-
-            String query = uri.getRawQuery();
-            String path = uri.getRawPath();
+        if (protocol.equals("jrt") && !isOpaque()
+                && getRawFragment() == null) {
+            String query = getRawQuery();
+            String path = getRawPath();
             String file = (query == null) ? path : path + "?" + query;
-
             // URL represent undefined host as empty string while URI use null
-            String host = uri.getHost();
+            String host = getHost();
             if (host == null) {
                 host = "";
             }
-
-            int port = uri.getPort();
-
-            return new URL("jrt", host, port, file, null);
+            int port = getPort();
+            return URI.create("jrt://" + host + ":" + port + "/" + file).toURL();
         } else {
-            return new URL((URL)null, uri.toString(), null);
+            return URI.create(toString()).toURL();
         }
     }
 
