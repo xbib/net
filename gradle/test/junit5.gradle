@@ -2,6 +2,7 @@ dependencies {
     testImplementation libs.junit.jupiter.api
     testImplementation libs.hamcrest
     testRuntimeOnly libs.junit.jupiter.engine
+    testRuntimeOnly libs.junit.jupiter.platform.launcher
 }
 
 test {
@@ -19,7 +20,6 @@ test {
             '--add-opens=java.base/java.nio=ALL-UNNAMED',
             '--add-opens=java.base/java.util=ALL-UNNAMED'
     systemProperty 'java.util.logging.config.file', 'src/test/resources/logging.properties'
-    systemProperty 'io.netty.tryReflectionSetAccessible', 'true'
     testLogging {
         events 'STARTED', 'PASSED', 'FAILED', 'SKIPPED'
     }
