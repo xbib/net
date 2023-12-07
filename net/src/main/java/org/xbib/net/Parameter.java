@@ -1,5 +1,7 @@
 package org.xbib.net;
 
+import java.nio.charset.MalformedInputException;
+import java.nio.charset.UnmappableCharacterException;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -102,9 +104,17 @@ public class Parameter implements Iterable<Pair<String, Object>>, Comparable<Par
             } else {
                 object = null;
             }
-            return object != null ? object.toString() : null;
+            return object != null ? decodeIfQueryDomain(domain, object.toString()) : null;
         }
-        return object != null ? object instanceof String ? (String) object : object.toString() : null;
+        return object != null ? decodeIfQueryDomain(domain, object instanceof String ? (String) object : object.toString()) : null;
+    }
+
+    private String decodeIfQueryDomain(Domain domain, String string) throws ParameterException {
+        try {
+            return Domain.QUERY == domain ? builder().percentDecode(string) : string;
+        } catch (UnmappableCharacterException | MalformedInputException e) {
+            throw new ParameterException(e);
+        }
     }
 
     @SuppressWarnings("unchecked")

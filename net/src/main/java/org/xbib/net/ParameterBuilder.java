@@ -14,6 +14,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
+
 import org.xbib.datastructures.common.ImmutableList;
 import org.xbib.datastructures.common.MultiMap;
 import org.xbib.datastructures.common.Pair;
@@ -107,9 +109,23 @@ public class ParameterBuilder implements PairValidator {
         return this;
     }
 
+    public String percentEncode(CharSequence text) throws UnmappableCharacterException, MalformedInputException {
+        if (percentEncoder == null) {
+            charset(StandardCharsets.UTF_8);
+        }
+        return percentEncoder.encode(text);
+    }
+
     public ParameterBuilder percentDecode(PercentDecoder percentDecoder) {
         this.percentDecoder = percentDecoder;
         return this;
+    }
+
+    public String percentDecode(CharSequence text) throws UnmappableCharacterException, MalformedInputException {
+        if (percentDecoder == null) {
+            charset(StandardCharsets.UTF_8);
+        }
+        return percentDecoder.decode(text);
     }
 
     public ParameterBuilder enablePercentEncoding() {
@@ -222,7 +238,11 @@ public class ParameterBuilder implements PairValidator {
         return this;
     }
 
-    public ParameterBuilder add(String percentEncodedQueryString) {
+    public ParameterBuilder add(String percentEncodedQueryString, Charset charset) {
+        Objects.requireNonNull(charset);
+        if (this.charset == null || !this.charset.equals(charset)) {
+            charset(charset);
+        }
         try {
             decodeQueryString(percentEncodedQueryString);
         } catch (MalformedInputException | UnmappableCharacterException e) {
@@ -234,6 +254,9 @@ public class ParameterBuilder implements PairValidator {
     public Parameter build() {
         if (enableSort) {
             list.sort(Comparator.comparing(Pair::getKey));
+        }
+        if (percentDecoder == null) {
+            charset(StandardCharsets.UTF_8);
         }
         String queryString = null;
         if (enableQueryString) {

@@ -57,6 +57,11 @@ class PercentDecoderTest {
     }
 
     @Test
+    void testJoerg() throws UnmappableCharacterException, MalformedInputException {
+        assertEquals("Hello Jörg", decoder.decode("Hello%20J%C3%B6rg"));
+    }
+
+    @Test
     void testRandomStrings() throws MalformedInputException, UnmappableCharacterException {
         PercentEncoder encoder = PercentEncoders.getQueryEncoder(StandardCharsets.UTF_8);
         Random rand = new Random();

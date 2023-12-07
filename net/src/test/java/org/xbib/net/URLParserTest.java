@@ -3,6 +3,7 @@ package org.xbib.net;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import java.net.URI;
 import java.nio.charset.Charset;
 import java.nio.charset.CodingErrorAction;
 import java.nio.charset.StandardCharsets;
@@ -498,7 +499,7 @@ class URLParserTest {
     private void assertUrlCompatibility(String url) throws Exception {
         String s = URL.from(url).toExternalForm();
         assertEquals(s, URL.from(s).toExternalForm());
-        assertEquals(s, new java.net.URL(url).toExternalForm());
+        assertEquals(s, URI.create(url).toURL().toExternalForm());
     }
 
     private void assertRoundTrip(String url) {

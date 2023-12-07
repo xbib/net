@@ -78,6 +78,17 @@ public class ParameterTest {
     }
 
     @Test
+    public void testQueryParameterDecoding() throws ParameterException {
+        Parameter parameter = Parameter.builder()
+                .domain(Parameter.Domain.QUERY)
+                .add("value1", "Hello%20J%C3%B6rg") // query parameter, no query string mode
+                .add("value2=Hello%20J%C3%B6rg", StandardCharsets.UTF_8) // query string mode
+                .build();
+        assertEquals("Hello Jörg", parameter.getAsString("value1", Parameter.Domain.QUERY));
+        assertEquals("Hello Jörg", parameter.getAsString("value2", Parameter.Domain.QUERY));
+    }
+
+    @Test
     public void testParameters() {
         Map<String, Object> map = Map.of(
                 "version", "1.1",

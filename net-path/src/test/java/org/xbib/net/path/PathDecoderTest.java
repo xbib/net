@@ -4,6 +4,8 @@ import org.junit.jupiter.api.Test;
 import org.xbib.net.Parameter;
 import org.xbib.net.URL;
 
+import java.nio.charset.StandardCharsets;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
@@ -11,27 +13,27 @@ class PathDecoderTest {
 
     @Test
     void testPlusSign() throws Exception {
-        PathDecoder decoder = new PathDecoder("/path?a=b+c", "d=e+f");
+        PathDecoder decoder = new PathDecoder("/path?a=b+c", "d=e+f", StandardCharsets.UTF_8);
         assertEquals("[b c]", decoder.getParameter().getAll("a", Parameter.Domain.PATH).toString());
         assertEquals("[e f]", decoder.getParameter().getAll("d", Parameter.Domain.PATH).toString());
     }
 
     @Test
     void testSlash() throws Exception {
-        PathDecoder decoder = new PathDecoder("path/foo/bar/?a=b+c", "d=e+f");
+        PathDecoder decoder = new PathDecoder("path/foo/bar/?a=b+c", "d=e+f", StandardCharsets.UTF_8);
         assertEquals("[b c]", decoder.getParameter().getAll("a", Parameter.Domain.PATH).toString());
         assertEquals("[e f]", decoder.getParameter().getAll("d", Parameter.Domain.PATH).toString());
     }
 
     @Test
     void testDoubleSlashes() {
-        PathDecoder decoder = new PathDecoder("//path", "");
+        PathDecoder decoder = new PathDecoder("//path", "", StandardCharsets.UTF_8);
         assertEquals("/path", decoder.path());
     }
 
     @Test
     void testSlashes() throws Exception {
-        PathDecoder decoder = new PathDecoder("//path?a=b+c", "d=e+f");
+        PathDecoder decoder = new PathDecoder("//path?a=b+c", "d=e+f", StandardCharsets.UTF_8);
         assertEquals("/path", decoder.path());
         assertEquals("[b c]", decoder.getParameter().getAll("a", Parameter.Domain.PATH).toString());
         assertEquals("[e f]", decoder.getParameter().getAll("d", Parameter.Domain.PATH).toString());
@@ -39,7 +41,7 @@ class PathDecoderTest {
 
     @Test
     void testPlusPercent() throws Exception {
-        PathDecoder decoder = new PathDecoder("//path?a=b%2Bc", "d=e%2Bf");
+        PathDecoder decoder = new PathDecoder("//path?a=b%2Bc", "d=e%2Bf", StandardCharsets.UTF_8);
         assertEquals("/path", decoder.path());
         assertEquals("[b+c]", decoder.getParameter().getAll("a", Parameter.Domain.PATH).toString());
         assertEquals("[e+f]", decoder.getParameter().getAll("d", Parameter.Domain.PATH).toString());
@@ -53,7 +55,7 @@ class PathDecoderTest {
         assertNull(url.getPort());
         assertEquals("/pdfconverter/index.gtpl", url.getPath());
         assertNull(url.getFragment());
-        PathDecoder decoder = new PathDecoder(requestURI);
+        PathDecoder decoder = new PathDecoder(requestURI, StandardCharsets.UTF_8);
         if (url.getQuery() != null) {
             decoder.parse(url.getDecodedQuery());
         }
