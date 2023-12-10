@@ -15,8 +15,8 @@ pluginManagement {
 dependencyResolutionManagement {
     versionCatalogs {
         libs {
-            version('gradle', '8.4')
-            library('bouncycastle', 'org.bouncycastle', 'bcpkix-jdk18on').version('1.76')
+            version('gradle', '8.5')
+            library('bouncycastle', 'org.bouncycastle', 'bcpkix-jdk18on').version('1.77')
             library('jackson', 'com.fasterxml.jackson.core', 'jackson-databind').version('2.15.2')
             library('jna', 'net.java.dev.jna', 'jna').version('5.13.0')
             library('datastructures-common', 'org.xbib', 'datastructures-common').version('5.0.5')
